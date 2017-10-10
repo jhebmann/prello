@@ -1,4 +1,3 @@
-
 # Prello
 ## Instructions to run
 
@@ -14,3 +13,6 @@
 * Socket.io :8000
 * Back End Api (Express) :8000
 * React App :3000
+
+## Architecture Diagram
+![](https://i.imgur.com/sjQp09p.jpg)
