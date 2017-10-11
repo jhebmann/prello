@@ -1,7 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-Card = mongoose.model('Cards');
+Card = mongoose.model('Lists');
 
 exports.list_all_cards = function(req, res) {
   Card.find({}, function(err, card) {

@@ -8,12 +8,12 @@ class List extends React.Component{
     super(props);    
     //Default State
     this.state={
+      id_list:this.props.id_list,
       cards: [],
       title_new_card: null
     }
     
     this.socket = this.props.io;
-    this.initialize = this.initialize.bind(this);
     this.handleCarTitleImputChange = this.handleCarTitleImputChange.bind(this);
     this.onClickAddCard = this.onClickAddCard.bind(this);
     this.addCard = this.addCard.bind(this);
@@ -22,8 +22,11 @@ class List extends React.Component{
 
     //Event Listeners
     this.socket.on('newCard', this.addCard);
-    this.socket.on('initialize', this.initialize);  //We should use componentDidMount() ?
     this.socket.on('changeList',this.changeList);
+  }
+
+  componentDidMount() {
+    this.setState({cards:this.props.cards});
   }
 
   render(){
@@ -31,27 +34,22 @@ class List extends React.Component{
       <Panel bsSize="small" style={{display: "inline-flex", background: "lightgray",margin:"20px"}}>
         {this.cardList(this.state.cards)} 
         <p><FormControl type="text" onChange={this.handleCarTitleImputChange} placeholder="Card Title" />
-        <Button bsStyle="success" onClick={this.onClickAddCard}>Add empty Card</Button>
+        <Button bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
         <Button bsStyle="danger" onClick={this.onClickDeleteList}>Delete List</Button></p>
     </Panel>
       );
   } 
-  
-  //Gets the array from server with all the cards
-  initialize(data){
-    data.map((card)=>
-      this.addCard(card)
-    );
-  }
 
-  addCard(card){
-    this.setState(prevState=>({
-      cards: prevState.cards.concat({
-        title_card: card.title_card,
-        description: card.description,
-        date: card.date
-      })
-    }));
+  addCard(card,id_list){
+    if(id_list == this.state.id_list){
+      this.setState(prevState=>({
+        cards: prevState.cards.concat({
+          title_card: card.title_card,
+          description: card.description,
+          date: card.date
+        })
+      }));
+    }
   }
 
   //Handle Card title imput
@@ -67,7 +65,7 @@ class List extends React.Component{
     this.setState(prevState=>({
       cards: prevState.cards.concat(new_card)
     }));
-    this.socket.emit('newCardClient',new_card);
+    this.socket.emit('newCardClient',new_card,this.state.id_list);
   }
 
   //Renders the Cards stored in the cards array   
@@ -78,6 +76,7 @@ class List extends React.Component{
     );
     return cardItems
   }
+
   onClickDeleteList(){
     this.socket.emit('deleteList');
     this.changeList([]);

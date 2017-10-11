@@ -10,7 +10,7 @@ var CardSchema = new Schema({
     type: String
   },
   description: {
-    type: String,
+    type: String
   },
   date: {
     type: Date,
@@ -18,4 +18,19 @@ var CardSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('Cards', CardSchema);
+var ListSchema = new Schema({
+    id_list: {
+    type: String
+    },
+    title_list: {
+      type: String
+    },
+    cards: [CardSchema],
+    date: {
+      type: Date,
+      default: Date.now
+    }
+});
+
+
+module.exports = mongoose.model('Lists', ListSchema);
