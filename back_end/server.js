@@ -7,7 +7,10 @@ var bodyParser = require('body-parser');
 //Database declaration
 var mongoose = require('mongoose'),
     Lists = require('./cardModel'); //created model loading here
-mongoose.connect('mongodb://localhost:27017/Lists');
+mongoose.connect('mongodb://localhost:27017/Lists', {
+    useMongoClient: true
+  })
+
 var mongodbUri = "mongodb://localhost:27017/test";
 var options = {
     useMongoClient: true,
