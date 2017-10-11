@@ -54,7 +54,7 @@ class Board extends React.Component{
         const listItems= lists.map((list, index)=>
           <List key={index} cards={list.cards} id_list={list.id_list} io={this.socket} title_list={list.title_list}/>
         );
-        console.log('List Items ',listItems);
+        //console.log('List Items ',listItems);
         return listItems
       }
 }

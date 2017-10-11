@@ -1,8 +1,8 @@
 'use strict';
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var CardSchema = new Schema({
+const CardSchema = new Schema({
   id: {
    type: String
   },
@@ -18,7 +18,7 @@ var CardSchema = new Schema({
   }
 });
 
-var ListSchema = new Schema({
+const ListSchema = new Schema({
     id_list: {
     type: String,
     default: Date.now
