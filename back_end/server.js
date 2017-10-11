@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 
 //Database declaration
 var mongoose = require('mongoose'),
-    Lists = require('./cardModel'); //created model loading here
+    Lists = require('./models/list'); //created model loading here
 mongoose.connect('mongodb://localhost:27017/Lists', {
     useMongoClient: true
   })
@@ -19,7 +19,7 @@ var options = {
     reconnectTries: 30
 };
 var db = mongoose.connect(mongodbUri, options);
-var listController =  require('./cardController.js');
+var listController =  require('./routes/Card/cardController.js');
 cardModel = mongoose.model('Lists');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

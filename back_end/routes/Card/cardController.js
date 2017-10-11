@@ -23,8 +23,10 @@ exports.create_a_card = function(req, res) {
 
 exports.delete_collection = function(req, res) {
   Card.remove({}, function(err, card) {
-    if (err)
+    if (err){
+      console.log('problems')
       res.send(err);
+    }
     res.json({ message: 'Collection successfully deleted' });
   });
 };
