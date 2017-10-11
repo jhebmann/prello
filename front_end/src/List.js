@@ -42,7 +42,7 @@ class List extends React.Component{
   } 
 
   addCard(card,id_list){
-    if(id_list == this.state.id_list){
+    if(id_list === this.state.id_list){
       this.setState(prevState=>({
         cards: prevState.cards.concat({
           title_card: card.title_card,
@@ -72,8 +72,8 @@ class List extends React.Component{
   //Renders the Cards stored in the cards array   
   cardList(list){
     const cards=this.state.cards;
-    const cardItems= cards.map((card)=>
-      <Card title_card={card.title_card} description={card.description} date={card.date}/>
+    const cardItems= cards.map((card, index)=>
+      <Card key={index} title_card={card.title_card} description={card.description} date={card.date}/>
     );
     return cardItems
   }
@@ -85,7 +85,7 @@ class List extends React.Component{
 
   changeList(list,id_list){
     console.log("Id list param",id_list,"Id list state",this.state.id_list)
-    if(id_list==this.state.id_list)
+    if(id_list===this.state.id_list)
       this.setState({cards:[]});
   }
 

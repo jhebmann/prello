@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import List from './List.js';
 import Board from './Board.js';
 import NavbarElem from './NavbarElem'
 import NumberUser from './NumberUser'
@@ -20,7 +19,7 @@ import SocketIOClient from 'socket.io-client';
           <NumberUser io={this.socket}/>
           <Board io={this.socket}/>
         </div>
-      );
+      )
     }
 }
 ReactDOM.render(<App />, document.getElementById('root'));

@@ -1,6 +1,6 @@
 import React from 'react';
 import List from './List.js';
-import {Button,Panel,FormControl} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 
 class Board extends React.Component{
     
@@ -35,7 +35,7 @@ class Board extends React.Component{
       }
 
       onClickAddList(){
-          var id_list=Date.now()
+          const id_list=Date.now()
           this.socket.emit("newList",id_list);
           this.createList(id_list);
       }
@@ -51,8 +51,8 @@ class Board extends React.Component{
       }
 
       cardList(lists){
-        const listItems= lists.map((list)=>
-          <List cards={list.cards} id_list={list.id_list} io={this.socket} title_list={list.title_list}/>
+        const listItems= lists.map((list, index)=>
+          <List key={index} cards={list.cards} id_list={list.id_list} io={this.socket} title_list={list.title_list}/>
         );
         console.log('List Items ',listItems);
         return listItems
