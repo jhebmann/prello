@@ -7,7 +7,7 @@ class Card extends React.Component{
         return(
             <Thumbnail >
                     <ProgressBar bsStyle="danger" now={100} />
-                    <h3>{this.props.title_card}</h3>
+                    <h4>{this.props.title_card}</h4>
                     <p>{this.props.description}</p>
                     <p>{this.props.date}</p>
                     <Button bsStyle="primary">Button</Button>&nbsp;

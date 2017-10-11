@@ -37,32 +37,39 @@ io.on('connection', (client) => {
     });
 
     client.on('newCardClient', (card,id_list)=>{//When a client adds new card, emit to all the connected users and save it
-        console.log('New Card',card,id_list);
         client.broadcast.emit('newCard', card, id_list);
-        
-        /*var new_card = new Card(card);
-        
-        MyModel.findOneAndUpdate(query, req.newData, {upsert:true}, function(err, doc){
-            if (err) return res.send(500, { error: err });
-            return res.send("succesfully saved");
-        });
-        
-        
-        
-        new_card.save((err)=> {
-        if (err)
-            console.log('Error adding New Card mongo',err);
-        console.log('Added New Card mongo');
-        });    */
+        cardModel.findOneAndUpdate({id_list:id_list},
+            { "$push": { "cards": card } },
+            { "new": true, "upsert": true },
+            function (err, managerparent) {
+                if (err) throw err;
+                console.log(managerparent);
+            }
+        );
     });
 
-    client.on('deleteList', ()=>{
-        cardModel.remove({}, (err)=> { //For now delete all the cards from database
+    client.on('deleteList', (id_list)=>{
+        cardModel.findOneAndUpdate({id_list:id_list},
+            { "cards": [] } ,
+            { "new": true, "upsert": true },
+            function (err, managerparent) {
+                if (err) throw err;
+                console.log(managerparent);
+            }
+        );
+        client.broadcast.emit('changeList',[],id_list);
+    });    
+
+
+    client.on('newList', (id_list)=>{
+        var newList=new Lists();
+        newList.id_list=id_list;
+        newList.save({}, (err)=> { //For now delete all the cards from database
         if (err)
-            console.log('Error deleting',err);
-        console.log('Collection successfully deleted');
-        client.broadcast.emit('changeList',[]);
-        });    
+            console.log('Error adding List',err);
+        console.log('List Added');
+        });
+        client.broadcast.emit('addEmptyList',id_list);
     });
 
     //Update state of the new user

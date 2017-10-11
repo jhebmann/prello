@@ -32,10 +32,11 @@ class List extends React.Component{
   render(){
     return(
       <Panel bsSize="small" style={{display: "inline-flex", background: "lightgray",margin:"20px"}}>
+        <h4>{this.props.title_list}</h4>
         {this.cardList(this.state.cards)} 
         <p><FormControl type="text" onChange={this.handleCarTitleImputChange} placeholder="Card Title" />
         <Button bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
-        <Button bsStyle="danger" onClick={this.onClickDeleteList}>Delete List</Button></p>
+        <Button bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button></p>
     </Panel>
       );
   } 
@@ -78,12 +79,14 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    this.socket.emit('deleteList');
-    this.changeList([]);
+    this.socket.emit('deleteList',this.state.id_list);
+     this.setState({cards:[]});
   }
 
-  changeList(list){
-    this.setState({cards:list});
+  changeList(list,id_list){
+    console.log("Id list param",id_list,"Id list state",this.state.id_list)
+    if(id_list==this.state.id_list)
+      this.setState({cards:[]});
   }
 
 }

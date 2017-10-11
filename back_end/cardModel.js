@@ -20,7 +20,8 @@ var CardSchema = new Schema({
 
 var ListSchema = new Schema({
     id_list: {
-    type: String
+    type: String,
+    default: Date.now
     },
     title_list: {
       type: String
