@@ -17,10 +17,13 @@ class List extends React.Component{
     this.handleCarTitleImputChange = this.handleCarTitleImputChange.bind(this);
     this.onClickAddCard = this.onClickAddCard.bind(this);
     this.addCard = this.addCard.bind(this);
-    
+    this.changeList = this.changeList.bind(this);
+    this.onClickDeleteList= this.onClickDeleteList.bind(this)
+
     //Event Listeners
     this.socket.on('newCard', this.addCard);
     this.socket.on('initialize', this.initialize);  //We should use componentDidMount() ?
+    this.socket.on('changeList',this.changeList);
   }
 
   render(){
@@ -28,7 +31,8 @@ class List extends React.Component{
       <Panel bsSize="small" style={{display: "inline-flex", background: "lightgray",margin:"20px"}}>
         {this.cardList(this.state.cards)} 
         <p><FormControl type="text" onChange={this.handleCarTitleImputChange} placeholder="Card Title" />
-        <Button bsStyle="primary" onClick={this.onClickAddCard}>Add empty Card</Button></p>
+        <Button bsStyle="success" onClick={this.onClickAddCard}>Add empty Card</Button>
+        <Button bsStyle="danger" onClick={this.onClickDeleteList}>Delete List</Button></p>
     </Panel>
       );
   } 
@@ -73,6 +77,14 @@ class List extends React.Component{
       <Card title_card={card.title_card} description={card.description} date={card.date}/>
     );
     return cardItems
+  }
+  onClickDeleteList(){
+    this.socket.emit('deleteList');
+    this.changeList([]);
+  }
+
+  changeList(list){
+    this.setState({cards:list});
   }
 
 }

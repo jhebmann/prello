@@ -26,29 +26,38 @@ var numUsers=0;
 io.on('connection', (client) => {
     console.log('Client connected...');
     ++numUsers;
-    cardModel.find({}, function (err, doc){//Get cards and emit event to the new user connected
+    cardModel.find({}, (err, doc)=>{//Get cards and emit event to the new user connected
         client.emit('initialize',doc); 
       });
      
-    client.on('disconnect', function(){
+    client.on('disconnect', ()=>{
         console.log('User disconnected');
         --numUsers;
         client.broadcast.emit('connectedUser', numUsers);//Update connectedUser number on all clients        
     });
 
-    client.on('newCardClient', function(card){//When a client adds new card, emit to all the connected users and save it
+    client.on('newCardClient', (card)=>{//When a client adds new card, emit to all the connected users and save it
         console.log('New Card');
         client.broadcast.emit('newCard', card);
         var new_card = new Card(card);
-        new_card.save(function(err, card) {
+        new_card.save((err)=> {
         if (err)
             console.log('Error adding New Card mongo',err);
         console.log('Added New Card mongo');
         });    
     });
 
+    client.on('deleteList', ()=>{
+        cardModel.remove({}, (err)=> { //For now delete all the cards from database
+        if (err)
+            console.log('Error deleting',err);
+        console.log('Collection successfully deleted');
+        client.broadcast.emit('changeList',[]);
+        });    
+    });
+
     //Update state of the new user
-    client.on('newUser', function(){
+    client.on('newUser', ()=>{
         console.log('New User');
         client.emit('connectedUser', numUsers);    
     });
