@@ -19,7 +19,7 @@ import SocketIOClient from 'socket.io-client';
           <NumberUser io={this.socket}/>
           <Board io={this.socket}/>
         </div>
-      )
+      ) 
     }
 }
 ReactDOM.render(<App />, document.getElementById('root'));
