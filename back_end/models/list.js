@@ -9,7 +9,7 @@ const CardSchema = require('mongoose').model('Cards').schema
       type: String,
       default: Date.now
       },
-      title_list: {
+      title: {
         type: String
       },
       cards: [CardSchema],

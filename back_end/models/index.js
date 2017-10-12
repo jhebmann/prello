@@ -1,5 +1,16 @@
+require('./item')
+require('./checklist')
+require('./activity')
+require('./attachment')
+require('./comment')
+require('./label')
 require('./card')
 require('./list')
+require('./board')
+require('./team')
+require('./notification')
+require('./user')
+
 
 const mongoose = require('mongoose')
 

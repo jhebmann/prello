@@ -4,18 +4,25 @@ const Schema = mongoose.Schema
 const autoIncrement = require('mongoose-auto-increment')
 
 const CardSchema = new Schema({
-    id: {
-     type: String
-    },
-    title_card: {
+    title: {
       type: String
     },
     description: {
       type: String
     },
-    date: {
+    dueDate: {
+      type: Date
+    },
+    doneDate: {
+      type: Date
+    },
+    createdAt: {
       type: Date,
       default: Date.now
+    },
+    isArchived: {
+      type: Boolean,
+      default: false
     }
   });
 
