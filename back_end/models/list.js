@@ -2,23 +2,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const autoIncrement = require('mongoose-auto-increment')
+const CardSchema = require('mongoose').model('Cards').schema
 
-const CardSchema = new Schema({
-    id: {
-     type: String
-    },
-    title_card: {
-      type: String
-    },
-    description: {
-      type: String
-    },
-    date: {
-      type: Date,
-      default: Date.now
-    }
-  });
-  
   const ListSchema = new Schema({
       id_list: {
       type: String,

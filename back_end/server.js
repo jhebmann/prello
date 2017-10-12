@@ -1,35 +1,34 @@
-var express = require('express');  
-var app = express();  
-var server = require('http').createServer(app);  
-var io = require('socket.io')(server);
-var bodyParser = require('body-parser');
+const express = require('express');  
+const app = express();  
+const server = require('http').createServer(app);  
+const io = require('socket.io')(server);
+const bodyParser = require('body-parser');
+const models = require('./models/index')
 
 //Database declaration
-var mongoose = require('mongoose'),
-    Lists = require('./models/list'); //created model loading here
+const mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost:27017/Lists', {
     useMongoClient: true
   })
 
-var mongodbUri = "mongodb://localhost:27017/test";
-var options = {
+const mongodbUri = "mongodb://localhost:27017/test";
+const options = {
     useMongoClient: true,
     socketTimeoutMS: 0,
     keepAlive: true,
     reconnectTries: 30
 };
-var db = mongoose.connect(mongodbUri, options);
-var listController =  require('./routes/Card/cardController.js');
-cardModel = mongoose.model('Lists');
+const db = mongoose.connect(mongodbUri, options);
+const listController =  require('./routes/Card/cardController.js');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var numUsers=0;
+let numUsers=0;
 
 io.on('connection', (client) => {
     console.log('Client connected...');
     ++numUsers;
-    cardModel.find({}, (err, doc)=>{//Get cards and emit event to the new user connected
+    models.Lists.find({}, (err, doc)=>{//Get cards and emit event to the new user connected
         client.emit('initialize',doc); 
     });
      
@@ -41,7 +40,7 @@ io.on('connection', (client) => {
 
     client.on('newCardClient', (card,id_list)=>{//When a client adds new card, emit to all the connected users and save it
         client.broadcast.emit('newCard', card, id_list);
-        cardModel.findOneAndUpdate({id_list:id_list},
+        models.Lists.findOneAndUpdate({id_list:id_list},
             { "$push": { "cards": card } },
             { "new": true, "upsert": true },
             function (err, managerparent) {
@@ -52,7 +51,7 @@ io.on('connection', (client) => {
     });
 
     client.on('deleteList', (id_list)=>{
-        cardModel.findOneAndUpdate({id_list:id_list},
+        models.Lists.findOneAndUpdate({id_list:id_list},
             { "cards": [] } ,
             { "new": true, "upsert": true },
             function (err, managerparent) {
@@ -65,7 +64,7 @@ io.on('connection', (client) => {
 
 
     client.on('newList', (id_list)=>{
-        var newList=new Lists();
+        const newList=new models.Lists();
         newList.id_list=id_list;
         newList.save({}, (err)=> { //For now delete all the cards from database
         if (err)
