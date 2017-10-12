@@ -4,15 +4,11 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const bodyParser = require('body-parser');
 const eventController = require('./controllers/eventController.js')
-
+const models = require('./models/index')
 
 //Database declaration
-const mongoose = require('mongoose'),
-    Lists = require('./models/list'); //created model loading here
-mongoose.connect('mongodb://localhost:27017/Lists', {
-    useMongoClient: true
-  })
-const listController =  require('./controllers/cardController.js')//Put it after the db creation, avoid 'MissingSchema'
+const mongoose = require('mongoose')
+
 const mongodbUri = "mongodb://localhost:27017/test";
 const options = {
     useMongoClient: true,
@@ -21,32 +17,35 @@ const options = {
     reconnectTries: 30
 };
 const db = mongoose.connect(mongodbUri, options);
-cardModel = mongoose.model('Lists');
+const listController =  require('./controllers/cardController.js');
+const listModel = mongoose.model('Lists');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 let numUsers=0;
 
 io.on('connection', (client) => {
-    eventController.get_all_cards(client,cardModel)
+    eventController.get_all_cards(client,listModel)
     ++numUsers;
     client.broadcast.emit('connectedUser', numUsers); 
     
+
     client.on('disconnect', ()=>{
         --numUsers;
         client.broadcast.emit('connectedUser', numUsers);        
     });
 
     client.on('newCardClient', (card,id_list)=>
-        eventController.save_new_card(client,cardModel,card,id_list))
+        eventController.save_new_card(client,listModel,card,id_list))
 
     client.on('deleteList', (id_list)=>{
-        eventController.delete_list(client,cardModel,id_list);
-    });    
+        eventController.delete_list(client,listModel,id_list);
 
+    });    
 
     client.on('newList', (id_list)=>{
         eventController.create_list(client,id_list)
+
     });
 
     //Update state of the new user

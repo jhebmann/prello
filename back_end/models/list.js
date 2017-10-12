@@ -1,27 +1,11 @@
 'use strict'
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const CardSchema = require('mongoose').model('Cards').schema
 
-const CardSchema = new Schema({
-    id: {
-     type: String
-    },
-    title_card: {
-      type: String
-    },
-    description: {
-      type: String
-    },
-    date: {
-      type: Date,
-      default: Date.now
-    }
-  });
-  
   const ListSchema = new Schema({
       id_list: {
-      type: String,
-      default: Date.now
+      type: String
       },
       title_list: {
         type: String

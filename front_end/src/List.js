@@ -43,6 +43,7 @@ class List extends React.Component{
 
   addCard(card,id_list){
     if(id_list === this.state.id_list){
+      console.log(id_list,this.state.id_list)
       this.setState(prevState=>({
         cards: prevState.cards.concat({
           title_card: card.title_card,
