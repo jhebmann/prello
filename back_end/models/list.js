@@ -3,22 +3,22 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const CardSchema = require('mongoose').model('Cards').schema
 
-  const ListSchema = new Schema({
-      id_list: {
+const ListSchema = new Schema({
+    id_list: {
+    type: String
+    },
+    title_list: {
       type: String
-      },
-      title_list: {
-        type: String
-      },
-      cards: [CardSchema],
-      date: {
-        type: Date,
-        default: Date.now
-      }
-  });
+    },
+    cards: [CardSchema],
+    date: {
+      type: Date,
+      default: Date.now
+    }
+});
   
   
-  module.exports = mongoose.model('Lists', ListSchema);
+module.exports = mongoose.model('Lists', ListSchema)
 
 /*
 const CardSchema = new Schema({
