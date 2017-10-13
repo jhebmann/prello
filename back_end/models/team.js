@@ -1,8 +1,6 @@
 'use strict'
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const UserSchema = require('mongoose').model('Users').schema
-const BoardSchema = require('mongoose').model('Board').schema
 
 const TeamSchema = new Schema({
     nameTeam: {
@@ -11,8 +9,12 @@ const TeamSchema = new Schema({
     descriptionTeam: {
         type: String
     },
-    users: [UserSchema],
-    boards: [BoardSchema]
+    users: [Schema.ObjectId],
+    admins: {
+        type :[Schema.ObjectId] ,
+        required : true
+      },
+    boards: [Schema.ObjectId]
 })
 
 module.exports = mongoose.model('Team', TeamSchema)

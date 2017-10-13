@@ -1,7 +1,6 @@
 'use strict'
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const UserSchema = require('mongoose').model('User').schema
 
 const CommentSchema = new Schema({
     content: {
@@ -14,7 +13,7 @@ const CommentSchema = new Schema({
     lastModifiedAt: {
         type: Date
     },
-    postedBy: UserSchema
+    postedBy: Schema.ObjectId
 })
 
 module.exports = mongoose.model('Comment', CommentSchema)

@@ -1,10 +1,12 @@
 'use strict';
 
-const mongoose = require('mongoose'),
-Card = mongoose.model('Lists');
+const mongoose = require('mongoose')
+const models = require('../models/index')
+const lists = models.Lists
+//Card = mongoose.model('Lists');
 
 exports.list_all_cards = function(req, res) {
-  Card.find({}, function(err, card) {
+  lists.find({}, function(err, card) {
     if (err)
       res.send(err);
     res.json(card);
@@ -13,7 +15,7 @@ exports.list_all_cards = function(req, res) {
 
 exports.create_a_card = function(req, res) {
   console.log(req.body);  
-  const new_card = new Card(req.body);
+  const new_card = new lists(req.body);
   new_card.save(function(err, card) {
     if (err)
       res.send(err);
@@ -22,7 +24,7 @@ exports.create_a_card = function(req, res) {
 };
 
 exports.delete_collection = function(req, res) {
-  Card.remove({}, function(err, card) {
+  lists.remove({}, function(err, card) {
     if (err){
       console.log('problems')
       res.send(err);

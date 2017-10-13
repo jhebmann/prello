@@ -18,7 +18,7 @@ const options = {
 };
 const db = mongoose.connect(mongodbUri, options);
 const listController =  require('./controllers/cardController.js');
-const listModel = mongoose.model('Lists');
+const listModel = models.Lists
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

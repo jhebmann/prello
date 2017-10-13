@@ -1,7 +1,7 @@
 'use strict'
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const CardSchema = require('mongoose').model('Cards').schema
+const CardSchema = require('mongoose').model('Card').schema
 
 const ListSchema = new Schema({
     id_list: {
@@ -18,7 +18,7 @@ const ListSchema = new Schema({
 });
   
   
-module.exports = mongoose.model('Lists', ListSchema)
+module.exports = mongoose.model('List', ListSchema)
 
 /*
 const CardSchema = new Schema({

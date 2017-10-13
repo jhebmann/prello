@@ -1,37 +1,34 @@
 'use strict'
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const TeamSchema = require('mongoose').model('Team').schema
+//const TeamSchema = require('mongoose').model('Team').schema
 const BoardSchema = require('mongoose').model('Board').schema
 
 
 const UserSchema = new Schema({
     mail: {
       type: String,
-      default: false,
+      required: true,
       unique : true 
     },
     nickname: {
         type: String,
-        default: false,
+        required: true,
         unique: true
-      
+
     },
     password: {
         type: String,
-        default : false,
-        unique: true
-      
+        required: true
     },
     firstname: {
-        type: String,
+        type: String
     },
     lastname: {
-        type: String,
+        type: String
     },
-    teams: [TeamSchema],
-    boards : [BoardSchema]
-
+    teams: [Schema.ObjectId],
+    boards : [Schema.ObjectId]
 })
 
-module.exports = mongoose.model('Users', TeamSchema)
+module.exports = mongoose.model('User', UserSchema)
