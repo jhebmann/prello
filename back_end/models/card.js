@@ -1,8 +1,7 @@
 'use strict'
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-
-
+const CheckListSchema = require('mongoose').model('Checklist').schema
 const CardSchema = new Schema({
     title_card: {
       type: String
@@ -23,7 +22,8 @@ const CardSchema = new Schema({
     isArchived: {
       type: Boolean,
       default: false
-    }
+    },
+    checklists : [CheckListSchema]
   });
 
   module.exports = mongoose.model('Cards', CardSchema);
