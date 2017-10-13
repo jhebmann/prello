@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const ListSchema = require('mongoose').model('Lists').schema
 
 const BoardSchema = new Schema({
-    title_board: {
+    titleBoard: {
       type: String
     },
     lists: [ListSchema]
