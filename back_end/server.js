@@ -26,7 +26,7 @@ app.use(bodyParser.json())
 let numUsers = 0
 
 io.on('connection', (client) => {
-    eventController.get_all_cards(client,listModel)
+    eventController.getAllCards(client,listModel)
     ++numUsers;
     client.broadcast.emit('connectedUser', numUsers); 
     
@@ -36,16 +36,16 @@ io.on('connection', (client) => {
         client.broadcast.emit('connectedUser', numUsers);        
     });
 
-    client.on('newCardClient', (card,id_list)=>
-        eventController.save_new_card(client,listModel,card,id_list))
+    client.on('newCardClient', (card,idList)=>
+        eventController.saveNewCard(client,listModel,card,idList))
 
-    client.on('deleteList', (id_list)=>{
-        eventController.delete_list(client,listModel,id_list);
+    client.on('deleteList', (idList)=>{
+        eventController.deleteList(client,listModel,idList);
 
     });    
 
-    client.on('newList', (id_list)=>{
-        eventController.create_list(client,id_list)
+    client.on('newList', (idList)=>{
+        eventController.createList(client,idList)
 
     });
 
@@ -55,8 +55,8 @@ io.on('connection', (client) => {
 });
 
 //External Routes BackEnd (Testing only for now) 
-app.route('/').get(cardController.list_all_cards).post(cardController.create_a_card);
-app.route('/delete_collection').delete(cardController.delete_collection);
+app.route('/').get(cardController.listAllCards).post(cardController.createACard);
+app.route('/deleteCollection').delete(cardController.deleteCollection);
 
 const port = 8000;
 server.listen(port);

@@ -8,9 +8,9 @@ class List extends React.Component{
     super(props);    
     //Default State
     this.state={
-      id_list:this.props.id_list,
+      idList:this.props.idList,
       cards: [],
-      title_new_card: null
+      titleNewCard: null
     }
     
     this.socket = this.props.io;
@@ -32,7 +32,7 @@ class List extends React.Component{
   render(){
     return(
       <Panel bsSize="small" style={{display: "inline-flex", background: "lightgray",margin:"20px"}}>
-        <h4>{this.props.title_list}</h4>
+        <h4>{this.props.titleList}</h4>
         {this.cardList(this.state.cards)} 
         <p><FormControl type="text" onChange={this.handleCarTitleImputChange} placeholder="Card Title" />
         <Button bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
@@ -41,12 +41,12 @@ class List extends React.Component{
       );
   } 
 
-  addCard(card,id_list){
-    if(id_list === this.state.id_list){
-      console.log(id_list,this.state.id_list)
+  addCard(card,idList){
+    if(idList === this.state.idList){
+      console.log(idList,this.state.idList)
       this.setState(prevState=>({
         cards: prevState.cards.concat({
-          title_card: card.title_card,
+          titleCard: card.titleCard,
           description: card.description,
           date: card.date
         })
@@ -56,37 +56,37 @@ class List extends React.Component{
 
   //Handle Card title imput
   handleCarTitleImputChange(e) {  
-    this.setState({title_new_card: e.target.value});
+    this.setState({titleNewCard: e.target.value});
   }
 
   onClickAddCard(b){
-    const new_card={
-      title_card: this.state.title_new_card,
+    const newCard={
+      titleCard: this.state.titleNewCard,
       date: Date.now()
     }
     this.setState(prevState=>({
-      cards: prevState.cards.concat(new_card)
+      cards: prevState.cards.concat(newCard)
     }));
-    this.socket.emit('newCardClient',new_card,this.state.id_list);
+    this.socket.emit('newCardClient',newCard,this.state.idList);
   }
 
   //Renders the Cards stored in the cards array   
   cardList(list){
     const cards=this.state.cards;
     const cardItems= cards.map((card, index)=>
-      <Card key={index} title_card={card.title_card} description={card.description} date={card.date}/>
+      <Card key={index} titleCard={card.titleCard} description={card.description} date={card.date}/>
     );
     return cardItems
   }
 
   onClickDeleteList(){
-    this.socket.emit('deleteList',this.state.id_list);
+    this.socket.emit('deleteList',this.state.idList);
      this.setState({cards:[]});
   }
 
-  changeList(list,id_list){
-    console.log("Id list param",id_list,"Id list state",this.state.id_list)
-    if(id_list===this.state.id_list)
+  changeList(list,idList){
+    console.log("Id list param",idList,"Id list state",this.state.idList)
+    if(idList===this.state.idList)
       this.setState({cards:[]});
   }
 

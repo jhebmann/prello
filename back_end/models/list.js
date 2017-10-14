@@ -4,10 +4,10 @@ const Schema = mongoose.Schema
 const CardSchema = require('mongoose').model('Card').schema
 
 const ListSchema = new Schema({
-    id_list: {
+    idList: {
     type: String
     },
-    title_list: {
+    titleList: {
       type: String
     },
     cards: [CardSchema],
@@ -22,7 +22,7 @@ module.exports = mongoose.model('List', ListSchema)
 
 /*
 const CardSchema = new Schema({
-  title_card: {
+  titleCard: {
     type: String
   },
   description: {
@@ -35,13 +35,13 @@ const CardSchema = new Schema({
 })
 
 const ListSchema = new Schema({
-    id_list: {
+    idList: {
     type: Number,
     default: 0,
     unique: true,
     required: true
     },
-    title_list: {
+    titleList: {
       type: String
     },
     cards: [CardSchema],
@@ -57,7 +57,7 @@ autoIncrement.initialize(mongoose.connection)
 
 ListSchema.plugin(autoIncrement.plugin, {
   model: 'Lists',
-  field: 'id_list',
+  field: 'idList',
   startAt: 0,
   incrementBy: 1
 });*/

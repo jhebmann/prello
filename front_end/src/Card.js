@@ -14,7 +14,7 @@ class Card extends React.Component{
         return(
             <Thumbnail>
                 <ProgressBar bsStyle="danger" now={100} />
-                <h3>{this.props.title_card}</h3>
+                <h3>{this.props.titleCard}</h3>
                 <p> {descr} </p>
                 <p><Timestamp time={this.props.date} precision={1} /></p>
                 

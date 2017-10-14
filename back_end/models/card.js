@@ -5,7 +5,7 @@ const CheckListSchema = require('mongoose').model('Checklist').schema
 const AttachmentSchema = require('mongoose').model('Attachment').schema
 const CommentSchema = require('mongoose').model('Comment').schema
 const CardSchema = new Schema({
-    title_card: {
+    titleCard: {
       type: String
     },
     description: {
