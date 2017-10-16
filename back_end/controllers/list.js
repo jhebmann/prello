@@ -1,4 +1,4 @@
-/*'use strict';
+'use strict';
 const mongoose = require('mongoose')
 const models = require('../models/index')
 const lists = models.Lists
@@ -11,7 +11,7 @@ exports.findAll = function(req, res) {
   });
 };
 
-exports.add = function(req, res) {
+/*exports.add = function(req, res) {
   console.log(req.body);  
   const newList = new lists(req.body);
   newList.save(function(err, card) {
