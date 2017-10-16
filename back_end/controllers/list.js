@@ -1,7 +1,7 @@
 'use strict';
 const mongoose = require('mongoose')
 const models = require('../models/index')
-const lists = models.Lists
+const lists = models.lists
 
 exports.findAll = function(req, res) {
   lists.find({}, function(err, card) {

@@ -29,7 +29,7 @@ exports.deleteList=(client,db,idList)=>{
 }
 
 exports.createList=(client,idList)=>{
-    const newList=new models.Lists();
+    const newList=new models.lists();
     newList.idList=idList;
     newList.save({}, (err)=> { //For now delete all the cards from database
     if (err)
