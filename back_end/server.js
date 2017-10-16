@@ -55,8 +55,8 @@ io.on('connection', (client) => {
 });
 
 //External Routes BackEnd (Testing only for now) 
-app.route('/').get(cardController.listAllCards).post(cardController.createACard);
-app.route('/deleteCollection').delete(cardController.deleteCollection);
+app.route('/').get(cardController.findAll).post(cardController.add);
+app.route('/deleteAll').delete(cardController.deleteAll);
 
 const port = 8000;
 server.listen(port);

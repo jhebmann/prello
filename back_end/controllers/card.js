@@ -5,7 +5,7 @@ const models = require('../models/index')
 const lists = models.Lists
 //Card = mongoose.model('Lists');
 
-exports.listAllCards = function(req, res) {
+exports.findAll = function(req, res) {
   lists.find({}, function(err, card) {
     if (err)
       res.send(err);
@@ -13,7 +13,7 @@ exports.listAllCards = function(req, res) {
   });
 };
 
-exports.createACard = function(req, res) {
+exports.add = function(req, res) {
   console.log(req.body);  
   const newCard = new lists(req.body);
   newCard.save(function(err, card) {
@@ -23,7 +23,7 @@ exports.createACard = function(req, res) {
   });
 };
 
-exports.deleteCollection = function(req, res) {
+exports.deleteAll = function(req, res) {
   lists.remove({}, function(err, card) {
     if (err){
       console.log('problems')
