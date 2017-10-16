@@ -35,15 +35,14 @@ class Board extends React.Component{
       }
 
       onClickAddList(){
-          const idList=Date.now()
-          this.socket.emit("newList",idList);
-          this.createList(idList);
+          this.socket.emit("newList");
+          this.createList();
       }
 
-      createList(idList){
-        const newList={idList:idList,
+      createList(){
+        const newList={
             cards: [],
-           titleNewCard: null
+            titleNewCard: null
            }
         this.setState(prevState=>({
         lists: prevState.lists.concat(newList)
@@ -52,7 +51,7 @@ class Board extends React.Component{
 
       cardList(lists){
         const listItems= lists.map((list, index)=>
-          <List key={index} cards={list.cards} idList={list.idList} io={this.socket} titleList={list.titleList}/>
+          <List key={index} cards={list.cards} _id={list._id} io={this.socket} titleList={list.titleList}/>
         );
         //console.log('List Items ',listItems);
         return listItems

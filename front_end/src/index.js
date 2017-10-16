@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Header from './components/Header'
 import NumberUser from './components/NumberUser'
-import Board from './components/Board.js'
-import Header from './components/Header'
+import Board from './components/Board'
+import Footer from './components/Footer'
 import SocketIOClient from 'socket.io-client'
 
   class App extends React.Component{

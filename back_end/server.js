@@ -36,16 +36,16 @@ io.on('connection', (client) => {
         client.broadcast.emit('connectedUser', numUsers);        
     });
 
-    client.on('newCardClient', (card,idList)=>
-        eventController.saveNewCard(client,listModel,card,idList))
+    client.on('newCardClient', (card,_id)=>
+        eventController.saveNewCard(client,listModel,card,_id))
 
-    client.on('deleteList', (idList)=>{
-        eventController.deleteList(client,listModel,idList);
+    client.on('deleteList', (_id)=>{
+        eventController.deleteList(client,listModel,_id);
 
     });    
 
-    client.on('newList', (idList)=>{
-        eventController.createList(client,idList)
+    client.on('newList', (_id)=>{
+        eventController.createList(client,_id)
 
     });
 
