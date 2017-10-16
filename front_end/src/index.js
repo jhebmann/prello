@@ -1,9 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Board from './Board.js';
-import NavbarElem from './NavbarElem'
-import NumberUser from './NumberUser'
-import SocketIOClient from 'socket.io-client';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Header from './components/Header'
+import NumberUser from './components/NumberUser'
+import Board from './components/Board.js'
+import Header from './components/Header'
+import SocketIOClient from 'socket.io-client'
 
   class App extends React.Component{
     
@@ -15,11 +16,12 @@ import SocketIOClient from 'socket.io-client';
     render(){
       return(
         <div>
-          <NavbarElem/>
+          <Header/>
           <NumberUser io={this.socket}/>
           <Board io={this.socket}/>
+          <Footer/>
         </div>
       ) 
     }
 }
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App/>, document.getElementById('root'));

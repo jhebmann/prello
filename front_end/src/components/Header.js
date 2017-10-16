@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button,FormGroup,FormControl, Nav, Navbar, NavItem} from 'react-bootstrap';
+import React from 'react'
+import { Button,FormGroup,FormControl, Nav, Navbar, NavItem} from 'react-bootstrap'
 
 
-class NavbarElem extends React.Component{
+class Header extends React.Component{
   render(){
     const navbarInstance = (
       <Navbar collapseOnSelect>
@@ -34,4 +34,4 @@ class NavbarElem extends React.Component{
     )}
   }
 
-export default NavbarElem
+export default Header

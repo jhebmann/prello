@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-class NumberUse extends React.Component{
+class NumberUser extends React.Component{
 
     constructor(props){
         super(props);
@@ -34,4 +34,4 @@ class NumberUse extends React.Component{
     }
 }
 
-export default NumberUse;
+export default NumberUser
