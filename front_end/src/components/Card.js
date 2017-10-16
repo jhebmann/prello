@@ -16,7 +16,7 @@ class Card extends React.Component{
                 <ProgressBar bsStyle="danger" now={100} />
                 <h3>{this.props.titleCard}</h3>
                 <p> {descr} </p>
-                <p><Timestamp time={this.props.date} precision={1} /></p>
+                <p><Timestamp time={this.props.createdAt} precision={1} /></p>
                 
                 <Button bsStyle="primary">Button</Button>&nbsp;
                 <Button bsStyle="default">Button</Button>
