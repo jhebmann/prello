@@ -2,8 +2,7 @@
 
 const mongoose = require('mongoose')
 const models = require('../models/index')
-const lists = models.Lists
-//Card = mongoose.model('Lists');
+const lists = models.lists
 
 exports.listAllCards = function(req, res) {
   lists.find({}, function(err, card) {
@@ -15,8 +14,8 @@ exports.listAllCards = function(req, res) {
 
 exports.createACard = function(req, res) {
   console.log(req.body);  
-  const newCard = new lists(req.body);
-  newCard.save(function(err, card) {
+  const newList = new lists(req.body);
+  newList.save(function(err, card) {
     if (err)
       res.send(err);
     res.json(card);

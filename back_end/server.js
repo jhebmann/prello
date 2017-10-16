@@ -19,7 +19,7 @@ const options = {
 const db = mongoose.connect(mongodbUri, options)
 
 const cardController =  require('./controllers/card.js')
-const listModel = models.Lists
+const listModel = models.lists
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
