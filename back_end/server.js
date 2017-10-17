@@ -1,27 +1,37 @@
-const express = require('express');  
-const app = express();  
-const server = require('http').createServer(app);  
-const io = require('socket.io')(server);
-const bodyParser = require('body-parser');
-const eventController = require('./controllers/event.js')
-const models = require('./models/index')
+const express = require('express')
+const app = express()
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
+const bodyParser = require('body-parser')
+const session = require('express-session')
+const passport = require('passport')
+const flash = require('connect-flash')
+const cookieParser = require('cookie-parser')
 
 //Database declaration
 const mongoose = require('mongoose')
+const configDb = require('./config/database')
+mongoose.connect(configDb.mongodbUri, configDb.options)
+require('./config/passport')(passport)
 
-const mongodbUri = "mongodb://localhost:27017/test"
-const options = {
-    useMongoClient: true,
-    socketTimeoutMS: 0,
-    keepAlive: true,
-    reconnectTries: 30
-}
-const db = mongoose.connect(mongodbUri, options)
-
-const cardController =  require('./controllers/card.js')
+const models = require('./models/index')
 const listModel = models.lists
+
+const eventController = require('./controllers/event')
+const cardController =  require('./controllers/card')
+
+
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(session({secret: 'banane34',
+                saveUninitialized: true,
+                resave: true}))
+
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 let numUsers = 0
 

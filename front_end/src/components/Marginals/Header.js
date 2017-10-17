@@ -26,6 +26,11 @@ class Header extends React.Component{
                 Login
               </NavItem>
             </LinkContainer>
+            <LinkContainer to="/register">
+              <NavItem>
+                Register
+              </NavItem>
+            </LinkContainer>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
