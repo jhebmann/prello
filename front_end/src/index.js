@@ -1,27 +1,13 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import Header from './components/Header'
-import NumberUser from './components/NumberUser'
-import Board from './components/Board'
-import Footer from './components/Footer'
-import SocketIOClient from 'socket.io-client'
+import { render } from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
+import App from './components/App';
 
-  class App extends React.Component{
-    
-    constructor(props){
-      super(props)
-      this.socket = SocketIOClient('http://localhost:8000');
-    }
+render((
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+), document.getElementById('root'));
 
-    render(){
-      return(
-        <div>
-          <Header/>
-          <NumberUser io={this.socket}/>
-          <Board io={this.socket}/>
-          <Footer/>
-        </div>
-      ) 
-    }
-}
-ReactDOM.render(<App/>, document.getElementById('root'));
+
+//ReactDOM.render(<App/>, document.getElementById('root'));

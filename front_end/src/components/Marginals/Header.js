@@ -21,8 +21,6 @@ class Header extends React.Component{
             <Button type="submit">Submit</Button>
           </Navbar.Form>
           <Nav pullRight>
-            {/*<NavItem href="/login">Login</NavItem>
-            <NavItem href="/register">Register</NavItem>*/}
             <NavItem> <a href="/login">Login</a></NavItem>
             <NavItem> <a href="/register">Register</a></NavItem>
           </Nav>
