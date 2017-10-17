@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button,FormGroup,FormControl, Nav, Navbar, NavItem} from 'react-bootstrap'
-
+import { LinkContainer } from 'react-router-bootstrap'
 
 class Header extends React.Component{
   render(){
@@ -8,7 +8,7 @@ class Header extends React.Component{
       <Navbar collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="/">Prello</a>
+            <a href="/"> Prello </a>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -21,8 +21,11 @@ class Header extends React.Component{
             <Button type="submit">Submit</Button>
           </Navbar.Form>
           <Nav pullRight>
-            <NavItem> <a href="/login">Login</a></NavItem>
-            <NavItem> <a href="/register">Register</a></NavItem>
+            <LinkContainer to="/login">
+              <NavItem>
+                Login
+              </NavItem>
+            </LinkContainer>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
