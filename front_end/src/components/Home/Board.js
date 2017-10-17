@@ -35,12 +35,14 @@ class Board extends React.Component{
       }
 
       onClickAddList(){
-          this.socket.emit("newList");
-          this.createList();
+          const id=Date.now()
+          this.socket.emit("newList", id);
+          this.createList(id);
       }
 
-      createList(){
+      createList(id){
         const newList={
+            id: id,
             cards: [],
             titleNewCard: null
            }
@@ -51,7 +53,7 @@ class Board extends React.Component{
 
       cardList(lists){
         const listItems= lists.map((list, index)=>
-          <List key={index} cards={list.cards} _id={list._id} io={this.socket} titleList={list.titleList}/>
+          <List key={index} cards={list.cards} id={list.id} io={this.socket} titleList={list.titleList}/>
         );
         //console.log('List Items ',listItems);
         return listItems

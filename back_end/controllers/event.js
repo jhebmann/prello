@@ -6,9 +6,9 @@ exports.getAllCards = (client, db)=> {
     });
 }
 
-exports.saveNewCard=(client,db,card,_id)=>{
-    client.broadcast.emit('newCard', card, _id);
-    db.findOneAndUpdate({_id:_id},
+exports.saveNewCard=(client,db,card,id)=>{
+    client.broadcast.emit('newCard', card, id);
+    db.findOneAndUpdate({id:id},
         { "$push": { "cards": card } },
         { "new": true, "upsert": true },
         function (err, managerparent) {
@@ -17,24 +17,24 @@ exports.saveNewCard=(client,db,card,_id)=>{
     );
 }
 
-exports.deleteList=(client,db,_id)=>{
-    db.findOneAndUpdate({_id:_id},
+exports.deleteList=(client,db,id)=>{
+    db.findOneAndUpdate({id:id},
     { "cards": [] } ,
     { "new": true, "upsert": true },
     function (err, managerparent) {
         if (err) throw err;
     }
     );
-    client.broadcast.emit('changeList',[],_id);
+    client.broadcast.emit('changeList',[],id);
 }
 
-exports.createList=(client)=>{
+exports.createList=(client, id)=>{
     const newList=new models.lists();
+    newList.id = id
     newList.save({}, (err)=> { //For now delete all the cards from database
     if (err)
         console.log('Error adding List',err);
     console.log('List Added');
     });
-    console.log(newList)
-    client.broadcast.emit('addEmptyList',newList._id);
+    client.broadcast.emit('addEmptyList',id);
 }
