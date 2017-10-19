@@ -11,7 +11,7 @@ class Register extends React.Component{
             email: '', 
             password: '', 
             nickname: '',
-            formErrors: {email: '', password: '', nickname: ''},
+            formErrors: {email: '', nickname: '', password: ''},
             emailValid: false,
             passwordValid: false,
             nicknameValid: false,
@@ -22,7 +22,12 @@ class Register extends React.Component{
 
     handleSubmit(event) {
         alert('nickname: ' + this.state.nickname + ' emai: ' + this.state.email + ' || pass: ' + this.state.password);
-        event.preventDefault();
+        const newUser = {
+            nickname: this.state.nickname,
+            mail: this.state.email,
+            password: this.state.password
+        }
+        //event.preventDefault();
     }
 
     handleUserInput = (e) => {

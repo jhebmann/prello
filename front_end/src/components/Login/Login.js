@@ -10,7 +10,7 @@ class Register extends React.Component{
         this.state = {
             password: '', 
             nickname: '',
-            formErrors: {password: '', nickname: ''},
+            formErrors: {nickname: '', password: ''},
             passwordValid: false,
             nicknameValid: false,
             formValid: false

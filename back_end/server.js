@@ -1,12 +1,15 @@
 const express = require('express')
 const app = express()
+
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
+
+const morgan = require('morgan')
+const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const passport = require('passport')
 const flash = require('connect-flash')
-const cookieParser = require('cookie-parser')
 
 //Database declaration
 const mongoose = require('mongoose')
@@ -20,7 +23,7 @@ const listModel = models.lists
 const eventController = require('./controllers/event')
 const cardController =  require('./controllers/card')
 
-
+app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -68,6 +71,6 @@ io.on('connection', (client) => {
 app.route('/').get(cardController.findAll).post(cardController.add);
 app.route('/deleteAll').delete(cardController.deleteAll);
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 server.listen(port);
 console.log('listening on port ', port);
