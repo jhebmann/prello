@@ -1,13 +1,6 @@
 'use strict';
 
-exports.getAllCards = (client, db)=> {
-  db.find({}, (err, doc)=>{//Get lists and emit event to the new user connected
-      client.emit('initialize',doc); 
-  });
-}
-
 exports.createCard = (client,db,card,idList)=>{
-  client.broadcast.emit('newCard', card, idList);
   db.findOneAndUpdate({id:idList},
       { "$push": { "cards": card } },
       { "new": true, "upsert": true },
@@ -15,9 +8,18 @@ exports.createCard = (client,db,card,idList)=>{
           if (err) throw err;
       }
   );
+  client.broadcast.emit('addEmptyCard', card, idList);
 }
 
-
+exports.updateCard=(client,db,idCard,idList,newCard)=>{
+  db.findOneAndUpdate({id:idList, "cards.id":idCard},
+    {$set: {"cards.$": newCard}},
+    function (err, managerparent) {
+        if (err) throw err;
+    }
+  );
+  client.broadcast.emit('updateCard',newCard.id,idList);
+}
 
 /*
 router.get('/findAll', function(req, res) {

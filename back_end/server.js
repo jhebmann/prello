@@ -3,6 +3,7 @@ const app = express()
 
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
+app.set('socketio', io);
 
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
@@ -38,7 +39,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 let numUsers = 0
 
 io.on('connection', (client) => {
-    controller.cards.getAllCards(client,listModel)
+    controller.lists.getAllLists(client,listModel)
     numUsers++;
     client.broadcast.emit('connectedUser', numUsers); 
     
@@ -52,7 +53,7 @@ io.on('connection', (client) => {
         controller.cards.createCard(client,listModel,card,idList))
 
     client.on('deleteAllCards', (idList)=>{
-        controller.lists.deleteAllCards(client,listModel,idList);
+        controller.lists.deleteAllCardsFromList(client,listModel,idList);
     });    
 
     client.on('newList', (id)=>{
@@ -66,8 +67,8 @@ io.on('connection', (client) => {
 
 //External Routes BackEnd (Testing only for now) 
 //app.use('/', controller)
-app.route('/').get(controller.cards.getAllCards).post(controller.cards.createCard);
-app.route('/deleteAll').delete(controller.lists.deleteAll);
+app.route('/').get(controller.lists.getAllLists).post(controller.cards.createCard);
+app.route('/deleteAll').delete(controller.lists.deleteAllLists);
 
 const port = process.env.PORT || 8000;
 server.listen(port);

@@ -16,9 +16,11 @@ class Board extends React.Component{
         this.initialize = this.initialize.bind(this);
         this.onClickAddList = this.onClickAddList.bind(this);
         this.createList = this.createList.bind(this);
+        this.deleteAllLists = this.deleteAllLists.bind(this);
 
         this.socket.on('initialize', this.initialize);  //We should use componentDidMount() ?
         this.socket.on('addEmptyList',this.createList);
+        this.socket.on('deleteAllLists',this.deleteAllLists);
     }
 
     render(){
@@ -57,6 +59,10 @@ class Board extends React.Component{
         );
         //console.log('List Items ',listItems);
         return listItems
+      }
+
+      deleteAllLists(){
+          this.setState({lists: []})
       }
 }
 export default Board;
