@@ -80,8 +80,8 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    this.socket.emit('deleteList',this.state.idList);
-     this.setState({cards:[]});
+    this.socket.emit('deleteAllCards',this.state.idList);
+    this.setState({cards:[]});
   }
 
   changeList(list,idList){

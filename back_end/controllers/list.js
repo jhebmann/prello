@@ -1,32 +1,25 @@
 'use strict';
-const mongoose = require('mongoose')
 const models = require('../models/index')
-const lists = models.lists
 
-exports.findAll = function(req, res) {
-  lists.find({}, function(err, card) {
-    if (err)
-      res.send(err);
-    res.json(card);
-  });
-};
-
-/*exports.add = function(req, res) {
-  console.log(req.body);  
-  const newList = new lists(req.body);
-  newList.save(function(err, card) {
-    if (err)
-      res.send(err);
-    res.json(card);
-  });
-};
-
-exports.deleteAll = function(req, res) {
-  lists.remove({}, function(err, card) {
-    if (err){
-      console.log('problems')
-      res.send(err);
+exports.deleteAllCards=(client,db,idList)=>{
+  db.findOneAndUpdate({idList:idList},
+    { "cards": [] } ,
+    { "new": true, "upsert": true },
+    function (err, managerparent) {
+        if (err) throw err;
     }
-    res.json({ message: 'Collection successfully deleted' });
+  );
+  client.broadcast.emit('changeList',[],idList);
+}
+
+exports.createList=(client,idList)=>{
+  const newList=new models.lists();
+  newList.idList=idList;
+  newList.save({}, (err)=> { //For now delete all the cards from database
+    if (err)
+      console.log('Error adding List',err);
+    else
+      console.log('List Added');
   });
-};*/
+  client.broadcast.emit('addEmptyList',idList);
+}

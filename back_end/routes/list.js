@@ -1,5 +1,5 @@
 module.exports = function(app){
-    const lists = require('../controllers/list')
+    const lists = require('../controllers/index')
     app.get('/list', lists.findAll)
     app.get('/list/:id', lists.findById)
     app.post('/list', lists.add)

@@ -1,5 +1,5 @@
 module.exports = function(app){
-    const cards = require('../controllers/card')
+    const cards = require('../controllers/index')
     app.get('/card', cards.findAll)
     app.get('/card/:id', cards.findById)
     app.post('/card', cards.add)

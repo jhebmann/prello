@@ -3,7 +3,7 @@ const app = express();
 const server = require('http').createServer(app);  
 const io = require('socket.io')(server);
 const bodyParser = require('body-parser');
-const eventController = require('./controllers/event.js')
+const controller = require('./controllers/index.js')
 const models = require('./models/index')
 
 //Database declaration
@@ -18,7 +18,6 @@ const options = {
 }
 const db = mongoose.connect(mongodbUri, options)
 
-const cardController =  require('./controllers/card.js')
 const listModel = models.lists
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -26,27 +25,25 @@ app.use(bodyParser.json())
 let numUsers = 0
 
 io.on('connection', (client) => {
-    eventController.getAllCards(client,listModel)
-    ++numUsers;
+    controller.cards.getAllCards(client,listModel)
+    numUsers++;
     client.broadcast.emit('connectedUser', numUsers); 
     
 
     client.on('disconnect', ()=>{
-        --numUsers;
+        numUsers--;
         client.broadcast.emit('connectedUser', numUsers);        
     });
 
     client.on('newCardClient', (card,idList)=>
-        eventController.saveNewCard(client,listModel,card,idList))
+        controller.cards.createCard(client,listModel,card,idList))
 
-    client.on('deleteList', (idList)=>{
-        eventController.deleteList(client,listModel,idList);
-
+    client.on('deleteAllCards', (idList)=>{
+        controller.lists.deleteAllCards(client,listModel,idList);
     });    
 
     client.on('newList', (idList)=>{
-        eventController.createList(client,idList)
-
+        controller.lists.createList(client,idList)
     });
 
     //Update state of the new user
@@ -55,8 +52,9 @@ io.on('connection', (client) => {
 });
 
 //External Routes BackEnd (Testing only for now) 
-app.route('/').get(cardController.findAll).post(cardController.add);
-app.route('/deleteAll').delete(cardController.deleteAll);
+//app.use('/', controller)
+app.route('/').get(controller.cards.getAllCards).post(controller.cards.createCard);
+//app.route('/deleteAll').delete(controller.cards.deleteAll);
 
 const port = 8000;
 server.listen(port);
