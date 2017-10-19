@@ -56,8 +56,8 @@ io.on('connection', (client) => {
         controller.lists.deleteAllCardsFromList(client,listModel,idList);
     });    
 
-    client.on('newList', (id)=>{
-        controller.lists.createList(client,id)
+    client.on('newList', ()=>{
+        controller.lists.createList(client)
     });
 
     //Update state of the new user

@@ -1,24 +1,25 @@
 'use strict';
 
 exports.createCard = (client,db,card,idList)=>{
-  db.findOneAndUpdate({id:idList},
+  db.findOneAndUpdate({_id:idList},
       { "$push": { "cards": card } },
       { "new": true, "upsert": true },
       function (err, managerparent) {
           if (err) throw err;
       }
   );
+  client.emit('addEmptyCard', card, idList);  
   client.broadcast.emit('addEmptyCard', card, idList);
 }
 
 exports.updateCard=(client,db,idCard,idList,newCard)=>{
-  db.findOneAndUpdate({id:idList, "cards.id":idCard},
+  db.findOneAndUpdate({_id:idList, "cards._id":idCard},
     {$set: {"cards.$": newCard}},
     function (err, managerparent) {
         if (err) throw err;
     }
   );
-  client.broadcast.emit('updateCard',newCard.id,idList);
+  client.broadcast.emit('updateCard',newCard._id,idList);
 }
 
 /*

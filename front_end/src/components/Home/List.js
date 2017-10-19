@@ -21,7 +21,7 @@ class List extends React.Component{
     this.onClickDeleteList= this.onClickDeleteList.bind(this)
 
     //Event Listeners
-    this.socket.on('newCard', this.addCard);
+    this.socket.on('addEmptyCard', this.addCard);
     this.socket.on('changeList',this.changeList);
   }
 
@@ -42,7 +42,7 @@ class List extends React.Component{
   } 
 
   addCard(card,id){
-    if(id == this.state.id){	//Change the ==
+    if(id === this.state.id){
       this.setState(prevState=>({
         cards: prevState.cards.concat({
           titleCard: card.titleCard,
@@ -63,9 +63,6 @@ class List extends React.Component{
       titleCard: this.state.titleNewCard,
       date: Date.now()
     }
-    this.setState(prevState=>({
-      cards: prevState.cards.concat(newCard)
-    }));
     this.socket.emit('newCardClient',newCard,this.state.id);
   }
 
