@@ -8,7 +8,7 @@ class List extends React.Component{
     super(props);    
     //Default State
     this.state={
-      idList:this.props.idList,
+      id:this.props.id,
       cards: [],
       titleNewCard: null
     }
@@ -41,9 +41,8 @@ class List extends React.Component{
       );
   } 
 
-  addCard(card,idList){
-    if(idList === this.state.idList){
-      console.log(idList,this.state.idList)
+  addCard(card,id){
+    if(id == this.state.id){	//Change the ==
       this.setState(prevState=>({
         cards: prevState.cards.concat({
           titleCard: card.titleCard,
@@ -67,7 +66,7 @@ class List extends React.Component{
     this.setState(prevState=>({
       cards: prevState.cards.concat(newCard)
     }));
-    this.socket.emit('newCardClient',newCard,this.state.idList);
+    this.socket.emit('newCardClient',newCard,this.state.id);
   }
 
   //Renders the Cards stored in the cards array   
@@ -80,13 +79,13 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    this.socket.emit('deleteAllCards',this.state.idList);
+    this.socket.emit('deleteAllCards',this.state.id);
     this.setState({cards:[]});
   }
 
-  changeList(list,idList){
-    console.log("Id list param",idList,"Id list state",this.state.idList)
-    if(idList===this.state.idList)
+  changeList(list,id){
+    console.log("Id list param",id,"Id list state",this.state.id)
+    if(id===this.state.id)
       this.setState({cards:[]});
   }
 

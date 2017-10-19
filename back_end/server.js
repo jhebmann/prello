@@ -1,26 +1,39 @@
-const express = require('express');  
-const app = express();  
-const server = require('http').createServer(app);  
-const io = require('socket.io')(server);
-const bodyParser = require('body-parser');
-const controller = require('./controllers/index.js')
-const models = require('./models/index')
+const express = require('express')
+const app = express()
+
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
+
+const morgan = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const session = require('express-session')
+const passport = require('passport')
+const flash = require('connect-flash')
 
 //Database declaration
 const mongoose = require('mongoose')
+const configDb = require('./config/database')
+mongoose.connect(configDb.mongodbUri, configDb.options)
+require('./config/passport')(passport)
 
-const mongodbUri = "mongodb://localhost:27017/test"
-const options = {
-    useMongoClient: true,
-    socketTimeoutMS: 0,
-    keepAlive: true,
-    reconnectTries: 30
-}
-const db = mongoose.connect(mongodbUri, options)
-
+const models = require('./models/index')
 const listModel = models.lists
+
+const controller = require('./controllers/index.js')
+
+app.use(morgan('dev'))
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(session({secret: 'banane34',
+                saveUninitialized: true,
+                resave: true}))
+
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 let numUsers = 0
 
@@ -42,8 +55,8 @@ io.on('connection', (client) => {
         controller.lists.deleteAllCards(client,listModel,idList);
     });    
 
-    client.on('newList', (idList)=>{
-        controller.lists.createList(client,idList)
+    client.on('newList', (id)=>{
+        controller.lists.createList(client,id)
     });
 
     //Update state of the new user
@@ -54,8 +67,8 @@ io.on('connection', (client) => {
 //External Routes BackEnd (Testing only for now) 
 //app.use('/', controller)
 app.route('/').get(controller.cards.getAllCards).post(controller.cards.createCard);
-//app.route('/deleteAll').delete(controller.cards.deleteAll);
+app.route('/deleteAll').delete(controller.lists.deleteAll);
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 server.listen(port);
 console.log('listening on port ', port);

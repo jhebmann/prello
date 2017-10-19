@@ -8,7 +8,7 @@ exports.getAllCards = (client, db)=> {
 
 exports.createCard = (client,db,card,idList)=>{
   client.broadcast.emit('newCard', card, idList);
-  db.findOneAndUpdate({idList:idList},
+  db.findOneAndUpdate({id:idList},
       { "$push": { "cards": card } },
       { "new": true, "upsert": true },
       function (err, managerparent) {
