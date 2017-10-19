@@ -6,10 +6,11 @@ class Register extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {email: '', password: ''};
+        this.state = {email: '', password: '', nickname: ''};
 
         this.handleMailChange = this.handleMailChange.bind(this);
         this.handlePassChange = this.handlePassChange.bind(this);
+        this.handleNicknameChange = this.handleNicknameChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -21,12 +22,21 @@ class Register extends React.Component{
         this.setState({password: event.target.value});
     }
 
+    handleNicknameChange(event) {
+        this.setState({nickname: event.target.value});
+    }
+
     handleSubmit(event) {
-        alert('email: ' + this.state.email + ' || pass: ' + this.state.password);
+        alert('nickname: ' + this.state.nickname + ' email: ' + this.state.email + ' || pass: ' + this.state.password);
         event.preventDefault();
     }
 
     render(){
+        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let isEnabled = 
+            re.test(this.state.email) && 
+            this.state.password.length > 0 && 
+            this.state.nickname.length > 0;
         return (
             <div>
                 <h1> Signup </h1>
@@ -37,10 +47,15 @@ class Register extends React.Component{
                         </label>
                     </div>
                     <div>
+                        <label>Nickname
+                            <input type="text" value={this.state.nickname} onChange={this.handleNicknameChange} name="nickname"/>
+                        </label>
+                    </div>
+                    <div>
                         <label>Password</label>
                         <input type="password" value={this.state.password} onChange={this.handlePassChange} name="password"/>
                     </div>
-                    <Button bsStyle="success" onClick={this.handleSubmit}>Signup</Button>
+                    <input type="submit" value="Signup" disabled={!isEnabled}/>
                 </form>
             </div>
         )
