@@ -1,24 +1,21 @@
 import React from 'react'
-import {Button} from 'react-bootstrap';
+import { FormErrors } from './FormErrors';
+import './Form.css';
 
 // Not done yet
-class Login extends React.Component{
+class Register extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {nickname: '', password: ''};
-
-        this.handlePassChange = this.handlePassChange.bind(this);
-        this.handleNicknameChange = this.handleNicknameChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handlePassChange(event) {
-        this.setState({password: event.target.value});
-    }
-
-    handleNicknameChange(event) {
-        this.setState({nickname: event.target.value});
+        this.state = {
+            password: '', 
+            nickname: '',
+            formErrors: {password: '', nickname: ''},
+            passwordValid: false,
+            nicknameValid: false,
+            formValid: false
+        }
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     handleSubmit(event) {
@@ -26,28 +23,70 @@ class Login extends React.Component{
         event.preventDefault();
     }
 
-    render(){
-        let isEnabled = 
-            this.state.password.length > 0 && 
-            this.state.nickname.length > 0;
+    handleUserInput = (e) => {
+        const name = e.target.name;
+        const value = e.target.value;
+        this.setState({[name]: value},
+                        () => { this.validateField(name, value) });
+    }
+    
+    validateField(fieldName, value) {
+        let fieldValidationErrors = this.state.formErrors;
+        let passwordValid = this.state.passwordValid;
+        let nicknameValid = this.state.nicknameValid;
+    
+        switch(fieldName) {
+            case 'password':
+                passwordValid = value.length >= 1;
+                fieldValidationErrors.password = passwordValid ? '': ' is empty';
+                break;
+            case 'nickname':
+                nicknameValid = value.length >= 1;
+                fieldValidationErrors.nickname = nicknameValid ? '': ' is empty';
+                break;
+            default:
+                break;
+        }
+        this.setState({formErrors: fieldValidationErrors,
+                        passwordValid: passwordValid,
+                        nicknameValid: nicknameValid
+                        }, this.validateForm);
+    }
+    
+    validateForm() {
+            this.setState({formValid: this.state.passwordValid && this.state.nicknameValid});
+    }
+    
+    errorClass(error) {
+            return(error.length === 0 ? '' : 'has-error');
+    }
+    
+    render () {
         return (
-            <div>
-                <h1> Login </h1>
-                <form onSubmit={this.handleSubmit}>
-                    <div>
-                        <label>Nickname
-                            <input type="text" value={this.state.nickname} onChange={this.handleNicknameChange} name="nickname"/>
-                        </label>
-                    </div>
-                    <div>
-                        <label>Password</label>
-                        <input type="password" value={this.state.password} onChange={this.handlePassChange} name="password"/>
-                    </div>
-                    <input type="submit" value="Signup" disabled={!isEnabled}/>
-                </form>
+          <form className="demoForm" onSubmit={this.handleSubmit}>
+            <h2>Login</h2>
+            <div className="panel panel-default">
+              <FormErrors formErrors={this.state.formErrors} />
             </div>
+            <div className={`form-group ${this.errorClass(this.state.formErrors.nickname)}`}>
+              <label htmlFor="nickname">Nickname</label>
+              <input type="text" required className="form-control" name="nickname"
+                placeholder="Nickname"
+                value={this.state.nickname}
+                onChange={this.handleUserInput}  />
+            </div>
+
+            <div className={`form-group ${this.errorClass(this.state.formErrors.password)}`}>
+              <label htmlFor="password">Password</label>
+              <input type="password" className="form-control" name="password"
+                placeholder="Password"
+                value={this.state.password}
+                onChange={this.handleUserInput}  />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={!this.state.formValid}>Login</button>
+          </form>
         )
     }
 }
 
-export default Login;
+export default Register;
