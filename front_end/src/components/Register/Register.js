@@ -6,18 +6,23 @@ class Register extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {value: ''};
+        this.state = {email: '', password: ''};
 
-        this.handleChange = this.handleChange.bind(this);
+        this.handleMailChange = this.handleMailChange.bind(this);
+        this.handlePassChange = this.handlePassChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({value: event.target.value});
+    handleMailChange(event) {
+        this.setState({email: event.target.value});
+    }
+
+    handlePassChange(event) {
+        this.setState({password: event.target.value});
     }
 
     handleSubmit(event) {
-        alert('A name was submitted: ' + this.state.value);
+        alert('email: ' + this.state.email + ' || pass: ' + this.state.password);
         event.preventDefault();
     }
 
@@ -28,14 +33,14 @@ class Register extends React.Component{
                 <form onSubmit={this.handleSubmit}>
                     <div>
                         <label>Email
-                            <input type="text" value={this.state.value} onChange={this.handleChange} />
+                            <input type="text" value={this.state.email} onChange={this.handleMailChange} name="email"/>
                         </label>
                     </div>
                     <div>
                         <label>Password</label>
-                        <input type="password" name="password"/>
+                        <input type="password" value={this.state.password} onChange={this.handlePassChange} name="password"/>
                     </div>
-                    <Button bsStyle="success" onClick={this.onClickAddUser}>Signup</Button>
+                    <Button bsStyle="success" onClick={this.handleSubmit}>Signup</Button>
                 </form>
             </div>
         )
