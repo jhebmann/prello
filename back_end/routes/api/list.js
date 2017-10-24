@@ -1,8 +1,9 @@
-const List = require('../../models').lists
+const lists = require('../../models').lists
+const boards = require('../../models').boards
 const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
-    List.find().then(function(list){
+    lists.find().then(function(list){
         res.status(200).send(list)
     }).catch(function(err) {
         res.status(401).send(err);
@@ -10,7 +11,7 @@ router.get('/', function (req, res, next) {
 })
 
 router.get('/:id', function (req, res, next) {
-    List.findById(req.params.id).then(function(list){
+    lists.findById(req.params.id).then(function(list){
         res.status(200).send(list)
     }).catch(function(err) {
         res.status(401).send(err);
@@ -18,7 +19,7 @@ router.get('/:id', function (req, res, next) {
 })
 
 router.post('/', function (req, res, next) {
-    List.create(
+    lists.create(
         {title: req.body.title}
     ).then(function() {
         res.status(200).send("Successfully created");
@@ -27,16 +28,19 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/:id', function (req, res, next) {
-    List.findByIdAndUpdate(req.params.id, {$set: {"title": req.body.newTitle}}).then(function() {
-        res.status(200).send("Successfully updated");
+router.put('/', function (req, res, next) { // Not good
+    boards.findOneAndUpdate(
+        {_id : req.body.boardId, lists: {$elemMatch: {_id: req.body.listId}}},
+        {"lists.$.title": req.body.newTitle}
+    ).then(function() {
+        res.status(200).send(res);
     }).catch(function(err) {
         res.status(401).send(err);
     });
 })
 
 router.delete('/:id', function (req, res, next) {
-    List.findByIdAndRemove(req.params.id).then(function() {
+    lists.findByIdAndRemove(req.params.id).then(function() {
         res.status(200).send("Successfully destroyed");
     }).catch(function(err) {
         res.status(401).send(err);
@@ -44,7 +48,7 @@ router.delete('/:id', function (req, res, next) {
 })
 
 router.delete('/', function (req, res, next) {
-    List.remove
+    lists.remove
 })
 
 module.exports = router

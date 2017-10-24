@@ -1,5 +1,6 @@
 import React from 'react';
 import {Button,Panel,FormControl} from 'react-bootstrap';
+import axios from 'axios'
 import Card from './Card.js';
 
 class List extends React.Component{
@@ -13,7 +14,8 @@ class List extends React.Component{
       titleNewCard: null,
       showInput: false,
       title: this.props.title,
-      idBoard: this.props.idBoard
+      idBoard: this.props.idBoard,
+      getApi: ''
     }
     
     this.socket = this.props.io;
@@ -56,9 +58,11 @@ class List extends React.Component{
           </div>
           <div className="listBody">
             {this.cardList(this.state.cards)} 
-            <p><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Card Title" />
-            <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
-            <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button></p>
+            <p>
+              <FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Card Title" />
+              <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
+              <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
+            </p>
           </div>
         </Panel>
       );
@@ -90,7 +94,17 @@ class List extends React.Component{
 
   onClickEditTitle(e) {
     if (this.state.showInput){
-      this.socket.emit('updateListTitle', this.state.idBoard, this.state.id, e.target.value)
+      //this.socket.emit('updateListTitle', this.state.idBoard, this.state.id, e.target.value)
+      axios.put(`http://localhost:8000/api/list`, {
+        boardId: this.state.idBoard,
+        listId: this.state.id,
+        newTitle: this.state.title
+      }).then((response) => {
+          console.log(response)
+          this.setState({title: ''})
+      })
+      .catch((error) => {
+      })
     }
     this.setState({showInput: !this.state.showInput})
   }
