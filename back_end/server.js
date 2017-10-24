@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const helmet = require('helmet')
+const router = express.Router()
 
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
@@ -20,13 +21,6 @@ const listModel = models.lists
 const controller = require('./controllers/index.js')
 
 // API routes
-/*app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*")
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-    next()
-})*/
-
-
 //To prevent errors from Cross Origin Resource Sharing, we will set 
 //our headers to allow CORS with middleware like so:
 app.use(function(req, res, next) {
@@ -38,9 +32,8 @@ app.use(function(req, res, next) {
 //and remove cacheing so we get the most recent comments
  res.setHeader('Cache-Control', 'no-cache');
  next();
-});
+})
 
-  
 app.use('/api', require('./routes'))
 
 // Database declaration
@@ -85,22 +78,22 @@ io.on('connection', (client) => {
     client.on('deleteAllCards', (idList, idBoard)=>
         controller.lists.deleteAllCardsFromList(client, idList, idBoard))
 
-    client.on('updateListTitle', (idBoard, idList, newTitle)=>
-        controller.lists.updateList(client, idBoard, idList, newTitle)
-    )
+    client.on('updateListTitle', (idBoard, idList, newTitle)=> {
+        client.emit('UpdateListTitle', idList, newTitle),
+        client.broadcast.emit('UpdateListTitle', idList, newTitle)
+    })
 
     client.on('newBoard', (titleBoard)=>{
         controller.boards.createBoard(client,titleBoard)
-    });
+    })
 
     client.on('deleteBoard', (idBoard)=>{
         controller.boards.deleteBoard(client,idBoard)
-    });
+    })
 
     //Update state of the new user
-    
     client.emit('connectedUser', numUsers)
-});
+})
 
 //External Routes BackEnd (Testing only for now) 
 //app.use('/', controller)

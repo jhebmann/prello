@@ -57,7 +57,6 @@ class Board extends React.Component{
                 cards: [],
                 titleNewCard: null
             }
-            console.log(idList + " " + idBoard)
             this.setState(prevState=>({
                 lists: prevState.lists.concat(newList)
             }));

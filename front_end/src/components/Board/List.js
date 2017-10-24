@@ -14,8 +14,8 @@ class List extends React.Component{
       titleNewCard: null,
       showInput: false,
       title: this.props.title,
-      idBoard: this.props.idBoard,
-      getApi: ''
+      pos: this.props.pos,
+      idBoard: this.props.idBoard
     }
     
     this.socket = this.props.io;
@@ -39,9 +39,7 @@ class List extends React.Component{
   }
 
   handleTitleinput = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    this.setState({[name]: value})
+    this.setState({[e.target.name]: e.target.value})
   }
 
   render(){
@@ -94,28 +92,26 @@ class List extends React.Component{
 
   onClickEditTitle(e) {
     if (this.state.showInput){
-      //this.socket.emit('updateListTitle', this.state.idBoard, this.state.id, e.target.value)
-      axios.put(`http://localhost:8000/api/list`, {
-        boardId: this.state.idBoard,
-        listId: this.state.id,
-        newTitle: this.state.title
+      e.persist()
+      axios.put('http://localhost:8000/api/list/' + this.state.id + '/board/' + this.state.idBoard, {
+        title: this.state.title,
+        pos : this.state.pos
       }).then((response) => {
-          console.log(response)
-          this.setState({title: ''})
+        this.socket.emit('updateListTitle', this.state.idBoard, this.state.id, e.target.value)
       })
       .catch((error) => {
+        console.log(error)
       })
     }
     this.setState({showInput: !this.state.showInput})
   }
 
-  //Handle Card title imput
+  //Handle Card title input
   handleCardTitleInputChange(e) {  
-    this.setState({titleNewCard: e.target.value});
+    this.setState({titleNewCard: e.target.value})
   }
 
   onClickAddCard(b){
-    console.log(this.state.titleNewCard + " " + this.state.id + " " + this.state.idBoard)
     this.socket.emit('newCardClient', this.state.titleNewCard, this.state.id, this.state.idBoard);
   }
 
@@ -129,7 +125,6 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    console.log(this.state.id + this.state.idBoard)
     this.socket.emit('deleteAllCards', this.state.id, this.state.idBoard);
   }
 

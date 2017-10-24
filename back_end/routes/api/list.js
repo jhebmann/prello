@@ -28,15 +28,19 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/', function (req, res, next) { // Not good
-    boards.findOneAndUpdate(
-        {_id : req.body.boardId, lists: {$elemMatch: {_id: req.body.listId}}},
-        {"lists.$.title": req.body.newTitle}
+router.put('/:listId/board/:boardId', function (req, res, next) { // Not good
+    boards.findOneAndUpdate({
+        _id : req.params.boardId, 
+        lists: {$elemMatch: {_id: req.params.listId}}},
+        {
+            "lists.$.pos" : ('undefined' !== typeof req.body.pos) ? req.body.pos : null,
+            "lists.$.title" : ('undefined' !== typeof req.body.title) ? req.body.title : null
+        }        
     ).then(function() {
-        res.status(200).send(res);
+        res.json({message: "List updated"})
     }).catch(function(err) {
-        res.status(401).send(err);
-    });
+        res.send(err)
+    })
 })
 
 router.delete('/:id', function (req, res, next) {

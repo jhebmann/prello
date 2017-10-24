@@ -18,7 +18,6 @@ class NumberUser extends React.Component{
     }
 
     initialize(){
-        console.log("gjreigore")
         this.socket.emit('newUser', null);
     }
 
