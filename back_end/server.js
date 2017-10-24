@@ -72,6 +72,10 @@ io.on('connection', (client) => {
         controller.boards.createBoard(client,titleBoard)
     });
 
+    client.on('deleteBoard', (idBoard)=>{
+        controller.boards.deleteBoard(client,idBoard)
+    });
+
     //Update state of the new user
     
     client.emit('connectedUser', numUsers)

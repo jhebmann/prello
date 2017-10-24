@@ -1,7 +1,6 @@
 import React from 'react'
-import NumberUser from './NumberUser'
 import SocketIOClient from 'socket.io-client'
-import {Button,FormControl} from 'react-bootstrap';
+import {Button,FormControl,Grid,Row,Col,Thumbnail} from 'react-bootstrap';
 
 class Home extends React.Component{
     
@@ -19,8 +18,10 @@ class Home extends React.Component{
     this.initialize = this.initialize.bind(this);
     this.onClickAddBoard = this.onClickAddBoard.bind(this);
     this.addBoard = this.addBoard.bind(this);
+    this.deleteBoard = this.deleteBoard.bind(this);
     this.socket.on('getAllBoards',this.initialize);
     this.socket.on('addEmptyBoard', this.addBoard);
+    this.socket.on('deleteBoard', this.deleteBoard);
     this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this);
     
   }
@@ -34,7 +35,11 @@ class Home extends React.Component{
         <div>
           <p style={{display: "inline-flex"}}><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Board Title" /></p>
           <Button bsStyle="success" className='addListButton' onClick={this.onClickAddBoard}>Add Board</Button>    
-          {this.renderBoards(this.state.boards)}
+          <Grid>
+            <Row>
+            {this.renderBoards(this.state.boards)}
+            </Row>
+          </Grid>
         </div>
     )
   } 
@@ -56,10 +61,28 @@ class Home extends React.Component{
     this.setState({titleNewBoard: e.target.value});
   }
 
+  onClickDeleteBoard(id){
+    this.socket.emit("deleteBoard",id);
+    this.deleteBoard(id)
+  }
+
+  deleteBoard(id){
+    this.setState(prevState=>({
+      boards: prevState.boards.filter((item) => item._id !== id)
+  }));
+  }
+
   renderBoards(list){
     const boards=this.state.boards;
     const boardItems= boards.map((board, index)=>
-      <p><Button key={index} href={"/board/" + board._id} >{board.title}</Button></p>
+      <Col key={index} xs={6} md={4}>
+      <Button bsStyle="danger" onClick={() => this.onClickDeleteBoard(board._id)}>Delete Board</Button>
+      <Thumbnail style={{background:"aliceblue"}} href={"/board/" + board._id}>
+        <h3>{board.title || 'Undefined'}</h3>
+        <p>Description</p>
+       </Thumbnail>
+    </Col>
+    
     );
     return boardItems
   }

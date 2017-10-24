@@ -49,7 +49,7 @@ exports.getList = (client, idList, idBoard) => {
 }
 
 exports.deleteBoard = (client, idBoard) => {
-  boards.findOneAndDelete(
+  boards.deleteOne(
     {_id:idBoard},
     function (err, res) {
         if (err) throw err;
