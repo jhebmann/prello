@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const ItemSchema = require('mongoose').model('Item').schema
 
 const ChecklistSchema = new Schema({
-    titleChecklist: {
+    title: {
       type: String
     },
     items: [ItemSchema]

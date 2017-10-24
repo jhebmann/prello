@@ -1,8 +1,8 @@
 import React from 'react'
-import { FormErrors } from './FormErrors';
-import './Form.css';
+import { FormErrors } from './FormErrors'
+import './Form.css'
 
-// Not done yet
+
 class Register extends React.Component{
 
     constructor(props) {
@@ -21,13 +21,14 @@ class Register extends React.Component{
     }
 
     handleSubmit(event) {
-        alert('nickname: ' + this.state.nickname + ' emai: ' + this.state.email + ' || pass: ' + this.state.password);
-        const newUser = {
+        console.log(this.props)
+        console.log(event)
+        /*const newUser = {
             nickname: this.state.nickname,
             mail: this.state.email,
             password: this.state.password
-        }
-        //event.preventDefault();
+        }*/
+        event.preventDefault()
     }
 
     handleUserInput = (e) => {
@@ -111,4 +112,4 @@ class Register extends React.Component{
     }
 }
 
-export default Register;
+export default Register

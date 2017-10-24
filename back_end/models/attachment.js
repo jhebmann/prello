@@ -10,7 +10,7 @@ const AttachmentSchema = new Schema({
     file: {
       type: String
     },
-    datePostAttachment: {
+    datePost: {
       type: Date,
       default: Date.now
     },

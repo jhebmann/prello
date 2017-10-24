@@ -18,6 +18,7 @@ class NumberUser extends React.Component{
     }
 
     initialize(){
+        console.log("gjreigore")
         this.socket.emit('newUser', null);
     }
 
@@ -30,7 +31,7 @@ class NumberUser extends React.Component{
     }
 
     render() {
-        return (<h3>Users Online : {this.state.numberUsers}</h3>);
+        return (<h3 className='numberUser'>Users Online : {this.state.numberUsers}</h3>);
     }
 }
 

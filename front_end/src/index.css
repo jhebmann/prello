@@ -1,0 +1,16 @@
+*{
+    box-sizing: border-box;
+}
+
+html{
+    position: relative;
+    height: 100%;
+}
+
+.rootDiv { 
+    padding-top: 40px;
+}
+
+.numberUser {
+    margin-left: 20px;
+}

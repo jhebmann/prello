@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 
 const ActivitySchema = new Schema({
-    dateActivity: {
+    date: {
       type: Date,
       default: Date.now
     }

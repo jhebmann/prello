@@ -1,80 +1,101 @@
 'use strict';
+const mongoose = require('mongoose')
 const models = require('../models/index')
+const boards = models.boards
 
-exports.getAllLists = (client, db)=> {
-  db.find({}, (err, doc)=>{//Get lists and emit event to the new user connected
-      client.emit('initialize',doc); 
-  });
-}
-
-exports.deleteList=(client,db,idList)=>{
-  db.findOneAndDelete({_id:idList},
-    function (err, managerparent) {
+exports.deleteCardFromList=(client, idCard, idList, idBoard)=>{
+  boards.findOneAndUpdate(
+    {_id:idBoard, "boards.lists._id":idList},
+    {$pull: {"boards.lists.cards":{_id:idCard}}},
+    function (err, res) {
         if (err) throw err;
+        client.broadcast.emit('deleteCard', idCard, idList, idBoard);
     }
   );
-  client.broadcast.emit('deleteList',idList);
 }
 
-exports.deleteCardFromList=(client,db,idCard, idList)=>{
-  db.findOneAndUpdate({_id:idList, "cards._id":idCard},
-    {$pull: {cards:{_id:idCard}}},
-    function (err, managerparent) {
+exports.deleteAllCardsFromList=(client, idList, idBoard)=>{
+  boards.findOneAndUpdate(
+    {_id:idBoard, lists: {$elemMatch: {_id: idList}}},
+    {"lists.$.cards": []},
+    function (err, res) {
         if (err) throw err;
+        console.log("Deleted all cards from list " + idList + " on board " + idBoard)
+        client.emit('deleteCards', idList, idBoard)
+        client.broadcast.emit('deleteCards', idList, idBoard);
     }
   );
-  client.broadcast.emit('deleteCard',idCard, idList);
 }
 
-exports.deleteAllCardsFromList=(client,db,idList)=>{
-  db.findOneAndUpdate({_id:idList},
-    { "cards": [] } ,
-    { "new": true, "upsert": true },
-    function (err, managerparent) {
-        if (err) throw err;
-    }
-  );
-  client.broadcast.emit('changeList',[],idList);
-}
-
-exports.createList=(client)=>{
-  const newList=new models.lists();
-  newList.save({}, (err, insertedList)=> {
-    if (err)
-      console.log('Error adding List',err);
-    else {
-      console.log('List Added');
-      client.emit('addEmptyList',insertedList._id);
-      client.broadcast.emit('addEmptyList',insertedList._id);
-    }
-  });
-}
-
-exports.moveCardToNewList=(client,db,idCard,idOldList,idNewList)=>{
-  const card = db.findOne({_id:idOldList, "cards._id":idCard}, {"cards.$":1},
+exports.moveCardToNewList=(client, idCard, idOldList, idNewList, idBoard)=>{
+  boards.findOneAndUpdate(
+    {_id:idBoard, "lists._id": idNewList},
+    {$push: {"lists.$.cards": idCard}},
     function (err, managerparent) {
       if (err) throw err;
     }
   )
-  db.findOneAndUpdate({_id:idNewList}, {$push: {"cards": card}},
+  boards.findOneAndUpdate(
+    {_id:idBoard, "lists._id": idOldList}, 
+    {$pull: {"lists.$.cards":idCard}},
     function (err, managerparent) {
-      if (err) throw err;
+      if (err) throw err
     }
   )
-  db.findOneAndDelete({_id:idOldList, "cards._id":idCard},
-    function (err, managerparent) {
-      if (err) throw err;
-    }
-  )
-  client.broadcast.emit('moveCard',idCard,idOldList,idNewList);
+  client.broadcast.emit('moveCard', idCard, idOldList, idNewList, idBoard);
 }
 
-exports.deleteAllLists=(req, res)=>{
-  models.lists.remove({}, function(err, card) {
-    if (err){
-      res.send(err);
+exports.updateList = (client, idBoard, idList, newTitle) => {
+  boards.findOneAndUpdate(
+    {_id:idBoard, lists: {$elemMatch: {_id: idList}}},
+    {"lists.$.title": newTitle},
+    function (err, res) {
+        if (err) throw err;
+        client.emit('UpdateListTitle', idList, newTitle)
+        client.broadcast.emit('UpdateListTitle', idList, newTitle)
     }
-    res.json({ message: 'Collection successfully deleted' });
-  });
-  req.app.get('socketio').emit('deleteAllLists');
+  )
+}
+
+exports.addCard = (client, titleCard, idList, idBoard) => {
+  const newCard = new models.cards({titleCard: titleCard});
+  newCard.save(
+    {},
+    (err, res) => {
+      if(err)
+        console.log("Error adding card")
+      boards.findOneAndUpdate(
+        {_id:idBoard, "lists._id": idList},
+        { "$push": { "lists.$.cards": res._id }},
+        (err, res) => {
+          if (err)
+            console.log("Error updating board")
+          else {
+            console.log("Card : " + newCard._id + " added to List : " + idList)
+            client.emit('addEmptyCard', newCard, idList, idBoard);  
+            client.broadcast.emit('addEmptyCard', newCard, idList, idBoard);
+          }
+        }
+      )
+    }
+  )
+}
+
+exports.getAllCards = (client, idList, idBoard) => {
+  boards.findOne(
+    {_id: idBoard, "lists._id": idList},
+    {"lists.$": 1, _id: 0},
+    (err, res) => {
+      if (res === null)
+        client.emit('getAllCards', idList, [])
+      else {
+        models.cards.find(
+          {_id: {$in: res.lists[0].cards}},
+          (err, res) => {
+            client.emit('getAllCards', res, idList);  
+          }
+        )
+      }
+    }
+  )
 }

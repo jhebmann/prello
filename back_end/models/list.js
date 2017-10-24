@@ -4,13 +4,16 @@ const Schema = mongoose.Schema
 const CardSchema = require('mongoose').model('Card').schema
 
 const ListSchema = new Schema({
-  id: {
+  _id: {
+    type: Schema.ObjectId
+  },
+  title: {
     type: String
   },
-  titleList: {
-    type: String
+  pos: {
+    type: Number
   },
-  cards: [CardSchema],
+  cards: [Schema.ObjectId],
   date: {
     type: Date,
     default: Date.now

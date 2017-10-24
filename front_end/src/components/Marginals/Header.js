@@ -4,8 +4,8 @@ import { LinkContainer } from 'react-router-bootstrap'
 
 class Header extends React.Component{
   render(){
-    const navbarInstance = (
-      <Navbar className="navbar navbar-default navbar-fixed-top" responsive collapseable>
+    const guestNavbar = (
+      <Navbar className="navbar navbar-default navbar-fixed-top" responsive='true' collapseable='true'>
         <Navbar.Header>
           <Navbar.Brand>
             <a href="/"> Prello </a>
@@ -35,8 +35,9 @@ class Header extends React.Component{
         </Navbar.Collapse>
       </Navbar>
     )
+
     return(
-      <div>{navbarInstance}</div>
+      <div>{guestNavbar}</div>
     )}
   }
 

@@ -1,6 +1,7 @@
-import React from 'react';
-import { Button,Thumbnail,ProgressBar } from 'react-bootstrap';
-const Timestamp = require('react-timestamp');
+import React from 'react'
+import { Thumbnail, ProgressBar } from 'react-bootstrap'
+import SkyLight from 'react-skylight'
+
 
 class Card extends React.Component{
 
@@ -12,15 +13,15 @@ class Card extends React.Component{
             descr = "No description"
         }
         return(
-            <Thumbnail>
+            <Thumbnail onClick={() => this.simpleDialog.show()} className='card' >
                 <ProgressBar bsStyle="danger" now={100} />
                 <h3>{this.props.titleCard}</h3>
                 <p> {descr} </p>
-                <p><Timestamp time={this.props.createdAt} precision={1} /></p>
-                
-                <Button bsStyle="primary">Button</Button>&nbsp;
-                <Button bsStyle="default">Button</Button>
+         <SkyLight hideOnOverlayClicked ref={ref => this.simpleDialog = ref} title="Hi, I'm a simple modal">
+          Hello, I dont have any callback.
+        </SkyLight>                               
             </Thumbnail>
+            
             );
         }
 }

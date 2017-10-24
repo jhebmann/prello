@@ -6,7 +6,7 @@ const LabelSchema = new Schema({
     title: {
       type: String
     },
-    Color: {
+    color: {
         type: String,
         required: true
     }

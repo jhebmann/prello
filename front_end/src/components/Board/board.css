@@ -1,0 +1,74 @@
+body{
+    font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	line-height: 18px;
+	color: #4d4d4d;
+	font-weight: normal;
+	padding: 0 10px;
+	background-color: rgb(201, 201, 201);
+	position: relative;
+	min-height: 100%;
+	padding: 0;
+    margin: 0;
+    overflow: -moz-scrollbars-vertical;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-top: 40px;
+}
+
+.board{
+    padding-left: 20px;
+    padding-bottom: 15px;
+    padding-right: 15px;
+    white-space: nowrap;
+	display: inline-block;
+    border-radius: 5px;
+    height: 80vh;
+}
+
+.addListButton{
+    display: inline;
+    text-decoration: none;
+    font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	line-height: 30px;
+	position: relative;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.list {
+    width: 240px;
+	display: inline-block;
+	max-height: 100%;
+	background-color: #e2e4e6;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.5);
+	border-radius: 3px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    vertical-align: top;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+
+.listHead{
+    padding-bottom: 5px;
+}
+
+.listTitle{
+    text-align: center;
+    padding-top: 0px;
+    cursor: pointer;
+}
+
+.card{
+    overflow-y: auto;
+    height: 100%;
+    cursor: pointer;
+}
+
+.cardButton{
+    margin-top: 10px;
+    margin-left: 4px;
+}

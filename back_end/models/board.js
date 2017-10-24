@@ -4,13 +4,14 @@ const Schema = mongoose.Schema
 const ListSchema = require('mongoose').model('List').schema
 
 const BoardSchema = new Schema({
-    titleBoard: {
+    title: {
       type: String
     },
     lists: [ListSchema],
     admins: {
       type :[Schema.ObjectId] ,
-      required : true
+      required : false,
+      ref: 'User'
     },
     isPublic: Boolean
 })

@@ -73,7 +73,7 @@ class Register extends React.Component{
               <input type="text" required className="form-control" name="nickname"
                 placeholder="Nickname"
                 value={this.state.nickname}
-                onChange={this.handleUserInput}  />
+                onChange={this.handleUserInput}/>
             </div>
 
             <div className={`form-group ${this.errorClass(this.state.formErrors.password)}`}>
