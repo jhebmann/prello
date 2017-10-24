@@ -19,7 +19,7 @@ exports.getAllBoards = (client, idUser = "59ee468557fbcd13e4871af7")=> {
             {_id: {$in: boardsOfUser}},
             (err, res)=>{
               if (err) throw err
-              console.log(res)
+              console.log(err)
               client.emit('getAllBoards',res);
             }
           )

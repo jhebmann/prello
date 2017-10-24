@@ -22,7 +22,7 @@ exports.createBoard=(client,titleBoard)=>{
 exports.getAllBoards= (client)=> {
   boards.find({}, (err, doc)=>{//Get lists and emit event to the new user connected
       client.emit('getAllBoards',doc); 
-      console.log(err)
+      // console.log('errors when getting boards : ' + err)
   });
 }
 

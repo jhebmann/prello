@@ -9,13 +9,11 @@ class List extends React.Component{
     super(props);    
     //Default State
     this.state={
-      id: this.props.id,
       cards: [],
       titleNewCard: null,
       showInput: false,
       title: this.props.title,
-      pos: this.props.pos,
-      idBoard: this.props.idBoard
+      pos: this.props.pos // always undefined for now
     }
     
     this.socket = this.props.io;
@@ -25,11 +23,11 @@ class List extends React.Component{
     this.deleteCards = this.deleteCards.bind(this);
     this.onClickDeleteList= this.onClickDeleteList.bind(this)
     this.getAllCards= this.getAllCards.bind(this)
-    this.onClickEditTitle = this.onClickEditTitle.bind(this)
+    this.onClickUpdateList = this.onClickUpdateList.bind(this)
     this.handleTitleinput = this.handleTitleinput.bind(this)
     this.UpdateListTitle = this.UpdateListTitle.bind(this)
 
-    this.socket.emit("getCards", this.state.id, this.state.idBoard)	
+    this.socket.emit("getCards", this.props.id, this.props.idBoard)	
 
     //Event Listeners
     this.socket.on('UpdateListTitle', this.UpdateListTitle);
@@ -45,9 +43,9 @@ class List extends React.Component{
   render(){
       let headList  = null;
       if(!this.state.showInput) {
-        headList = <h3 onClick={this.onClickEditTitle} className='listTitle'>{this.state.title || 'Undefined'}</h3>
+        headList = <h3 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h3>
       } else{
-        headList = <input autoFocus='true' onChange={this.handleTitleinput} onBlur={this.onClickEditTitle} type="text" name="title" value={this.state.title}/>
+        headList = <input autoFocus='true' onChange={this.handleTitleinput} onBlur={this.onClickUpdateList} type="text" name="title" value={this.state.title}/>
       }
       return(
         <Panel bsSize="small" className='list'>
@@ -67,13 +65,13 @@ class List extends React.Component{
   } 
 
   getAllCards(cards, id){
-    if(id === this.state.id){
+    if(id === this.props.id){
       this.setState({cards: cards})
     }
   }
 
   addCard(card, id){
-    if(id === this.state.id){
+    if(id === this.props.id){
       this.setState(prevState=>({
         cards: prevState.cards.concat({
           titleCard: card.titleCard,
@@ -85,22 +83,22 @@ class List extends React.Component{
   }
 
   UpdateListTitle(id, title){
-    if(id === this.state.id){
+    if(id === this.props.id){
       this.setState({title: title})
     }
   }
 
-  onClickEditTitle(e) {
+  onClickUpdateList(e) {
     if (this.state.showInput){
       e.persist()
-      axios.put('http://localhost:8000/api/list/' + this.state.id + '/board/' + this.state.idBoard, {
+      axios.put('http://localhost:8000/api/list/' + this.props.id + '/board/' + this.props.idBoard, {
         title: this.state.title,
         pos : this.state.pos
       }).then((response) => {
-        this.socket.emit('updateListTitle', this.state.idBoard, this.state.id, e.target.value)
+        this.socket.emit('updateListTitle', this.props.idBoard, this.props.id, e.target.value)
       })
       .catch((error) => {
-        console.log(error)
+        alert('An error occured when updating the list')
       })
     }
     this.setState({showInput: !this.state.showInput})
@@ -112,7 +110,7 @@ class List extends React.Component{
   }
 
   onClickAddCard(b){
-    this.socket.emit('newCardClient', this.state.titleNewCard, this.state.id, this.state.idBoard);
+    this.socket.emit('newCardClient', this.state.titleNewCard, this.props.id, this.props.idBoard);
   }
 
   //Renders the Cards stored in the cards array   
@@ -125,11 +123,11 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    this.socket.emit('deleteAllCards', this.state.id, this.state.idBoard);
+    this.socket.emit('deleteAllCards', this.props.id, this.props.idBoard);
   }
 
   deleteCards(idList){
-    if(idList === this.state.id)
+    if(idList === this.props.id)
       this.setState({cards:[]});
   }
 

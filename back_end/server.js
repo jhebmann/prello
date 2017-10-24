@@ -45,6 +45,7 @@ mongoose.connect(configDb.mongodbUri, configDb.options)
 // IO functions
 let numUsers = 0
 io.on('connection', (client) => {
+    // ----- Handle Users connections ----- //
     controller.boards.getAllBoards(client)
 
     numUsers++
@@ -56,6 +57,9 @@ io.on('connection', (client) => {
         numUsers--
         client.broadcast.emit('connectedUser', numUsers)
     })
+
+    //Update state of the new user
+    client.emit('connectedUser', numUsers)
 
     // ----- Handle Boards ----- //
     client.on('newList', (idBoard, pos)=>
@@ -78,7 +82,7 @@ io.on('connection', (client) => {
     client.on('deleteAllCards', (idList, idBoard)=>
         controller.lists.deleteAllCardsFromList(client, idList, idBoard))
 
-    client.on('updateListTitle', (idBoard, idList, newTitle)=> {
+    client.on('updateListTitle', (idBoard, idList, newTitle)=> {    // good implementation //
         client.emit('UpdateListTitle', idList, newTitle),
         client.broadcast.emit('UpdateListTitle', idList, newTitle)
     })
@@ -90,16 +94,7 @@ io.on('connection', (client) => {
     client.on('deleteBoard', (idBoard)=>{
         controller.boards.deleteBoard(client,idBoard)
     })
-
-    //Update state of the new user
-    client.emit('connectedUser', numUsers)
 })
-
-//External Routes BackEnd (Testing only for now) 
-//app.use('/', controller)
-/*app.route('/').get(controller.users.getAllBoards)
-app.route('/board/:id').get(controller.boards.getAllLists).post(controller.lists.addCard);
-app.route('/deleteAll').delete(controller.boards.deleteAll);*/
 
 // Server start
 const port = process.env.PORT || 8000

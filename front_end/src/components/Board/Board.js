@@ -6,12 +6,10 @@ import './board.css'
 class Board extends React.Component{
     
     constructor(props){
-        super(props);    
-        //Default State
+        super(props)
+        
         this.state={
-            id: this.props.id,
-            lists: [],
-            titleNewList: null
+            lists: []
         }
 
         this.socket = this.props.io;
@@ -21,7 +19,7 @@ class Board extends React.Component{
         this.createList = this.createList.bind(this);
         this.deleteAllLists = this.deleteAllLists.bind(this);
 
-        this.socket.emit("getLists", this.state.id)
+        this.socket.emit("getLists", this.props.id)
 
         this.socket.on('getAllLists', this.getAllLists);  //We should use componentDidMount() ?
         this.socket.on('addEmptyList',this.createList);
@@ -43,15 +41,15 @@ class Board extends React.Component{
     }
 
     onClickAddList(){
-        this.socket.emit("newList", this.state.id, this.state.lists.length);
+        this.socket.emit("newList", this.props.id, this.state.lists.length);
     }
     
     onClickDeleteLists(){
-        this.socket.emit("deleteLists", this.state.id)
+        this.socket.emit("deleteLists", this.props.id)
     }
 
     createList(idList, idBoard){
-        if (idBoard === this.state.id){
+        if (idBoard === this.props.id){
             const newList={
                 _id: idList,
                 cards: [],
@@ -65,7 +63,7 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-        <List key={index} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.state.id}/>
+        <List key={index} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.props.id}/>
         )
         return listItems
     }
