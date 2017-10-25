@@ -1,9 +1,9 @@
-const lists = require('../../models').lists
-const boards = require('../../models').boards
+const List = require('../../models').lists
+const Board = require('../../models').boards
 const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
-    lists.find().then(function(list){
+    List.find().then(function(list){
         res.status(200).send(list)
     }).catch(function(err) {
         res.status(401).send(err);
@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
 })
 
 router.get('/:id', function (req, res, next) {
-    lists.findById(req.params.id).then(function(list){
+    List.findById(req.params.id).then(function(list){
         res.status(200).send(list)
     }).catch(function(err) {
         res.status(401).send(err);
@@ -19,7 +19,7 @@ router.get('/:id', function (req, res, next) {
 })
 
 router.post('/', function (req, res, next) {
-    lists.create(
+    List.create(
         {title: req.body.title}
     ).then(function() {
         res.status(200).send("Successfully created");
@@ -29,13 +29,13 @@ router.post('/', function (req, res, next) {
 })
 
 router.put('/:listId/board/:boardId', function (req, res, next) { // Not good
-    boards.findOneAndUpdate({
+    let newList = {}
+    if ('undefined' !== typeof req.body.pos) newList.pos = req.body.pos
+    if ('undefined' !== typeof req.body.title) newList.title = req.body.title
+    Board.findOneAndUpdate({
         _id : req.params.boardId, 
-        lists: {$elemMatch: {_id: req.params.listId}}},
-        {
-            "lists.$.pos" : ('undefined' !== typeof req.body.pos) ? req.body.pos : null,
-            "lists.$.title" : ('undefined' !== typeof req.body.title) ? req.body.title : null
-        }        
+        list: {$elemMatch: {_id: req.params.listId}}},
+        {newList}        
     ).then(function() {
         res.json({message: "List updated"})
     }).catch(function(err) {
@@ -44,15 +44,19 @@ router.put('/:listId/board/:boardId', function (req, res, next) { // Not good
 })
 
 router.delete('/:id', function (req, res, next) {
-    lists.findByIdAndRemove(req.params.id).then(function() {
+    List.findByIdAndRemove(req.params.id).then(function() {
         res.status(200).send("Successfully destroyed");
     }).catch(function(err) {
         res.status(401).send(err);
     });
 })
 
-router.delete('/', function (req, res, next) {
-    lists.remove
+router.delete('/all', function (req, res, next) {
+    List.remove().then(function() {
+        res.status(200).send("Successfully destroyed")
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 module.exports = router

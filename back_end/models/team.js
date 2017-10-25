@@ -9,12 +9,19 @@ const TeamSchema = new Schema({
     description: {
         type: String
     },
-    users: [Schema.ObjectId],
+    users: {
+        type: [Schema.ObjectId],
+        ref: 'User'
+    },
     admins: {
         type :[Schema.ObjectId] ,
-        required : true
+        required : true,
+        ref: 'User'
       },
-    boards: [Schema.ObjectId]
+    boards: {
+        type: [Schema.ObjectId],
+        ref: 'Board'
+    }
 })
 
 module.exports = mongoose.model('Team', TeamSchema)

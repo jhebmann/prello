@@ -16,10 +16,12 @@ const AttachmentSchema = new Schema({
     },
     postedBy: {
       type : Schema.ObjectId,
-       required : true
+       required : true,
+       ref: 'User'
     },
     linkedComment: {
-      type : Schema.ObjectId
+      type : Schema.ObjectId,
+      ref: 'Comment'
     }
 })
 

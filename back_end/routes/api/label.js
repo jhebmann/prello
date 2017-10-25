@@ -18,33 +18,20 @@ router.get('/:id', function (req, res, next) {
 })
 
 router.post('/', function (req, res, next) {
-    Label.create(
-        {} // add parameters
-    ).then(function() {
-        res.status(200).send("Successfully created");
-    }).catch(function(err) {
-        res.status(401).send("Error", err);
-    })
+    
 })
 
 router.put('/:id', function (req, res, next) {
-    Label.findByIdAndUpdate(req.params.id, {$set: {}}).then(function() {//define what to add
-        res.status(200).send("Successfully updated");
-    }).catch(function(err) {
-        res.status(401).send("Error", err);
-    });
+    
 })
 
 router.delete('/:id', function (req, res, next) {
-    Label.findByIdAndRemove(req.params.id).then(function() {
-        res.status(200).send("Successfully destroyed");
-    }).catch(function(err) {
-        res.status(401).send("Error", err);
-    });
+    
 })
 
 router.delete('/all', function (req, res, next) {
-    Label.remove
+    
 })
+
 
 module.exports = router

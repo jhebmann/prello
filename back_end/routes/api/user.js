@@ -31,14 +31,6 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/:id', function (req, res, next) {
-    User.findByIdAndUpdate(req.params.id, {$set: {}}).then(function() {//define what to add
-        res.status(200).send("Successfully updated");
-    }).catch(function(err) {
-        res.status(401).send(err);
-    });
-})
-
 router.delete('/:id', function (req, res, next) {
     User.findByIdAndRemove(req.params.id).then(function() {
         res.status(200).send("Successfully destroyed");
@@ -55,5 +47,14 @@ router.delete('/all', function (req, res, next) {
     });
 })
 
+/*
+router.put('/:id', function (req, res, next) {
+    User.findByIdAndUpdate(req.params.id, {$set: {}}).then(function() {//define what to add
+        res.status(200).send("Successfully updated");
+    }).catch(function(err) {
+        res.status(401).send(err);
+    });
+})
+*/
 
 module.exports = router

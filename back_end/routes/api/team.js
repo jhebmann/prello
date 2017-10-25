@@ -28,25 +28,26 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/:id', function (req, res, next) {
-
-})
-
 router.delete('/:id', function (req, res, next) {
     Team.findByIdAndRemove(req.params.id).then(function() {
-        res.status(200).send("Successfully destroyed");
+        res.status(200).send("Successfully destroyed")
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     });
 })
 
 router.delete('/all', function (req, res, next) {
     Team.remove().then(function() {
-        res.status(200).send("Successfully destroyed");
+        res.status(200).send("Successfully destroyed")
     }).catch(function(err) {
-        res.status(401).send(err);
-    });
+        res.status(401).send(err)
+    })
 })
 
+/*
+router.put('/:id', function (req, res, next) {
+
+})
+*/
 
 module.exports = router

@@ -13,7 +13,10 @@ const ListSchema = new Schema({
   pos: {
     type: Number
   },
-  cards: [Schema.ObjectId],
+  cards: {
+    type: [Schema.ObjectId],
+    ref: 'Card'
+  },
   date: {
     type: Date,
     default: Date.now

@@ -13,7 +13,10 @@ const CommentSchema = new Schema({
     lastModifiedAt: {
         type: Date
     },
-    postedBy: Schema.ObjectId
+    postedBy: {
+        type: Schema.ObjectId,
+        ref: 'User'
+    }
 })
 
 module.exports = mongoose.model('Comment', CommentSchema)

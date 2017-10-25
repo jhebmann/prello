@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const CheckListSchema = require('mongoose').model('Checklist').schema
 const AttachmentSchema = require('mongoose').model('Attachment').schema
 const CommentSchema = require('mongoose').model('Comment').schema
+
 const CardSchema = new Schema({
     titleCard: {
       type: String
@@ -28,7 +29,10 @@ const CardSchema = new Schema({
     checklists : [CheckListSchema],
     attachments : [AttachmentSchema],
     comments : [CommentSchema],
-    labels : [Schema.ObjectId]
+    labels : {
+      type: [Schema.ObjectId],
+      ref: 'Label'
+    }
   });
 
   module.exports = mongoose.model('Card', CardSchema);

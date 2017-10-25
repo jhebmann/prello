@@ -35,7 +35,10 @@ const UserSchema = new Schema({
             type: String
         }
     },
-    teams: [Schema.ObjectId]
+    teams: {
+        type: [Schema.ObjectId],
+        ref: 'Team'
+    }
 })
 
 /**
