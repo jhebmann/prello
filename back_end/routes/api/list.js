@@ -6,7 +6,7 @@ const router = require('express').Router()
 // Done
 
 router.get('/:id', function (req, res, next) {
-    // Return the board id and the list having the id given in parameter
+    // Get the list having the id given in parameter
     Board.findOne({'lists._id': req.params.id}, '-_id').select({ lists: {$elemMatch: {_id: req.params.id}}})
     .then(function(listsMatching){
         res.status(200).send(listsMatching.lists[0])
@@ -15,7 +15,8 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/:listId/board/:boardId/card', function (req, res, next) {
+router.get('/:listId/board/:boardId/cards', function (req, res, next) {
+    // Get the cards in the list and board having the id given in parameter
     Board.findOne({_id: req.params.boardId, "lists._id": req.params.listId}, 'lists',
         (err, board) => {
             if (board === null)
@@ -32,6 +33,7 @@ router.get('/:listId/board/:boardId/card', function (req, res, next) {
 })
 
 router.post('/', function (req, res, next) {
+    // Post a new list
     Board.findById(req.body.boardId, function(err, board){
         let newList = new List()
         newList.title = req.body.title,
@@ -45,7 +47,8 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/:listId/board/:boardId', function (req, res, next) { // Not good
+router.put('/:listId/board/:boardId', function (req, res, next) {
+    // Update the list having the id given in parameter and that is contained in the board having the id given in parameter
     Board.findOneAndUpdate({
         _id : req.params.boardId, 
         lists: {$elemMatch: {_id: req.params.listId}}},
@@ -61,6 +64,7 @@ router.put('/:listId/board/:boardId', function (req, res, next) { // Not good
 })
 
 router.delete('/:id', function (req, res, next) {
+    // Delete the list having the id given in parameter
     List.findByIdAndRemove(req.params.id).then(function() {
         res.status(200).send("Successfully destroyed");
     }).catch(function(err) {

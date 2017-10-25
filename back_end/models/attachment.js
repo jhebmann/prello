@@ -7,6 +7,7 @@ const Schema = mongoose.Schema
 
 /* There is missing things if coming from dropbox */
 const AttachmentSchema = new Schema({
+    title: String,
     file: {
       type: String
     },

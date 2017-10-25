@@ -2,6 +2,7 @@ const Board = require('../../models').boards
 const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
+    // Get all boards
     Board.find().then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
@@ -10,6 +11,7 @@ router.get('/', function (req, res, next) {
 })
 
 router.get('/:id', function (req, res, next) {
+    // Get the board having the id given in parameter
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
@@ -17,11 +19,12 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/team/:teamId', function (req, res, next) {
-
+router.get('/:boardId/admins', function (req, res, next) {
+    // Get all admins of the board having the id given in parameter
 })
 
 router.post('/', function (req, res, next) {
+    // Post a new board
     Board.create({
         title: req.body.title,
         admins: req.body.admins,
@@ -34,6 +37,7 @@ router.post('/', function (req, res, next) {
 })
 
 router.put('/:id', function (req, res, next) {  // Not done
+    // Update the board having the id given in parameter
     Board.findOneAndUpdate({_id : req.params.id},
         {
             "title": ('undefined' !== typeof req.body.title) ? req.body.title : null ,
@@ -47,6 +51,7 @@ router.put('/:id', function (req, res, next) {  // Not done
 })
 
 router.delete('/:id', function (req, res, next) {
+    // Delete having the id given in parameter
     Board.findByIdAndRemove(req.params.id).then(function() {
         res.status(200).send("Successfully destroyed");
     }).catch(function(err) {
@@ -55,6 +60,7 @@ router.delete('/:id', function (req, res, next) {
 })
 
 router.delete('/', function (req, res, next) {
+    // Delete all boards
     Board.remove().then(function() {
         res.status(200).send("Successfully destroyed");
     }).catch(function(err) {
