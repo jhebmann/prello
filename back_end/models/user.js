@@ -37,7 +37,8 @@ const UserSchema = new Schema({
     },
     teams: {
         type: [Schema.ObjectId],
-        ref: 'Team'
+        ref: 'Team',
+        default: []
     }
 })
 

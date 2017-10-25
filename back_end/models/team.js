@@ -20,7 +20,8 @@ const TeamSchema = new Schema({
       },
     boards: {
         type: [Schema.ObjectId],
-        ref: 'Board'
+        ref: 'Board',
+        default: []
     }
 })
 

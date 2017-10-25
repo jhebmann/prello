@@ -29,8 +29,12 @@ router.delete('/:id', function (req, res, next) {
     
 })
 
-router.delete('/all', function (req, res, next) {
-    
+router.delete('/', function (req, res, next) {
+    Card.remove().then(function() {
+        res.status(200).send("Successfully destroyed")
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 

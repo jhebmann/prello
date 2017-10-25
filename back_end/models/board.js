@@ -7,13 +7,19 @@ const BoardSchema = new Schema({
     title: {
       type: String
     },
-    lists: [ListSchema],
+    lists: {
+      type: [ListSchema],
+      default: []
+    },
     admins: {
       type :[Schema.ObjectId] ,
       required : false,
       ref: 'User'
     },
-    isPublic: Boolean
+    isPublic: {
+      type: Boolean,
+      default: false
+    }
 })
 
 module.exports = mongoose.model('Board', BoardSchema)

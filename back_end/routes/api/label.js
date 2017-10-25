@@ -29,7 +29,7 @@ router.delete('/:id', function (req, res, next) {
     
 })
 
-router.delete('/all', function (req, res, next) {
+router.delete('/', function (req, res, next) {
     
 })
 

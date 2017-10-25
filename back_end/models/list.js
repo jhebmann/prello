@@ -4,9 +4,6 @@ const Schema = mongoose.Schema
 const CardSchema = require('mongoose').model('Card').schema
 
 const ListSchema = new Schema({
-  _id: {
-    type: Schema.ObjectId
-  },
   title: {
     type: String
   },
@@ -15,7 +12,8 @@ const ListSchema = new Schema({
   },
   cards: {
     type: [Schema.ObjectId],
-    ref: 'Card'
+    ref: 'Card',
+    default: []
   },
   date: {
     type: Date,

@@ -1,6 +1,8 @@
 const Team = require('../../models').teams
 const router = require('express').Router()
 
+// Done
+
 router.get('/', function (req, res, next) {
     Team.find().then(function(team){
         res.status(200).send(team)
@@ -19,8 +21,10 @@ router.get('/:id', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     Team.create({ 
-        name: req.params.name,
-        admins: [req.params.admins]
+        name: req.body.name,
+        description: req.body.description,
+        users: ('undefined' !== typeof req.body.users) ? req.body.users : [],
+        admins: req.body.admins
     }).then(function() {
         res.status(200).send("Successfully created");
     }).catch(function(err) {
@@ -36,7 +40,7 @@ router.delete('/:id', function (req, res, next) {
     });
 })
 
-router.delete('/all', function (req, res, next) {
+router.delete('/', function (req, res, next) {
     Team.remove().then(function() {
         res.status(200).send("Successfully destroyed")
     }).catch(function(err) {
@@ -44,10 +48,19 @@ router.delete('/all', function (req, res, next) {
     })
 })
 
-/*
-router.put('/:id', function (req, res, next) {
 
+router.put('/:id', function (req, res, next) {
+    Team.findOneAndUpdate({_id : req.params.id},
+        {
+            "name": ('undefined' !== typeof req.body.name) ? req.body.name : null ,
+            "description" : ('undefined' !== typeof req.body.description) ? req.body.description : null
+        }
+    ).then(function() {
+        res.status(200).send("Successfully updated")
+    }).catch(function(err) {
+        res.send(err)
+    })
 })
-*/
+
 
 module.exports = router

@@ -17,12 +17,15 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
+router.get('/team/:teamId', function (req, res, next) {
+
+})
+
 router.post('/', function (req, res, next) {
     Board.create({
         title: req.body.title,
-        lists: [],
         admins: req.body.admins,
-        isPublic: true
+        isPublic: req.body.isPublic
     }).then(function() {
         res.status(200).send("Successfully created");
     }).catch(function(err) {
@@ -30,24 +33,33 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/:id', function (req, res, next) {
-    Board.findByIdAndUpdate(req.params.id, {$set: {}}).then(function() {//define what to add
-        res.status(200).send("Successfully updated");
+router.put('/:id', function (req, res, next) {  // Not done
+    Board.findOneAndUpdate({_id : req.params.id},
+        {
+            "title": ('undefined' !== typeof req.body.title) ? req.body.title : null ,
+            "isPublic" : ('undefined' !== typeof req.body.isPublic) ? req.body.isPublic : null
+        }
+    ).then(function() {
+        res.status(200).send("Successfully updated")
     }).catch(function(err) {
-        res.status(401).send("Error", err);
-    });
+        res.send(err)
+    })
 })
 
 router.delete('/:id', function (req, res, next) {
     Board.findByIdAndRemove(req.params.id).then(function() {
         res.status(200).send("Successfully destroyed");
     }).catch(function(err) {
-        res.status(401).send("Error", err);
+        res.status(401).send(err);
     });
 })
 
-router.delete('/all', function (req, res, next) {
-    Board.remove
+router.delete('/', function (req, res, next) {
+    Board.remove().then(function() {
+        res.status(200).send("Successfully destroyed");
+    }).catch(function(err) {
+        res.status(401).send(err);
+    });
 })
 
 module.exports = router
