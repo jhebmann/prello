@@ -1,4 +1,5 @@
 const Card = require('../../models').cards
+const Board = require('../../models').boards
 const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
@@ -23,9 +24,30 @@ router.get('/:cardId/labels', function (req, res, next) {
     // Get all labels of the card having the id given in parameter
 })
 
-router.post('/', function (req, res, next) {
+router.post('/board/:boardId/list/:listId', function (req, res, next) {
     // Post a new card
-    
+    const newCard = new Card({
+        titleCard: req.params.titleCard,
+        description: req.params.description
+    })
+    newCard.save(
+      {},
+      (err, res) => {
+        if(err)
+          console.log("Error adding card")
+        Board.findOneAndUpdate(
+          {_id : req.params.boardId, "lists._id" : req.params.listId},
+          { "$push": { "lists.$.cards": res._id }},
+          (err, res) => {
+            if (err)
+              console.log("Error when adding the card in board")
+            else {
+              console.log("Card : " + newCard._id + " added to List : " + req.params.listId)
+            }
+          }
+        )
+      }
+    )
 })
 
 router.put('/:id', function (req, res, next) {

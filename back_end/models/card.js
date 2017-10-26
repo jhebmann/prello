@@ -26,12 +26,22 @@ const CardSchema = new Schema({
       type: Boolean,
       default: false
     },
-    checklists : [CheckListSchema],
-    attachments : [AttachmentSchema],
-    comments : [CommentSchema],
+    checklists : {
+      type: [CheckListSchema],
+      default: []
+    },
+    attachments : {
+      type: [AttachmentSchema],
+      default: []
+    },
+    comments : {
+      type: [CommentSchema],
+      default: []
+    },
     labels : {
       type: [Schema.ObjectId],
-      ref: 'Label'
+      ref: 'Label',
+      default: []
     }
   });
 
