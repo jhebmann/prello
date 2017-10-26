@@ -91,11 +91,11 @@ class List extends React.Component{
   onClickUpdateList(e) {
     if (this.state.showInput){
       e.persist()
-      axios.put('http://localhost:8000/api/list/' + this.props.id + '/board/' + this.props.idBoard, {
+      axios.put('http://localhost:8000/api/list/' + this.props.id, {
         title: this.state.title,
         pos : this.state.pos
       }).then((response) => {
-        this.socket.emit('updateListTitle', this.props.idBoard, this.props.id, e.target.value)
+        this.socket.emit('updateListTitle', response.data._id, e.target.value)
       })
       .catch((error) => {
         alert('An error occured when updating the list')

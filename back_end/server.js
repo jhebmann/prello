@@ -87,7 +87,7 @@ io.on('connection', (client) => {
         controller.lists.deleteAllCardsFromList(client, idList, idBoard)
     })
 
-    client.on('updateListTitle', (idBoard, idList, newTitle) => {    // good implementation //
+    client.on('updateListTitle', (idList, newTitle) => {  
         client.emit('UpdateListTitle', idList, newTitle),
         client.broadcast.emit('UpdateListTitle', idList, newTitle)
     })
