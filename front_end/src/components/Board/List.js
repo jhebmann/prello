@@ -109,8 +109,15 @@ class List extends React.Component{
     this.setState({titleNewCard: e.target.value})
   }
 
-  onClickAddCard(b){
-    this.socket.emit('newCardClient', this.state.titleNewCard, this.props.id, this.props.idBoard);
+  onClickAddCard(e){
+    axios.post('http://localhost:8000/api/card/board/' + this.props.idBoard + '/list/' + this.props.id, {
+      titleCard: this.state.titleNewCard
+    }).then((response) => {
+      this.socket.emit('newCardClient', response.data, this.props.id)
+    })
+    .catch((error) => {
+      alert('An error occured when updating the list')
+    })
   }
 
   //Renders the Cards stored in the cards array   

@@ -16,7 +16,7 @@ router.get('/:id', function (req, res, next) {
     Card.findById(req.params.id).then(function(card){
         res.status(200).send(card)
     }).catch(function(err) {
-        res.status(401).send(err.getMessage());
+        res.status(401).send(err)
     })
 })
 
@@ -27,8 +27,7 @@ router.get('/:cardId/labels', function (req, res, next) {
 router.post('/board/:boardId/list/:listId', function (req, res, next) {
     // Post a new card
     const newCard = new Card({
-        titleCard: req.params.titleCard,
-        description: req.params.description
+        titleCard: req.body.titleCard
     })
     newCard.save(
       {},
@@ -39,15 +38,20 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
           {_id : req.params.boardId, "lists._id" : req.params.listId},
           { "$push": { "lists.$.cards": res._id }},
           (err, res) => {
-            if (err)
-              console.log("Error when adding the card in board")
+            if (err){
+                console.log("Error when adding the card in board")
+            }              
             else {
               console.log("Card : " + newCard._id + " added to List : " + req.params.listId)
             }
           }
         )
       }
-    )
+    ).then(function() {
+        res.status(200).send(newCard)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 router.put('/:id', function (req, res, next) {

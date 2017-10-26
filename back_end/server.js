@@ -73,25 +73,30 @@ io.on('connection', (client) => {
     
     // ----- Handle lists ----- //
         
-    client.on('getCards', (idList, idBoard)=>
-        controller.lists.getAllCards(client, idList, idBoard))
+    client.on('getCards', (idList, idBoard) => {
+        controller.lists.getAllCards(client, idList, idBoard)
+    })
+        
 
-    client.on('newCardClient', (titleCard, idList, idBoard)=>
-        controller.lists.addCard(client, titleCard, idList, idBoard))
+    client.on('newCardClient', (newCard, idList) => {
+        client.emit('addEmptyCard', newCard, idList),
+        client.broadcast.emit('addEmptyCard', newCard, idList)
+    })
 
-    client.on('deleteAllCards', (idList, idBoard)=>
-        controller.lists.deleteAllCardsFromList(client, idList, idBoard))
+    client.on('deleteAllCards', (idList, idBoard) => {
+        controller.lists.deleteAllCardsFromList(client, idList, idBoard)
+    })
 
-    client.on('updateListTitle', (idBoard, idList, newTitle)=> {    // good implementation //
+    client.on('updateListTitle', (idBoard, idList, newTitle) => {    // good implementation //
         client.emit('UpdateListTitle', idList, newTitle),
         client.broadcast.emit('UpdateListTitle', idList, newTitle)
     })
 
-    client.on('newBoard', (titleBoard)=>{
+    client.on('newBoard', (titleBoard) => {
         controller.boards.createBoard(client,titleBoard)
     })
 
-    client.on('deleteBoard', (idBoard)=>{
+    client.on('deleteBoard', (idBoard) => {
         controller.boards.deleteBoard(client,idBoard)
     })
 })

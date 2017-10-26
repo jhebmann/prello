@@ -10,7 +10,8 @@ const CardSchema = new Schema({
       type: String
     },
     description: {
-      type: String
+      type: String,
+      default: ""
     },
     dueDate: {
       type: Date
