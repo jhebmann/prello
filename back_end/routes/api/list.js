@@ -63,13 +63,31 @@ router.put('/:listId/board/:boardId', function (req, res, next) {
     })
 })
 
-router.delete('/:id', function (req, res, next) {
-    // Delete the list having the id given in parameter
-    List.findByIdAndRemove(req.params.id).then(function() {
-        res.status(200).send("Successfully destroyed");
-    }).catch(function(err) {
-        res.status(401).send(err);
-    });
+/**
+ * Delete the list with the specified id
+ */
+router.delete('/:id/board/:idBoard', function (req, res, next) {
+    Board.findOne(
+        {_id: req.params.idBoard, "lists._id": req.params.id},
+        {"lists.$.cards": 1, _id: 0},
+        (err, board) => {
+            const list = board.lists[0]
+            Board.findOneAndUpdate(
+                {_id: req.params.idBoard},
+                {$pull: {lists: list}},
+                (err) => {
+                    if (err) throw err
+                    Card.remove(
+                        {_id: {$in: list.cards}}
+                    ).then(function() {
+                        res.status(200).send("Successfully destroyed")
+                    }).catch(function(err) {
+                        res.status(401).send(err)
+                    })
+                }
+            )
+        }
+    )
 })
 
 module.exports = router

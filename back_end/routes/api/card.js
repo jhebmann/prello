@@ -59,19 +59,71 @@ router.put('/:id', function (req, res, next) {
     
 })
 
-router.delete('/:id', function (req, res, next) {
-    // Delete the card having the id given in parameter
-    
+/**
+ * Delete the card with the specified id
+ */
+router.delete('/:id/list/:idList/board/:idBoard', function (req, res, next) {
+    const id = req.params.id
+    Board.findOneAndUpdate(
+        {_id: req.params.idBoard, "lists._id": req.params.idList},
+        {"$pull": {"lists.$.cards": id}},
+        (err) => {
+            if (err)
+                throw err
+            Card.findOneAndRemove(
+                {_id: id}
+            ).then(function() {
+                res.status(200).send("The card of id " + id + " was successfully destroyed")
+            }).catch(function(err) {
+                res.status(401).send(err)
+            })
+        }
+    )
 })
 
+/**
+ * Delete all cards from a list
+ */
+router.delete('/list/:idList/board/:idBoard', function (req, res, next) {
+    Board.findOne(
+        {_id: req.params.idBoard, "lists._id": req.params.idList},
+        {"lists.$": 1, _id: 0},
+        (err, board) => {
+            const cardsIds = board.lists[0].cards
+            Board.findOneAndUpdate(
+                {_id: req.params.idBoard, "lists._id": req.params.idList},
+                {$set: {"lists.$.cards": []}},
+                (err) => {
+                    if (err) throw err
+                    Card.remove(
+                        {_id: {$in: cardsIds}}
+                    ).then(function() {
+                        res.status(200).send("Successfully destroyed")
+                    }).catch(function(err) {
+                        res.status(401).send(err)
+                    })
+                }
+            )
+        }
+    )
+})
+
+/**
+ * Delete all the cards
+ */
 router.delete('/', function (req, res, next) {
-    // Delete all cards
-    Card.remove().then(function() {
-        res.status(200).send("Successfully destroyed")
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    Board.update(
+        {"lists.null": null},
+        {$set: {"lists.$.cards": []}},
+        (err) => {
+            if (err) throw err
+            Card.remove().then(function() {
+                res.status(200).send("Successfully destroyed")
+            }).catch(function(err) {
+                res.status(401).send(err)
+            })
+        }
+    )
 })
-
 
 module.exports = router

@@ -1,3 +1,4 @@
+const models = require('../../models')
 const Board = require('../../models').boards
 const router = require('express').Router()
 
@@ -51,21 +52,50 @@ router.put('/:id', function (req, res, next) {  // Not done
 })
 
 router.delete('/:id', function (req, res, next) {
-    // Delete having the id given in parameter
-    Board.findByIdAndRemove(req.params.id).then(function() {
-        res.status(200).send("Successfully destroyed");
-    }).catch(function(err) {
-        res.status(401).send(err);
-    });
+    Board.findOne(
+        {_id: req.params.id},
+        (err, board) => {
+            if (board === null)
+                res.status(401).send("No board of id " + req.params.id + " could be found")
+            else {
+                const allCards = board.lists.map((l) => l.cards).reduce((a, b) => a.concat(b))
+                models.cards.remove(
+                    {_id: {$in: allCards}},
+                    (err) => {
+                        Board.remove(
+                            {_id: board._id}
+                        ).then(function() {
+                            res.status(200).send("The board of id " + req.params.id + " was successfully destroyed")
+                        }).catch(function(err) {
+                            res.status(401).send(err)
+                        })
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.delete('/', function (req, res, next) {
-    // Delete all boards
-    Board.remove().then(function() {
-        res.status(200).send("Successfully destroyed");
-    }).catch(function(err) {
-        res.status(401).send(err);
-    });
+    Board.find(
+        {},
+        (err, boards) => {
+            const allLists = boards.length !== 0 ? boards.map(b => b.lists).reduce((a, b) => a.concat(b)) : []
+            const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b)) : []
+            models.cards.remove(
+                {_id: {$in: allCards}},
+                (err) => {
+                    const boardsIds = boards.length !== 0 ? boards.map((b) => b._id) : []
+                    Board.remove(
+                        {_id: {$in: boardsIds}}
+                    ).then(function() {
+                        res.status(200).send("All boards were successfully destroyed")
+                    }).catch(function(err) {
+                        res.status(401).send(err)
+                    })
+                }
+            )
+        }
+    )
 })
-
 module.exports = router
