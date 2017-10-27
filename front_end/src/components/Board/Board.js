@@ -31,7 +31,7 @@ class Board extends React.Component{
             this.getAllLists(response.data)
         })
         .catch((error) => {
-            alert('An error occured when getting the cards')
+            alert('An error occured when getting the boards !')
         })
     }
 
@@ -59,7 +59,7 @@ class Board extends React.Component{
             this.createList(response.data, this.props.id)
         })
         .catch((error) => {
-            alert('An error occured when getting the cards')
+            alert('An error occured when adding the lists')
         })
     }
     

@@ -31,7 +31,7 @@ class Home extends React.Component{
       this.setState({boards:response.data})
     })
     .catch((error) => {
-      alert('An error occured when getting the cards')
+      alert('An error occured when getting the boards!\nHint: check that the server is running')
     })
   }
   
@@ -59,7 +59,7 @@ class Home extends React.Component{
       this.addBoard(response.data)
     })
     .catch((error) => {
-      alert('An error occured when getting the cards')
+      alert('An error occured when adding the board')
     })
   }
 
@@ -81,7 +81,7 @@ class Home extends React.Component{
       this.deleteBoard(id)
     })
     .catch((error) => {
-      alert('An error occured when getting the cards')
+      alert('An error occured when deleting the board')
     })
   }
 

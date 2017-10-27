@@ -131,7 +131,7 @@ class List extends React.Component{
       this.addCard(response.data, this.props.id)
     })
     .catch((error) => {
-      alert('An error occured when updating the list')
+      alert('An error occured when adding the card')
     })
   }
 
@@ -142,7 +142,7 @@ class List extends React.Component{
       this.socket.emit('deleteAllCards', this.props.id)
     })
     .catch((error) => {
-      alert('An error occured when deleting the cards')
+      alert('An error occured when deleting the list')
     })
   }
 
