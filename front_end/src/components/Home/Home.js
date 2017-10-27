@@ -1,6 +1,8 @@
 import React from 'react'
 import SocketIOClient from 'socket.io-client'
-import {Button,FormControl,Grid,Row,Col,Thumbnail} from 'react-bootstrap';
+import {Button,FormControl,Grid,Row,Col,Thumbnail} from 'react-bootstrap'
+import axios from 'axios'
+import url from '../../config'
 
 class Home extends React.Component{
     
@@ -11,24 +13,28 @@ class Home extends React.Component{
       boards: [],
       titleNewBoard: null
     }
-    this.socket = SocketIOClient('http://localhost:8000');
+    this.socket = SocketIOClient('http://localhost:8000')
    
     //Event Listeners
-    this.renderBoards = this.renderBoards.bind(this);
-    this.initialize = this.initialize.bind(this);
-    this.onClickAddBoard = this.onClickAddBoard.bind(this);
-    this.addBoard = this.addBoard.bind(this);
-    this.deleteBoard = this.deleteBoard.bind(this);
-    this.socket.on('getAllBoards',this.initialize);
-    this.socket.on('addEmptyBoard', this.addBoard);
-    this.socket.on('deleteBoard', this.deleteBoard);
-    this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this);
-    
+    this.renderBoards = this.renderBoards.bind(this)
+    this.onClickAddBoard = this.onClickAddBoard.bind(this)
+    this.addBoard = this.addBoard.bind(this)
+    this.deleteBoard = this.deleteBoard.bind(this)
+    this.socket.on('addBoard', this.addBoard)
+    this.socket.on('deleteBoard', this.deleteBoard)
+    this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this)
   }
 
-  initialize(data){
-      this.setState({boards:data})
+  componentWillMount() {
+    axios.get(url.api + 'board')
+    .then((response) => {
+      this.setState({boards:response.data})
+    })
+    .catch((error) => {
+      alert('An error occured when getting the cards')
+    })
   }
+  
 
   render(){
     return(
@@ -37,7 +43,7 @@ class Home extends React.Component{
           <Button bsStyle="success" className='addListButton' onClick={this.onClickAddBoard}>Add Board</Button>    
           <Grid>
             <Row>
-            {this.renderBoards(this.state.boards)}
+              {this.renderBoards(this.state.boards)}
             </Row>
           </Grid>
         </div>
@@ -45,16 +51,24 @@ class Home extends React.Component{
   } 
   
   onClickAddBoard(){
-    this.socket.emit("newBoard",this.state.titleNewBoard);
+    axios.post(url.api + 'board', {
+      title: this.state.titleNewBoard
+    }).then((response) => {
+      console.log(response.data)
+      this.socket.emit("newBoard", response.data._id, response.data.title)
+    })
+    .catch((error) => {
+      alert('An error occured when getting the cards')
+    })
   }
 
   addBoard(id,t){
-      this.setState(prevState=>({
-        boards: prevState.boards.concat({
-          id:id,
-          title:t
-        })
-      }));
+        this.setState(prevState=>({
+            boards: prevState.boards.concat({
+                id:id,
+                title:t
+            })
+        }))
     }
 
   handleCardTitleInputChange(e) {  
@@ -73,9 +87,9 @@ class Home extends React.Component{
   }
 
   renderBoards(list){
-    const boards=this.state.boards;
-    const boardItems= boards.map((board, index)=>
-      <Col key={index} xs={6} md={4}>
+    const boards = this.state.boards
+    const boardItems = boards.map((board, index)=>
+      <Col key = {index} xs = {6} md = {4}>
       <Button bsStyle="danger" onClick={() => this.onClickDeleteBoard(board._id)}>Delete Board</Button>
       <Thumbnail style={{background:"aliceblue"}} href={"/board/" + board._id}>
         <h3>{board.title || 'Undefined'}</h3>

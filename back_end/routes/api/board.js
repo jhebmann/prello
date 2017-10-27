@@ -35,15 +35,22 @@ router.get('/:boardId/admins', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     // Post a new board
-    Board.create({
+    const newBoard = new Board({
         title: req.body.title,
         admins: req.body.admins,
         isPublic: req.body.isPublic
-    }).then(function() {
-        res.status(200).send("Successfully created")
-    }).catch(function(err) {
-        res.status(401).send(err)
     })
+    newBoard.save(
+        {},
+        (err, insertedBoard) => {
+            if (err)
+                res.status(401).send(err)
+            else {
+                console.log('Board Added')
+                res.status(200).send(insertedBoard)
+            }
+        }
+    )
 })
 
 router.put('/:id', function (req, res, next) {  // Not done

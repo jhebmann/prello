@@ -7,7 +7,7 @@ import url from '../../config'
 class List extends React.Component{
 
   constructor(props){
-    super(props);    
+    super(props)
     //Default State
     this.state={
       cards: [],
@@ -45,7 +45,7 @@ class List extends React.Component{
   }
 
   render(){
-      let headList  = null;
+      let headList  = null
       if(!this.state.showInput) {
         headList = <h3 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h3>
       } else{
@@ -65,15 +65,15 @@ class List extends React.Component{
             </p>
           </div>
         </Panel>
-      );
+      )
   } 
 
   //Renders the Cards stored in the cards array   
   cardList(list){
-    const cards=this.state.cards;
+    const cards=this.state.cards
     const cardItems= cards.map((card, index)=>
       <Card key={index} titleCard={card.titleCard} description={card.description} date={card.date}/>
-    );
+    )
     return cardItems
   }
 
@@ -91,7 +91,7 @@ class List extends React.Component{
           description: card.description,
           date: card.date
         })
-      }));
+      }))
     }
   }
 
@@ -102,7 +102,7 @@ class List extends React.Component{
   onClickUpdateList(e) {
     if (this.state.showInput){
       e.persist()
-      axios.put(url.api + 'list/' + this.props.id, {
+      axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
         title: this.state.title,
         pos : this.state.pos
       }).then((response) => {
@@ -136,7 +136,7 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    axios.delete('/list/' + this.props.id + '/board/' + this.props.idBoard)
+    axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard)
     .then((response) => {
       this.deleteCards(this.props.id)
       this.socket.emit('deleteAllCards', this.props.id)
@@ -148,9 +148,9 @@ class List extends React.Component{
 
   deleteCards(idList){
     if(idList === this.props.id)
-      this.setState({cards:[]});
+      this.setState({cards:[]})
   }
 
 }
 
-export default List;
+export default List

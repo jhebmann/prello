@@ -53,8 +53,6 @@ mongoose.connect(configDb.mongodbUri, configDb.options, function(err, db) {
 let numUsers = 0
 io.on('connection', (client) => {
     // ----- Handle Users connections ----- //
-    controller.boards.getAllBoards(client)
-
     numUsers++
     client.broadcast.emit('connectedUser', numUsers)
 
@@ -69,8 +67,9 @@ io.on('connection', (client) => {
     client.emit('connectedUser', numUsers)
 
     // ----- Handle Boards ----- //
-    client.on('newList', (idBoard, pos)=>
-        controller.boards.createList(client, idBoard, pos))
+    client.on('newList', (newList, idBoard)=> {
+        client.broadcast.emit('addList', newList, idBoard)
+    })
     
     client.on('deleteLists', (idBoard)=>
         controller.boards.deleteAllLists(client, idBoard))
@@ -89,8 +88,10 @@ io.on('connection', (client) => {
         client.broadcast.emit('updateListTitle', idList, newTitle)
     })
 
-    client.on('newBoard', (titleBoard) => {
-        controller.boards.createBoard(client,titleBoard)
+    client.on('newBoard', (id, titleBoard) => {
+        console.log('new board id:', id)
+        client.broadcast.emit('addBoard', id, titleBoard)
+        client.emit('addBoard', id, titleBoard)
     })
 
     client.on('deleteBoard', (idBoard) => {

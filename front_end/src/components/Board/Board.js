@@ -21,9 +21,7 @@ class Board extends React.Component{
         this.createList = this.createList.bind(this);
         this.deleteAllLists = this.deleteAllLists.bind(this);
 
-
-        this.socket.emit("getLists", this.props.id)
-        this.socket.on('addEmptyList',this.createList)
+        this.socket.on('addList',this.createList)
         this.socket.on('deleteAllLists',this.deleteAllLists)
     }
 
@@ -52,23 +50,28 @@ class Board extends React.Component{
     }
 
     onClickAddList(){
-        this.socket.emit("newList", this.props.id, this.state.lists.length);
+        axios.post(url.api + 'list', {
+            boardId: this.props.id,
+            title: "New List",
+            pos: this.state.lists.length
+        }).then((response) => {
+            this.socket.emit('newList', response.data, this.props.id)
+            this.createList(response.data, this.props.id)
+        })
+        .catch((error) => {
+            alert('An error occured when getting the cards')
+        })
     }
     
     onClickDeleteLists(){
         this.socket.emit("deleteLists", this.props.id)
     }
 
-    createList(idList, idBoard){
+    createList(newList, idBoard){
         if (idBoard === this.props.id){
-            const newList={
-                _id: idList,
-                cards: [],
-                titleNewCard: null
-            }
             this.setState(prevState=>({
                 lists: prevState.lists.concat(newList)
-            }));
+            }))
         }
     }
 
