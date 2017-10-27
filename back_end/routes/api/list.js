@@ -8,7 +8,7 @@ const router = require('express').Router()
 
 router.get('/:id', function (req, res, next) {
     // Get the list having the id given in parameter
-    Board.findOne({'lists._id': req.params.id})
+    Board.findOne({'lists._id': req.params.id}, 'lists')
     .then(function(board){
         const list = board.lists.filter(function(list) {
             return list._id == req.params.id
@@ -19,9 +19,9 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/:listId/board/:boardId/cards', function (req, res, next) {
+router.get('/:listId/cards', function (req, res, next) {
     // Get the cards in the list and board having the id given in parameter
-    Board.findOne({_id: req.params.boardId, "lists._id": req.params.listId}, 'lists',
+    Board.findOne({"lists._id": req.params.listId}, 'lists',
         (err, board) => {
             if (board === null)
                 res.status(401).send(err)

@@ -40,7 +40,14 @@ app.use('/api', require('./routes'))
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise;
 const configDb = require('./config/database')
-mongoose.connect(configDb.mongodbUri, configDb.options)
+mongoose.connect(configDb.mongodbUri, configDb.options, function(err, db) {
+    if (err) {
+        console.log('Unable to connect to the server. Please start mongod.')
+        process.exit(0)
+    } else {
+        console.log('Connected to MongoDB successfully!')
+    }
+})
 
 // IO functions
 let numUsers = 0
@@ -104,4 +111,4 @@ io.on('connection', (client) => {
 // Server start
 const port = process.env.PORT || 8000
 server.listen(port)
-console.log('The server is running on: ', port)
+console.log('The server is running on:', port)
