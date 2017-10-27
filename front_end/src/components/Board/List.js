@@ -29,7 +29,7 @@ class List extends React.Component{
 
     //Event Listeners
     this.socket.on('updateListTitle', this.updateListTitle)
-    this.socket.on('addEmptyCard', this.addCard)
+    this.socket.on('addCard', this.addCard)
     this.socket.on('deleteCards', this.deleteCards)
 
   }
@@ -127,7 +127,7 @@ class List extends React.Component{
     axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
       titleCard: this.state.titleNewCard
     }).then((response) => {
-      this.socket.emit('newCardClient', response.data, this.props.id)
+      this.socket.emit('newCard', response.data, this.props.id)
       this.addCard(response.data, this.props.id)
     })
     .catch((error) => {

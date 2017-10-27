@@ -55,35 +55,40 @@ class Home extends React.Component{
       title: this.state.titleNewBoard
     }).then((response) => {
       console.log(response.data)
-      this.socket.emit("newBoard", response.data._id, response.data.title)
+      this.socket.emit("newBoard", response.data)
+      this.addBoard(response.data)
     })
     .catch((error) => {
       alert('An error occured when getting the cards')
     })
   }
 
-  addBoard(id,t){
-        this.setState(prevState=>({
-            boards: prevState.boards.concat({
-                id:id,
-                title:t
-            })
-        }))
-    }
+  addBoard(board){
+    this.setState(prevState=>({
+        boards: prevState.boards.concat(board)
+    }))
+  }
+
 
   handleCardTitleInputChange(e) {  
     this.setState({titleNewBoard: e.target.value});
   }
 
   onClickDeleteBoard(id){
-    this.socket.emit("deleteBoard",id);
-    this.deleteBoard(id)
+    axios.delete(url.api + 'board/' + id)
+    .then((response) => {
+      this.socket.emit('deleteBoard', id)
+      this.deleteBoard(id)
+    })
+    .catch((error) => {
+      alert('An error occured when getting the cards')
+    })
   }
 
   deleteBoard(id){
     this.setState(prevState=>({
       boards: prevState.boards.filter((item) => item._id !== id)
-  }));
+    }));
   }
 
   renderBoards(list){

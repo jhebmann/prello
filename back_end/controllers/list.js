@@ -72,8 +72,8 @@ exports.addCard = (client, titleCard, idList, idBoard) => {
             console.log("Error updating board")
           else {
             console.log("Card : " + newCard._id + " added to List : " + idList)
-            client.emit('addEmptyCard', newCard, idList, idBoard);  
-            client.broadcast.emit('addEmptyCard', newCard, idList, idBoard);
+            client.emit('addCard', newCard, idList, idBoard);  
+            client.broadcast.emit('addCard', newCard, idList, idBoard);
           }
         }
       )
