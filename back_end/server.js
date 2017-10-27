@@ -74,29 +74,19 @@ io.on('connection', (client) => {
     
     client.on('deleteLists', (idBoard)=>
         controller.boards.deleteAllLists(client, idBoard))
-
-    client.on('getLists', (idBoard)=>
-        controller.boards.getAllLists(client, idBoard))
     
     // ----- Handle lists ----- //
-        
-    client.on('getCards', (idList, idBoard) => {
-        controller.lists.getAllCards(client, idList, idBoard)
-    })
-        
 
     client.on('newCardClient', (newCard, idList) => {
-        client.emit('addEmptyCard', newCard, idList),
         client.broadcast.emit('addEmptyCard', newCard, idList)
     })
 
-    client.on('deleteAllCards', (idList, idBoard) => {
-        controller.lists.deleteAllCardsFromList(client, idList, idBoard)
+    client.on('deleteAllCards', (idList) => {
+        client.broadcast.emit('deleteCards', idList)
     })
 
     client.on('updateListTitle', (idList, newTitle) => {  
-        client.emit('UpdateListTitle', idList, newTitle),
-        client.broadcast.emit('UpdateListTitle', idList, newTitle)
+        client.broadcast.emit('updateListTitle', idList, newTitle)
     })
 
     client.on('newBoard', (titleBoard) => {

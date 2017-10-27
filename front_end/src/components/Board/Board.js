@@ -2,6 +2,8 @@ import React from 'react';
 import List from './List.js';
 import {Button} from 'react-bootstrap';
 import './board.css'
+import axios from 'axios'
+import url from '../../config'
 
 class Board extends React.Component{
     
@@ -19,11 +21,20 @@ class Board extends React.Component{
         this.createList = this.createList.bind(this);
         this.deleteAllLists = this.deleteAllLists.bind(this);
 
-        this.socket.emit("getLists", this.props.id)
 
-        this.socket.on('getAllLists', this.getAllLists);  //We should use componentDidMount() ?
-        this.socket.on('addEmptyList',this.createList);
-        this.socket.on('deleteAllLists',this.deleteAllLists);
+        this.socket.emit("getLists", this.props.id)
+        this.socket.on('addEmptyList',this.createList)
+        this.socket.on('deleteAllLists',this.deleteAllLists)
+    }
+
+    componentDidMount() {
+        axios.get(url.api + 'board/' + this.props.id + '/lists')
+        .then((response) => {
+            this.getAllLists(response.data)
+        })
+        .catch((error) => {
+            alert('An error occured when getting the cards')
+        })
     }
 
 
@@ -33,11 +44,11 @@ class Board extends React.Component{
                 {this.cardList(this.state.lists)}
                 <Button bsStyle="success" className='addListButton' onClick={this.onClickAddList}>Add List</Button>
             </div>
-        );
+        )
     }
 
     getAllLists(data){
-        this.setState({lists: data[0].lists});
+        this.setState({lists: data})
     }
 
     onClickAddList(){

@@ -1,7 +1,8 @@
-import React from 'react';
-import {Button,Panel,FormControl} from 'react-bootstrap';
+import React from 'react'
+import {Button,Panel,FormControl} from 'react-bootstrap'
 import axios from 'axios'
-import Card from './Card.js';
+import Card from './Card.js'
+import url from '../../config'
 
 class List extends React.Component{
 
@@ -16,28 +17,31 @@ class List extends React.Component{
       pos: this.props.pos // always undefined for now
     }
     
-    this.socket = this.props.io;
-    this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this);
-    this.onClickAddCard = this.onClickAddCard.bind(this);
-    this.addCard = this.addCard.bind(this);
-    this.deleteCards = this.deleteCards.bind(this);
+    this.socket = this.props.io
+    this.onClickAddCard = this.onClickAddCard.bind(this)
+    this.addCard = this.addCard.bind(this)
+    this.deleteCards = this.deleteCards.bind(this)
     this.onClickDeleteList= this.onClickDeleteList.bind(this)
     this.getAllCards= this.getAllCards.bind(this)
     this.onClickUpdateList = this.onClickUpdateList.bind(this)
-    this.handleTitleinput = this.handleTitleinput.bind(this)
-    this.UpdateListTitle = this.UpdateListTitle.bind(this)
-
-    this.socket.emit("getCards", this.props.id, this.props.idBoard)	
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.updateListTitle = this.updateListTitle.bind(this)
 
     //Event Listeners
-    this.socket.on('UpdateListTitle', this.UpdateListTitle);
-    this.socket.on('addEmptyCard', this.addCard);
-    this.socket.on('deleteCards', this.deleteCards);
-    this.socket.on('getAllCards', this.getAllCards);  //We should use componentDidMount() ?
+    this.socket.on('updateListTitle', this.updateListTitle)
+    this.socket.on('addEmptyCard', this.addCard)
+    this.socket.on('deleteCards', this.deleteCards)
+
   }
 
-  handleTitleinput = (e) => {
-    this.setState({[e.target.name]: e.target.value})
+  componentDidMount() {
+    axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
+    .then((response) => {
+      this.getAllCards(response.data, this.props.id)
+    })
+    .catch((error) => {
+      alert('An error occured when getting the cards')
+    })
   }
 
   render(){
@@ -45,7 +49,7 @@ class List extends React.Component{
       if(!this.state.showInput) {
         headList = <h3 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h3>
       } else{
-        headList = <input autoFocus='true' onChange={this.handleTitleinput} onBlur={this.onClickUpdateList} type="text" name="title" value={this.state.title}/>
+        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} type="text" name="title" value={this.state.title}/>
       }
       return(
         <Panel bsSize="small" className='list'>
@@ -55,7 +59,7 @@ class List extends React.Component{
           <div className="listBody">
             {this.cardList(this.state.cards)} 
             <p>
-              <FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Card Title" />
+              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard"/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
             </p>
@@ -63,6 +67,15 @@ class List extends React.Component{
         </Panel>
       );
   } 
+
+  //Renders the Cards stored in the cards array   
+  cardList(list){
+    const cards=this.state.cards;
+    const cardItems= cards.map((card, index)=>
+      <Card key={index} titleCard={card.titleCard} description={card.description} date={card.date}/>
+    );
+    return cardItems
+  }
 
   getAllCards(cards, id){
     if(id === this.props.id){
@@ -82,20 +95,20 @@ class List extends React.Component{
     }
   }
 
-  UpdateListTitle(id, title){
-    if(id === this.props.id){
-      this.setState({title: title})
-    }
+  handleInputChange = (e) => {
+    this.setState({[e.target.name]: e.target.value})
   }
 
   onClickUpdateList(e) {
     if (this.state.showInput){
       e.persist()
-      axios.put('http://localhost:8000/api/list/' + this.props.id, {
+      axios.put(url.api + 'list/' + this.props.id, {
         title: this.state.title,
         pos : this.state.pos
       }).then((response) => {
         this.socket.emit('updateListTitle', response.data._id, e.target.value)
+        this.updateListTitle(response.data._id, e.target.value)
+
       })
       .catch((error) => {
         alert('An error occured when updating the list')
@@ -104,33 +117,33 @@ class List extends React.Component{
     this.setState({showInput: !this.state.showInput})
   }
 
-  //Handle Card title input
-  handleCardTitleInputChange(e) {  
-    this.setState({titleNewCard: e.target.value})
+  updateListTitle(id, title){
+    if(id === this.props.id){
+      this.setState({title: title})
+    }
   }
 
   onClickAddCard(e){
-    axios.post('http://localhost:8000/api/card/board/' + this.props.idBoard + '/list/' + this.props.id, {
+    axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
       titleCard: this.state.titleNewCard
     }).then((response) => {
       this.socket.emit('newCardClient', response.data, this.props.id)
+      this.addCard(response.data, this.props.id)
     })
     .catch((error) => {
       alert('An error occured when updating the list')
     })
   }
 
-  //Renders the Cards stored in the cards array   
-  cardList(list){
-    const cards=this.state.cards;
-    const cardItems= cards.map((card, index)=>
-      <Card key={index} titleCard={card.titleCard} description={card.description} date={card.date}/>
-    );
-    return cardItems
-  }
-
   onClickDeleteList(){
-    this.socket.emit('deleteAllCards', this.props.id, this.props.idBoard);
+    axios.delete('/list/' + this.props.id + '/board/' + this.props.idBoard)
+    .then((response) => {
+      this.deleteCards(this.props.id)
+      this.socket.emit('deleteAllCards', this.props.id)
+    })
+    .catch((error) => {
+      alert('An error occured when deleting the cards')
+    })
   }
 
   deleteCards(idList){

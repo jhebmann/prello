@@ -22,8 +22,8 @@ class Card extends React.Component{
         </SkyLight>                               
             </Thumbnail>
             
-            );
-        }
+        )
+    }
 }
 
 export default Card;

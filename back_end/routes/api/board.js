@@ -7,7 +7,7 @@ router.get('/', function (req, res, next) {
     Board.find().then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
-        res.status(401).send(err.getMessage());
+        res.status(401).send(err)
     })
 })
 
@@ -16,7 +16,16 @@ router.get('/:id', function (req, res, next) {
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
-        res.status(401).send(err.getMessage());
+        res.status(401).send(err)
+    })
+})
+
+router.get('/:id/lists', function (req, res, next) {
+    // Get the lists of the board having the id given in parameter
+    Board.findById(req.params.id).then(function(board){
+        res.status(200).send(board.lists)
+    }).catch(function(err) {
+        res.status(401).send(err)
     })
 })
 
@@ -31,9 +40,9 @@ router.post('/', function (req, res, next) {
         admins: req.body.admins,
         isPublic: req.body.isPublic
     }).then(function() {
-        res.status(200).send("Successfully created");
+        res.status(200).send("Successfully created")
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
