@@ -47,7 +47,7 @@ class List extends React.Component{
   render(){
       let headList  = null
       if(!this.state.showInput) {
-        headList = <h3 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h3>
+        headList = <h4 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h4>
       } else{
         headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} type="text" name="title" value={this.state.title}/>
       }
@@ -133,6 +133,7 @@ class List extends React.Component{
     .catch((error) => {
       alert('An error occured when adding the card')
     })
+    this.setState({titleNewCard : null})
   }
 
   onClickDeleteList(){

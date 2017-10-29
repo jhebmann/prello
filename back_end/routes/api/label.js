@@ -21,7 +21,21 @@ router.get('/:id', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     // Post a new label
-    
+    const newLabel = new Label({
+        title: req.body.title,
+        color: req.body.color
+    })
+    newLabel.save(
+        {},
+        (err, insertedLabel) => {
+            if (err)
+                res.status(401).send(err)
+            else {
+                console.log("Label added")
+                res.status(200).send(insertedLabel)
+            }
+        }
+    )
 })
 
 router.put('/:id', function (req, res, next) {

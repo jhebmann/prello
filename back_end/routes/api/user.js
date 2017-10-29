@@ -40,8 +40,8 @@ router.post('/', function (req, res, next) {
             nickname : req.body.ldap.nickname,
             password : req.body.ldap.password
         }        
-    }).then(function() {
-        res.status(200).send("Successfully created");
+    }).then(function(user) {
+        res.status(200).send(user);
     }).catch(function(err) {
         res.status(401).send(err);
     })
@@ -73,8 +73,8 @@ router.put('/:id', function (req, res, next) {
             "local.nickname": ('undefined' !== typeof req.body.local.nickname) ? req.body.local.nickname : null ,
             "local.password" : ('undefined' !== typeof req.body.local.password) ? req.body.local.password : null
         }
-    ).then(function() {
-        res.status(200).send("Successfully updated")
+    ).then(function(user) {
+        res.status(200).send(user)
     }).catch(function(err) {
         res.send(err)
     })

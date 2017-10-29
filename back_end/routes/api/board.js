@@ -60,8 +60,8 @@ router.put('/:id', function (req, res, next) {  // Not done
             "title": ('undefined' !== typeof req.body.title) ? req.body.title : null ,
             "isPublic" : ('undefined' !== typeof req.body.isPublic) ? req.body.isPublic : null
         }
-    ).then(function() {
-        res.status(200).send("Successfully updated")
+    ).then(function(board) {
+        res.status(200).send(board)
     }).catch(function(err) {
         res.send(err)
     })
