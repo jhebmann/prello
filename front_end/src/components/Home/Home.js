@@ -46,7 +46,7 @@ class Home extends React.Component{
     return(
         <div>
           <p style={{display: "inline-flex"}}><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Board Title" /></p>
-          <Button bsStyle="success" className='addListButton' onClick={this.onClickAddPrivateBoard}>Add Board</Button>    
+          {Auth.isUserAuthenticated() ? (<Button bsStyle="success" className='addListButton' onClick={this.onClickAddPrivateBoard}>Add Board</Button>):(<div></div>)}
           <Button bsStyle="primary" className='addListButton' onClick={this.onClickAddPublicBoard}>Add Public Board</Button>
           <Grid>
             <Row>
