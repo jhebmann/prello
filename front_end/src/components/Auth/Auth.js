@@ -9,6 +9,9 @@ class Auth {
         localStorage.setItem('token', token);
       }
     
+      static setUserId(id){
+        localStorage.setItem('userId',id)
+      }
       /**
        * Check if a user is authenticated - check if a token is saved in Local Storage
        *
@@ -23,7 +26,7 @@ class Auth {
        *
        */
       static deauthenticateUser() {
-        console.log(localStorage.getItem('token'))
+        localStorage.removeItem('userId')
         localStorage.removeItem('token');
       }
     
@@ -36,7 +39,10 @@ class Auth {
       static getToken() {
         return localStorage.getItem('token');
       }
-    
+
+      static getUserID(){
+        return localStorage.getItem('userId')
+      }
     }
     
     export default Auth;

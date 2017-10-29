@@ -124,9 +124,9 @@ class Register extends React.Component{
             });
     
             // save the token
+            
             Auth.authenticateUser(xhr.response.token);
-    
-    
+            Auth.setUserId(xhr.response.user.id)
             // change the current URL to /
             this.setState({ redirect: true })
           } else {

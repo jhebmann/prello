@@ -18,7 +18,8 @@ class Home extends React.Component{
    
     //Event Listeners
     this.renderBoards = this.renderBoards.bind(this)
-    this.onClickAddBoard = this.onClickAddBoard.bind(this)
+    this.onClickAddPrivateBoard = this.onClickAddPrivateBoard.bind(this)
+    this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)    
     this.addBoard = this.addBoard.bind(this)
     this.deleteBoard = this.deleteBoard.bind(this)
     this.socket.on('addBoard', this.addBoard)
@@ -27,41 +28,41 @@ class Home extends React.Component{
   }
 
   componentWillMount() {
-    if(Auth.isUserAuthenticated()){
-    axios.get(url.api + 'board')
+    axios.get(url.api + 'board/user',{
+      params: {
+        user: Auth.getUserID()
+      }
+    })
     .then((response) => {
       this.setState({boards:response.data})
     })
     .catch((error) => {
       alert('An error occured when getting the boards!\nHint: check that the server is running')
     })}
-    else
-      this.setState({boards:[]})
-  }
+
   
 
   render(){
     return(
-      Auth.isUserAuthenticated() ?(
         <div>
           <p style={{display: "inline-flex"}}><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Board Title" /></p>
-          <Button bsStyle="success" className='addListButton' onClick={this.onClickAddBoard}>Add Board</Button>    
+          <Button bsStyle="success" className='addListButton' onClick={this.onClickAddPrivateBoard}>Add Board</Button>    
+          <Button bsStyle="primary" className='addListButton' onClick={this.onClickAddPublicBoard}>Add Public Board</Button>
           <Grid>
             <Row>
               {this.renderBoards(this.state.boards)}
             </Row>
           </Grid>
         </div>
-      ):( 
-        <p>Log in to see your Boards</p>
     )
-  )
 }
   
   
-  onClickAddBoard(){
+  postBoard(isPublic){
     axios.post(url.api + 'board', {
-      title: this.state.titleNewBoard
+      title: this.state.titleNewBoard,
+      admins:Auth.getUserID(),
+      isPublic:isPublic
     }).then((response) => {
       console.log(response.data)
       this.socket.emit("newBoard", response.data)
@@ -70,6 +71,14 @@ class Home extends React.Component{
     .catch((error) => {
       alert('An error occured when adding the board')
     })
+  }
+
+  onClickAddPublicBoard(){
+    this.postBoard(true)
+  }
+
+  onClickAddPrivateBoard(){
+    this.postBoard(false)
   }
 
   addBoard(board){
@@ -108,7 +117,10 @@ class Home extends React.Component{
       <Thumbnail style={{background:"aliceblue"}} href={"/board/" + board._id}>
         <h3>{board.title || 'Undefined'}</h3>
         <p>Description</p>
-       </Thumbnail>
+        {(board.isPublic) ?(
+          <p>Public Board</p>):(
+          <p>Private Board</p>)
+        }</Thumbnail>
     </Col>
     
     );
