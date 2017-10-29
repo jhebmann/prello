@@ -3,6 +3,7 @@ import SocketIOClient from 'socket.io-client'
 import {Button,FormControl,Grid,Row,Col,Thumbnail} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
+import Auth from '../Auth/Auth.js';
 
 class Home extends React.Component{
     
@@ -26,18 +27,22 @@ class Home extends React.Component{
   }
 
   componentWillMount() {
+    if(Auth.isUserAuthenticated()){
     axios.get(url.api + 'board')
     .then((response) => {
       this.setState({boards:response.data})
     })
     .catch((error) => {
       alert('An error occured when getting the boards!\nHint: check that the server is running')
-    })
+    })}
+    else
+      this.setState({boards:[]})
   }
   
 
   render(){
     return(
+      Auth.isUserAuthenticated() ?(
         <div>
           <p style={{display: "inline-flex"}}><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Board Title" /></p>
           <Button bsStyle="success" className='addListButton' onClick={this.onClickAddBoard}>Add Board</Button>    
@@ -47,8 +52,12 @@ class Home extends React.Component{
             </Row>
           </Grid>
         </div>
+      ):( 
+        <p>Log in to see your Boards</p>
     )
-  } 
+  )
+}
+  
   
   onClickAddBoard(){
     axios.post(url.api + 'board', {

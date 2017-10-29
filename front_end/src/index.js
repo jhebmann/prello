@@ -6,8 +6,8 @@ import Board from './components/Board/HomeBoard'
 import Login from './components/Auth/Login/Login'
 import Register from './components/Auth/Register/Register'
 import NotFound from './components/NotFound/NotFound'
+import UnAuthorized from './components/Unauthorized/UnAuthorized'
 import Header from './components/Marginals/Header'
-import Auth from './components/Auth/Auth.js';
 
 import './index.css'
 
@@ -17,11 +17,8 @@ render((
     <div className='rootDiv'>
       <Header />
       <Switch>
-      {Auth.isUserAuthenticated() ? (
-      <Route exact path='/' component={Home}/>
-      ) : (
-        <Route path='/error' component={Login}/>
-      )}
+        <Route exact path='/' component={Home}/>
+        <Route path='/unauthorized' component={UnAuthorized}/>
         <Route path='/board/:id' component={Board}/>
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>

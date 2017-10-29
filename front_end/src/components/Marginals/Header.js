@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button,FormGroup,FormControl, Nav, Navbar, NavItem} from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
+import Auth from '../Auth/Auth.js';
 
 class Header extends React.Component{
   render(){
@@ -21,6 +22,16 @@ class Header extends React.Component{
             <Button type="submit">Submit</Button>
           </Navbar.Form>
           <Nav pullRight>
+          {Auth.isUserAuthenticated() ? 
+          (
+            <Nav pullRight>
+            <LinkContainer to="/" onClick={Auth.deauthenticateUser}>
+              <NavItem>
+                Log Out
+              </NavItem>
+            </LinkContainer>
+            </Nav>):
+            (<Nav pullRight>
             <LinkContainer to="/login">
               <NavItem>
                 Login
@@ -30,7 +41,7 @@ class Header extends React.Component{
               <NavItem>
                 Register
               </NavItem>
-            </LinkContainer>
+            </LinkContainer></Nav>) }
           </Nav>
         </Navbar.Collapse>
       </Navbar>
