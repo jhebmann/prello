@@ -40,8 +40,8 @@ router.post('/', function (req, res, next) {
         description: req.body.description,
         users: ('undefined' !== typeof req.body.users) ? req.body.users : [],
         admins: req.body.admins
-    }).then(function() {
-        res.status(200).send("Successfully created");
+    }).then(function(team) {
+        res.status(200).send(team)
     }).catch(function(err) {
         res.status(401).send(err);
     })
@@ -73,8 +73,8 @@ router.put('/:id', function (req, res, next) {
             "name": ('undefined' !== typeof req.body.name) ? req.body.name : null ,
             "description" : ('undefined' !== typeof req.body.description) ? req.body.description : null
         }
-    ).then(function() {
-        res.status(200).send("Successfully updated")
+    ).then(function(team) {
+        res.status(200).send(team)
     }).catch(function(err) {
         res.send(err)
     })

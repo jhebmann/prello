@@ -7,7 +7,10 @@ const ChecklistSchema = new Schema({
     title: {
       type: String
     },
-    items: [ItemSchema]
+    items: {
+      type: [ItemSchema],
+      default: []
+    }
 })
 
 module.exports = mongoose.model('Checklist', ChecklistSchema)

@@ -13,8 +13,7 @@ router.use('/comment', require('./api/comment'))
 router.use('/label', require('./api/label'))
 
 router.get('/', function (req, res) {
-  res.json({ tag: '❤♡❤ APPLE ❤♡❤'})
-  res.status(200)
+  res.status(200).json({ tag: '❤♡❤ APPLE ❤♡❤'})
 })
 
 module.exports = router

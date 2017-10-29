@@ -7,8 +7,8 @@ const router = require('express').Router()
 router.get('/:id', function (req, res, next) {
     // Return the attachment having the id given in parameter
     Card.findOne({'attachments._id': req.params.id}, '-_id').select({ attachments: {$elemMatch: {_id: req.params.id}}})
-    .then(function(cardsMatching){
-        res.status(200).send(cardsMatching.attachments[0])
+    .then(function(cards){
+        res.status(200).send(cards.attachments[0])
     }).catch(function(err) {
         res.status(401).send(err);
     })
@@ -58,10 +58,11 @@ router.post('/', function (req, res, next) {
         newattachment.linkedComment = req.body.linkedComment
         card.attachments.push(newattachment)
         card.save()
-    }).then(function(){
-        res.status(200).send("Successfully created")
-    }).catch(function(err) {
-        res.status(401).send(err);
+        .then(function(card){
+            res.status(200).send(card.attachments[card.attachments.length - 1])
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
     })
 })
 

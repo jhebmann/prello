@@ -39,10 +39,11 @@ router.post('/', function (req, res, next) {
         newcomment.postedBy = req.body.postedBy
         card.comments.push(newcomment)
         card.save()
-    }).then(function(){
-        res.status(200).send("Successfully created")
-    }).catch(function(err) {
-        res.status(401).send(err);
+        .then(function(card){
+            res.status(200).send(card.comments[card.comments.length - 1])
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
     })
 })
 

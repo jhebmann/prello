@@ -47,7 +47,7 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
           }
         )
       }
-    ).then(function() {
+    ).then(function(newCard) {
         res.status(200).send(newCard)
     }).catch(function(err) {
         res.status(401).send(err)
