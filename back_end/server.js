@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const helmet = require('helmet')
 const router = express.Router()
-
+const passport = require('passport');
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
 app.set('socketio', io);
@@ -33,7 +33,22 @@ app.use(function(req, res, next) {
  res.setHeader('Cache-Control', 'no-cache');
  next();
 })
+// pass the passport middleware
+app.use(passport.initialize());
 
+// load passport strategies
+const localSignupStrategy = require('./passport/local-signup');
+const localLoginStrategy = require('./passport/local-login');
+passport.use('local-signup', localSignupStrategy);
+passport.use('local-login', localLoginStrategy);
+/*
+// pass the authenticaion checker middleware
+const authCheckMiddleware = require('./routes/api/authCheck');
+app.use('/api', authCheckMiddleware);
+*/
+// routes
+const authRoutes = require('./routes/api/auth');
+app.use('/auth', authRoutes);
 app.use('/api', require('./routes'))
 
 // Database declaration

@@ -1,6 +1,9 @@
 import React from 'react'
 import { FormErrors } from './FormErrors';
 import './Form.css';
+import Auth from '../Auth.js';
+import { Redirect } from 'react-router-dom'
+import {ListGroupItem} from 'react-bootstrap'
 
 // Not done yet
 class Register extends React.Component{
@@ -13,9 +16,14 @@ class Register extends React.Component{
             formErrors: {nickname: '', password: ''},
             passwordValid: false,
             nicknameValid: false,
-            formValid: false
+            formValid: false,
+            redirect: false,
+            errorMssge:null,
+            error:false
         }
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.processForm = this.processForm.bind(this)
+        
     }
 
     handleSubmit(event) {
@@ -62,8 +70,10 @@ class Register extends React.Component{
     }
     
     render () {
+        if (this.state.redirect) 
+            return <Redirect to='/'/>
         return (
-          <form className="demoForm" onSubmit={this.handleSubmit}>
+          <form className="demoForm" onSubmit={this.processForm}>
             <h2>Login</h2>
             <div className="panel panel-default">
               <FormErrors formErrors={this.state.formErrors} />
@@ -84,9 +94,56 @@ class Register extends React.Component{
                 onChange={this.handleUserInput}  />
             </div>
             <button type="submit" className="btn btn-primary" disabled={!this.state.formValid}>Login</button>
+            { this.state.error ? <ListGroupItem bsStyle="danger" >{this.state.errorMssge}</ListGroupItem> : null }
+            
           </form>
         )
     }
+
+    processForm(event) {
+        // prevent default action. in this case, action is the form submission event
+        event.preventDefault();
+    
+        // create a string for an HTTP body message
+        const nickname = encodeURIComponent(this.state.nickname);
+        const password = encodeURIComponent(this.state.password);
+        const formData = `nickname=${nickname}&password=${password}`;
+    
+        // create an AJAX request
+        const xhr = new XMLHttpRequest();
+        xhr.open('post', 'http://localhost:8000/auth/login');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.responseType = 'json';
+        xhr.addEventListener('load', () => {
+          if (xhr.status === 200) {
+            // success
+    
+            // change the component-container state
+            this.setState({
+              errors: {}
+            });
+    
+            // save the token
+            Auth.authenticateUser(xhr.response.token);
+    
+    
+            // change the current URL to /
+            this.setState({ redirect: true })
+          } else {
+            // failure
+            console.log(xhr.status)
+            // change the component state
+            const errors = xhr.response.errors ? xhr.response.errors : {};
+            errors.summary = xhr.response.message;
+            
+            this.setState({
+              error:true,
+              errorMssge:errors.summary
+            });
+          }
+        });
+        xhr.send(formData);
+      }
 }
 
 export default Register;

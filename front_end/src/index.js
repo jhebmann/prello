@@ -7,6 +7,8 @@ import Login from './components/Auth/Login/Login'
 import Register from './components/Auth/Register/Register'
 import NotFound from './components/NotFound/NotFound'
 import Header from './components/Marginals/Header'
+import Auth from './components/Auth/Auth.js';
+
 import './index.css'
 
 render((
@@ -15,7 +17,11 @@ render((
     <div className='rootDiv'>
       <Header />
       <Switch>
-        <Route exact path='/'component={Home}/>
+      {Auth.isUserAuthenticated() ? (
+      <Route exact path='/' component={Home}/>
+      ) : (
+        <Route path='/error' component={Login}/>
+      )}
         <Route path='/board/:id' component={Board}/>
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>

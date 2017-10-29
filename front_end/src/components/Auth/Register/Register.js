@@ -1,12 +1,13 @@
 import React from 'react'
 import { FormErrors } from './FormErrors'
 import './Form.css'
-
+import { Redirect } from 'react-router-dom'
+import {ListGroupItem} from 'react-bootstrap'
 
 class Register extends React.Component{
 
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
         this.state = {
             email: '', 
             password: '', 
@@ -15,12 +16,23 @@ class Register extends React.Component{
             emailValid: false,
             passwordValid: false,
             nicknameValid: false,
-            formValid: false
+            formValid: false,
+            redirect: false,
+            error:false,
+            errorMssge:null
         }
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.processForm = this.processForm.bind(this);
     }
 
     handleSubmit(event) {
+        console.log(this.props)
+        console.log(event)
+        /*const newUser = {
+            nickname: this.state.nickname,
+            mail: this.state.email,
+            password: this.state.password
+        }*/
         event.preventDefault()
     }
 
@@ -69,6 +81,8 @@ class Register extends React.Component{
     }
     
     render () {
+        if (this.state.redirect) 
+            return <Redirect to='/login'/>
         return (
           <form className="demoForm" onSubmit={this.handleSubmit}>
             <h2>Sign up</h2>
@@ -99,10 +113,54 @@ class Register extends React.Component{
                 value={this.state.password}
                 onChange={this.handleUserInput}  />
             </div>
-            <button type="submit" className="btn btn-primary" disabled={!this.state.formValid}>Sign up</button>
+            <button type="submit" className="btn btn-primary" onClick={this.processForm} disabled={!this.state.formValid}>Sign up</button>
+            { this.state.error ? <ListGroupItem bsStyle="danger" >{this.state.errorMssge}</ListGroupItem> : null }
           </form>
         )
     }
+    processForm(event) {
+        // prevent default action. in this case, action is the form submission event
+        event.preventDefault();
+    
+        // create a string for an HTTP body message
+        const nickname = encodeURIComponent(this.state.nickname);
+        const email = encodeURIComponent(this.state.email);
+        const password = encodeURIComponent(this.state.password);
+        const formData = `name=${nickname}&email=${email}&password=${password}`;
+    
+        // create an AJAX request
+        const xhr = new XMLHttpRequest();
+        xhr.open('post', 'http://localhost:8000/auth/signup');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.responseType = 'json';
+        xhr.addEventListener('load', () => {
+          if (xhr.status === 200) {
+            // success
+    
+            // change the component-container state
+            this.setState({
+              error: {}
+            });
+    
+            // set a message
+            localStorage.setItem('successMessage', xhr.response.message);
+    
+            // make a redirect
+            this.setState({ redirect: true })
+          } else {
+            // failure
+            
+            const errors = xhr.response.errors ? xhr.response.errors : {};
+            errors.summary = xhr.response.errors.password||xhr.response.errors.email
+            console.log('Failed ', errors.summary)
+            this.setState({
+                error:true,
+                errorMssge:errors.summary
+            });
+          }
+        });
+        xhr.send(formData);
+      }
 }
 
 export default Register
