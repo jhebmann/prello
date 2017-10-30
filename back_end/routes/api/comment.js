@@ -52,9 +52,27 @@ router.put('/:id', function (req, res, next) {
     
 })
 
-router.delete('/:id', function (req, res, next) {
+router.delete('/:id/card/:idCard', function (req, res, next) {
     // Delete the comment having the id given in parameter
-    
+    Card.findOne(
+        {_id: req.params.idCard, "comments._id": req.params.id},
+        {"comments.$": 1, _id: 0},
+        (err, card) => {
+            if (err) res.status(401).send("There was an error retrieving the card of id " + req.params.idCard + " or comment of id " + req.params.id)
+            else if (card === undefined || card === null) res.status(401).send("There is no card of id " + req.params.idCard + " or comment of id " + req.params.id)
+            else {
+                const comment = card.comments[0]
+                Card.findOneAndUpdate(
+                    {_id: req.params.idCard},
+                    {$pull: {comments: comment}},
+                    (err, card) => {
+                        if (err) res.status(401).send("Couldn't delete the comment of id " + comment._id)
+                        else res.status(200).send("Successfully destroyed")
+                    }
+                )
+            }
+        }
+    )
 })
 
 

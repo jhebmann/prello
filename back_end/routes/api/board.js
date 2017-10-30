@@ -13,7 +13,7 @@ router.get('/', function (req, res, next) {
 })
 
 router.get('/user', function (req, res, next) {
-    // Get all boards
+    // Get all boards of a user
     console.log('Getting boards from User ID '+req.query.user)
     Board.find({$or:[ {admins:ObjectId(req.query.user)}, {'isPublic':true}]}).then(function(board){
         res.status(200).send(board)
@@ -83,6 +83,7 @@ router.put('/:id', function (req, res, next) {  // Not done
 })
 
 router.delete('/:id', function (req, res, next) {
+    //delete the board of the given id
     Board.findOne(
         {_id: req.params.id},
         (err, board) => {
@@ -110,6 +111,7 @@ router.delete('/:id', function (req, res, next) {
 })
 
 router.delete('/', function (req, res, next) {
+    //Delete all the boards
     Board.find(
         {},
         (err, boards) => {
