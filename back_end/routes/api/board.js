@@ -5,8 +5,8 @@ const ObjectId = require('mongodb').ObjectID;
 
 router.get('/', function (req, res, next) {
     // Get all boards
-    Board.find().then(function(board){
-        res.status(200).send(board)
+    Board.find().then(function(boards){
+        res.status(200).send(boards)
     }).catch(function(err) {
         res.status(401).send(err)
     })
@@ -39,8 +39,13 @@ router.get('/:id/lists', function (req, res, next) {
     })
 })
 
-router.get('/:boardId/admins', function (req, res, next) {
+router.get('/:id/admins', function (req, res, next) {
     // Get all admins of the board having the id given in parameter
+    Board.findById(req.params.id).then(function(board){
+        res.status(200).send(board.admins)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 router.post('/', function (req, res, next) {
@@ -56,7 +61,7 @@ router.post('/', function (req, res, next) {
             if (err)
                 res.status(401).send(err)
             else {
-                console.log('Board Added')
+                console.log("Board of id " + insertedBoard._id + " Added")
                 res.status(200).send(insertedBoard)
             }
         }
@@ -89,6 +94,7 @@ router.delete('/:id', function (req, res, next) {
                 models.cards.remove(
                     {_id: {$in: allCards}},
                     (err) => {
+                        if (err) res.status(401).send("Couldn't delete the cards of the board with id " + board._id)
                         Board.remove(
                             {_id: board._id}
                         ).then(function() {
