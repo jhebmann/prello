@@ -84,7 +84,8 @@ router.delete('/:id', function (req, res, next) {
             if (board === null)
                 res.status(401).send("No board of id " + req.params.id + " could be found")
             else {
-                const allCards = board.lists.map((l) => l.cards).reduce((a, b) => a.concat(b),0)
+                const allLists = board.lists
+                const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b),0) : []
                 models.cards.remove(
                     {_id: {$in: allCards}},
                     (err) => {
