@@ -51,17 +51,19 @@ router.post('/', function (req, res, next) {
 
 router.put('/:listId/board/:boardId', function (req, res, next) {
     // Update the list having the id given in parameter and that is contained in the board having the id given in parameter
-    Board.findOneAndUpdate({
-        _id : req.params.boardId, 
-        lists: {$elemMatch: {_id: req.params.listId}}},
+    Board.findOneAndUpdate(
         {
-            "lists.$.pos": ('undefined' !== typeof req.body.pos) ? req.body.pos : null ,
-            "lists.$.title" : ('undefined' !== typeof req.body.title) ? req.body.title : null
+            _id : req.params.boardId,
+            lists: {$elemMatch: {_id: req.params.listId}}
+        },
+        {
+            "lists.$.pos": ('undefined' !== typeof req.body.pos) ? req.body.pos : undefined ,
+            "lists.$.title" : ('undefined' !== typeof req.body.title) ? req.body.title : undefined
         }
     ).then(function() {
-        res.status(200).send("Successfully updated")
+        res.status(200).send("The list of id " + req.params.listId + " has been successfully updated")
     }).catch(function(err) {
-        res.send(err)
+        res.status(401).send(err)
     })
 })
 

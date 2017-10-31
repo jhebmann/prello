@@ -15,7 +15,7 @@ class Card extends React.Component{
         return(
             <Thumbnail onClick={() => this.simpleDialog.show()} className='card' >
                 <ProgressBar bsStyle="danger" now={100} />
-                <h4>{this.props.titleCard}</h4>
+                <h4>{this.props.title}</h4>
                 <p> {descr} </p>
          <SkyLight hideOnOverlayClicked ref={ref => this.simpleDialog = ref} title="Hi, I'm a simple modal">
           Hello, I dont have any callback.

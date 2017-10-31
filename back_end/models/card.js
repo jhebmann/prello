@@ -6,7 +6,7 @@ const AttachmentSchema = require('mongoose').model('Attachment').schema
 const CommentSchema = require('mongoose').model('Comment').schema
 
 const CardSchema = new Schema({
-    titleCard: {
+    title: {
       type: String
     },
     description: {

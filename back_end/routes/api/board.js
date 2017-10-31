@@ -68,13 +68,14 @@ router.post('/', function (req, res, next) {
     )
 })
 
-router.put('/:id', function (req, res, next) {  // Not done
+router.put('/:id', function (req, res, next) {  
     // Update the board having the id given in parameter
     Board.findOneAndUpdate({_id : req.params.id},
         {
-            "title": ('undefined' !== typeof req.body.title) ? req.body.title : null ,
-            "isPublic" : ('undefined' !== typeof req.body.isPublic) ? req.body.isPublic : null
-        }
+            "title": ('undefined' !== typeof req.body.title) ? req.body.title : undefined ,
+            "isPublic" : ('undefined' !== typeof req.body.isPublic) ? req.body.isPublic : undefined
+        },
+        {new: true}
     ).then(function(board) {
         res.status(200).send(board)
     }).catch(function(err) {

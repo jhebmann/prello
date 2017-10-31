@@ -58,7 +58,7 @@ exports.updateList = (client, idBoard, idList, newTitle) => {
 }
 
 exports.addCard = (client, titleCard, idList, idBoard) => {
-  const newCard = new models.cards({titleCard: titleCard})
+  const newCard = new models.cards({title: titleCard})
   newCard.save(
     {},
     (err, res) => {

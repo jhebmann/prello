@@ -72,7 +72,7 @@ class List extends React.Component{
   cardList(list){
     const cards=this.state.cards
     const cardItems= cards.map((card, index)=>
-      <Card key={index} titleCard={card.titleCard} description={card.description} date={card.date}/>
+      <Card key={index} title={card.title} description={card.description} date={card.date}/>
     )
     return cardItems
   }
@@ -87,7 +87,7 @@ class List extends React.Component{
     if(id === this.props.id){
       this.setState(prevState=>({
         cards: prevState.cards.concat({
-          titleCard: card.titleCard,
+          title: card.title,
           description: card.description,
           date: card.date
         })
@@ -125,7 +125,7 @@ class List extends React.Component{
 
   onClickAddCard(e){
     axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
-      titleCard: this.state.titleNewCard
+      title: this.state.titleNewCard
     }).then((response) => {
       this.socket.emit('newCard', response.data, this.props.id)
       this.addCard(response.data, this.props.id)
