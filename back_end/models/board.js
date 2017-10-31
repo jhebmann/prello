@@ -2,6 +2,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ListSchema = require('mongoose').model('List').schema
+const LabelSchema = require('mongoose').model('Label').schema
 
 const BoardSchema = new Schema({
     title: {
@@ -13,12 +14,16 @@ const BoardSchema = new Schema({
     },
     admins: {
       type :[Schema.ObjectId] ,
-      required : false,
+      required : true,
       ref: 'User'
     },
     isPublic: {
       type: Boolean,
       default: false
+    },
+    labels: {
+      type: [LabelSchema],
+      default: []
     }
 })
 

@@ -5,14 +5,19 @@ const router = require('express').Router()
 
 // Done
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id/board/:boardId', function (req, res, next) {
     // Get the list having the id given in parameter
-    Board.findOne({'lists._id': req.params.id}, '-_id').select({ lists: {$elemMatch: {_id: req.params.id}}})
-    .then(function(board){
-        res.status(200).send(board.lists[0])
-    }).catch(function(err) {
-        res.status(401).send(err);
-    })
+    Board.findOne(
+        {
+            _id: req.params.boardId, 
+            'lists._id': req.params.id
+        },
+        {"lists.$": 1, _id: 0},
+        (err, board) => {
+            if (err) res.status(401).send(err);
+            else res.status(200).send(board.lists[0])
+        }
+    )
 })
 
 router.get('/:id/board/:boardId/cards', function (req, res, next) {
@@ -33,9 +38,9 @@ router.get('/:id/board/:boardId/cards', function (req, res, next) {
     )
 })
 
-router.post('/', function (req, res, next) {
+router.post('/board/:boardId', function (req, res, next) {
     // Post a new list
-    Board.findById(req.body.boardId, function(err, board){
+    Board.findById(req.params.boardId, function(err, board){
         let newList = new List()
         newList.title = req.body.title,
         newList.pos = req.body.pos

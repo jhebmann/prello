@@ -21,6 +21,7 @@ router.get('/user', function (req, res, next) {
         res.status(401).send(err)
     })
 })
+
 router.get('/:id', function (req, res, next) {
     // Get the board having the id given in parameter
     Board.findById(req.params.id).then(function(board){
@@ -34,6 +35,15 @@ router.get('/:id/lists', function (req, res, next) {
     // Get the lists of the board having the id given in parameter
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board.lists)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.get('/:id/labels', function (req, res, next) {
+    // Get the labels of the board having the id given in parameter
+    Board.findById(req.params.id).then(function(board){
+        res.status(200).send(board.labels)
     }).catch(function(err) {
         res.status(401).send(err)
     })

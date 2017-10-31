@@ -1,5 +1,7 @@
-const Card = require('../../models').cards
-const Board = require('../../models').boards
+const models = require('../../models')
+const Card = models.cards
+const Board = models.boards
+const Label = models.labels
 const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
@@ -20,8 +22,23 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/:cardId/labels', function (req, res, next) {
+router.get('/:id/labels', function (req, res, next) {
     // Get all labels of the card having the id given in parameter
+    Card.findOne(
+        {_id: req.params.id},
+        (err, card) => {
+            if (err) res.status(401).send("There was an error retrieving the card of id " + req.params.id)
+            else {
+                Label.find(
+                    {_id: {$in: card.labels}},
+                    (err, labels) => {
+                        if (err) res.status(401).send("There was an error retrieving the labels of the card of id " + req.params.id)
+                        else res.status(200).send(labels)
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.post('/board/:boardId/list/:listId', function (req, res, next) {
@@ -63,7 +80,11 @@ router.put('/:id', function (req, res, next) {
             "dueDate" : ('undefined' !== typeof req.body.dueDate) ? req.body.dueDate : undefined,
             "doneDate" : ('undefined' !== typeof req.body.doneDate) ? req.body.doneDate : undefined,
             "createdAt" : ('undefined' !== typeof req.body.createdAt) ? req.body.createdAt : undefined,
-            "isArchived" : ('undefined' !== typeof req.body.isArchived) ? req.body.isArchived : undefined
+            "isArchived" : ('undefined' !== typeof req.body.isArchived) ? req.body.isArchived : undefined,
+            "checklists" : ('undefined' !== typeof req.body.checklists) ? req.body.checklists : undefined,
+            "attachments" : ('undefined' !== typeof req.body.attachments) ? req.body.attachments : undefined,
+            "comments" : ('undefined' !== typeof req.body.comments) ? req.body.comments : undefined,
+            "labels" : ('undefined' !== typeof req.body.labels) ? req.body.labels : undefined
         },
         {new: true}
     ).then(function(card) {
