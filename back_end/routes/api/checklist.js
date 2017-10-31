@@ -14,25 +14,38 @@ router.get('/:id/card/:idCard', function (req, res, next) {
     })
 })
 
-router.post('/', function (req, res, next) {
+router.post('/card/:idCard', function (req, res, next) {
     // Post a new checklist
-    // Post a new list
-    Card.findById(req.body.cardId, function(err, card){
-        let checklist = new Checklist()
-        checklist.title = req.body.title
-        card.checklists.push(checklist)
+    Card.findById(req.params.idCard, function(err, card){
+        let newChecklist = new Label()
+        newChecklist.title = req.body.title
+        card.checklists.push(newChecklist)
         card.save()
         .then(function(card){
             res.status(200).send(card.checklists[card.checklists.length - 1])
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(401).send(err);
         })
-    })  
+    })
 })
 
-router.put('/:id', function (req, res, next) {
-    // Update the checklist having the id given in parameter
-    
+router.put('/:id/card/:cardId', function (req, res, next) {
+    // Update the label having the id given in parameter and that is contained in the card having the id given in parameter
+    const id = req.params.id
+    const cardId = req.params.cardId
+    Card.findOneAndUpdate(
+        {
+            _id : cardId,
+            checklists: {$elemMatch: {_id: id}}
+        },
+        {
+            "labels.$.title" : ('undefined' !== typeof req.body.title) ? req.body.title : undefined
+        }
+    ).then(function() {
+        res.status(200).send("The checklist of id " + id + " has been successfully updated")
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 router.delete('/:id/card/:idCard', function (req, res, next) {

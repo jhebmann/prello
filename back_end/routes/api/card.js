@@ -94,6 +94,33 @@ router.put('/:id', function (req, res, next) {
     })
 })
 
+router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function (req, res, next) {
+    // Update the card having the id given in parameter
+    const id = req.params.id
+    const idOldList = req.params.idOldList
+    const idNewList = req.params.idNewList
+    const idBoard = req.params.idBoard
+    Board.update(
+        {_id: idBoard, "lists._id": idOldList},
+        {$pull: {"lists.$.cards": id}},
+        (err, result) =>{
+            if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + idOldList)
+            else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + idOldList)
+            else{
+                Board.update(
+                    {_id: idBoard, "lists._id": idNewList},
+                    {$push: {"lists.$.cards": id}},
+                    {new: true},
+                    (err, board) => {
+                        if (err) res.status(401).send("Couldn't add the card of id " + id + " to the list of id " + idNewList)
+                        else res.status(200).send(board)
+                    }
+                )
+            }            
+        }
+    )
+})
+
 /**
  * Delete the card with the specified id
  */

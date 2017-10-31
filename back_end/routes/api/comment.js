@@ -47,9 +47,24 @@ router.post('/', function (req, res, next) {
     })
 })
 
-router.put('/:id', function (req, res, next) {
-    // Update the comment having the id given in parameter
-    
+router.put('/:id/card/:cardId', function (req, res, next) {
+    // Update the label having the id given in parameter and that is contained in the card having the id given in parameter
+    const id = req.params.id
+    const cardId = req.params.cardId
+    Card.findOneAndUpdate(
+        {
+            _id : cardId,
+            comments: {$elemMatch: {_id: id}}
+        },
+        {
+            "comments.$.content" : ('undefined' !== typeof req.body.content) ? req.body.content : undefined,
+            "comments.$.lastModifiedAt" : ('undefined' !== typeof req.body.content) ? Date.now() : undefined
+        }
+    ).then(function() {
+        res.status(200).send("The comment of id " + id + " has been successfully updated")
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 router.delete('/:id/card/:idCard', function (req, res, next) {
