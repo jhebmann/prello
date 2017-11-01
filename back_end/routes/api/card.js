@@ -100,20 +100,43 @@ router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function
     const idOldList = req.params.idOldList
     const idNewList = req.params.idNewList
     const idBoard = req.params.idBoard
+    const oldPos = req.body.oldPos
+    const newPos = req.body.newPos
     Board.update(
         {_id: idBoard, "lists._id": idOldList},
-        {$pull: {"lists.$.cards": id}},
+        {$pull: {"lists.$.cards": {_id: id, pos: oldPos}}},
         (err, result) =>{
+            console.log(result)
             if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + idOldList)
             else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + idOldList)
             else{
                 Board.update(
-                    {_id: idBoard, "lists._id": idNewList},
-                    {$push: {"lists.$.cards": id}},
-                    {new: true},
-                    (err, board) => {
-                        if (err) res.status(401).send("Couldn't add the card of id " + id + " to the list of id " + idNewList)
-                        else res.status(200).send(board)
+                    {_id: idBoard, "lists._id": idOldList, "lists.$.cards.pos": {$lt: oldPos}},
+                    {$set: {"lists.$.cards.pos": {pos: lists.$.cards.pos-1}}},
+                    {multi: true},
+                    (err, result) =>{
+                        console.log(result)
+                        if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + idOldList)
+                        else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + idOldList)
+                        Board.update(
+                            {_id: idBoard, "lists._id": idNewList},
+                            {$push: {"lists.$.cards": {_id: id, pos: newPos}}},
+                            {new: true},
+                            (err, result) => {
+                                if (err) res.status(401).send("Couldn't add the card of id " + id + " to the list of id " + idNewList)
+                                else {
+                                    Board.update(
+                                        {_id: idBoard, "lists._id": idOldList, "lists.$.cards.pos": {$lt: oldPos}},
+                                        {$set: {"lists.$.cards.pos": {pos: lists.$.cards.pos-1}}},
+                                        {multi: true},
+                                        (err, board) =>{
+                                            if (err) res.status(401).send("Couldn't add the card of id " + id + " to the list of id " + idNewList)
+                                            else res.status(200).send(board)
+                                        }
+                                    )
+                                }
+                            }
+                        )
                     }
                 )
             }            

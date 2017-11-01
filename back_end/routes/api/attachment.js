@@ -48,9 +48,9 @@ router.get('/:attachmentId/card/:cardId/comments', function (req, res, next) {
     )
 })
 
-router.post('/', function (req, res, next) {
+router.post('/card/:idCard', function (req, res, next) {
     // Post a new attachment into a card
-    Card.findById(req.body.cardId, function(err, card){
+    Card.findById(req.params.idCard, function(err, card){
         let newattachment = new Attachment()
         newattachment.title = req.body.title,
         newattachment.file = req.body.file,

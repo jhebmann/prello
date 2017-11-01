@@ -27,8 +27,10 @@ router.get('/:id/board/:boardId/cards', function (req, res, next) {
             if (board === null)
                 res.status(401).send(err)
             else {
+                const cards = board.lists[0].cards
+                const cardsIds = cards.map((card) => card._id)
                 Card.find(
-                    {_id: {$in: board.lists[0].cards}},
+                    {_id: {$in: cardsIds}},
                     (err, cards) => {
                         res.status(200).send(cards)
                     }

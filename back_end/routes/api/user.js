@@ -1,4 +1,6 @@
-const User = require('../../models').users
+const models = require('../../models')
+const User = models.users
+const Team = models.teams
 const router = require('express').Router()
 const mongoose = require('mongoose')
 
@@ -22,8 +24,23 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/:userId/teams', function (req, res, next) {
+router.get('/:id/teams', function (req, res, next) {
     // Get all teams of the user having the id given in parameter
+    User.findOne(
+        {_id: req.params.id},
+        (err, user) => {
+            if (err) res.status(401).send("There was an error retrieving the user of id " + req.params.id)
+            else {
+                Team.find(
+                    {_id: {$in: user.teams}},
+                    (err, teams) => {
+                        if (err) res.status(401).send("There was an error retrieving the teams of the user of id " + req.params.id)
+                        else res.status(200).send(teams)
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.post('/', function (req, res, next) {

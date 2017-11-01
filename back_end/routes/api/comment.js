@@ -30,9 +30,9 @@ router.get('/:commentId/card/:cardId/users', function (req, res, next) {
     )
 })
 
-router.post('/', function (req, res, next) {
+router.post('/card/idCard', function (req, res, next) {
     // Post a new comment into a card
-    Card.findById(req.body.cardId, function(err, card){
+    Card.findById(req.params.idCard, function(err, card){
         let newcomment = new Comment()
         newcomment.content = req.body.content,
         newcomment.createdAt = req.body.createdAt,

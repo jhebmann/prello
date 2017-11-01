@@ -1,4 +1,6 @@
-const Team = require('../../models').teams
+const models = require('../../models')
+const Team = models.teams
+const Board = models.boards
 const router = require('express').Router()
 
 // Done
@@ -21,8 +23,23 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/:teamId/boards', function (req, res, next) {
+router.get('/:id/boards', function (req, res, next) {
     // Get all boards of the team having the id given in parameter
+    Team.findOne(
+        {_id: req.params.id},
+        (err, team) => {
+            if (err) res.status(401).send("There was an error retrieving the team of id " + req.params.id)
+            else {
+                Board.find(
+                    {_id: {$in: team.boards}},
+                    (err, boards) => {
+                        if (err) res.status(401).send("There was an error retrieving the boards of the team of id " + req.params.id)
+                        else res.status(200).send(boards)
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.get('/:teamId/users', function (req, res, next) {
