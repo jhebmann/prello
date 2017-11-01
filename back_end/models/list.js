@@ -11,7 +11,7 @@ const ListSchema = new Schema({
     type: Number
   },
   cards: {
-    type: [Schema.ObjectId],
+    type: [{_id: Schema.ObjectId, pos: Number}],
     ref: 'Card',
     default: []
   },

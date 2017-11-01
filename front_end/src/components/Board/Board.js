@@ -50,8 +50,7 @@ class Board extends React.Component{
     }
 
     onClickAddList(){
-        axios.post(url.api + 'list', {
-            boardId: this.props.id,
+        axios.post(url.api + 'list/board/' + this.props.id, {
             title: "New List",
             pos: this.state.lists.length
         }).then((response) => {

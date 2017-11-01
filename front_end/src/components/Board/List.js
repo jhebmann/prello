@@ -35,6 +35,7 @@ class List extends React.Component{
   }
 
   componentDidMount() {
+    console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     .then((response) => {
       this.getAllCards(response.data, this.props.id)
@@ -125,7 +126,8 @@ class List extends React.Component{
 
   onClickAddCard(e){
     axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
-      title: this.state.titleNewCard
+      title: this.state.titleNewCard,
+      pos: this.state.cards.length
     }).then((response) => {
       this.socket.emit('newCard', response.data, this.props.id)
       this.addCard(response.data, this.props.id)

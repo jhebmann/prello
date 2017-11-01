@@ -53,7 +53,7 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
           console.log("Error adding card")
         Board.findOneAndUpdate(
           {_id : req.params.boardId, "lists._id" : req.params.listId},
-          { "$push": { "lists.$.cards": res._id }},
+          { "$push": { "lists.$.cards": {_id: res._id, pos: req.body.pos}}},
           (err, res) => {
             if (err){
                 console.log("Error when adding the card in board")
@@ -95,7 +95,7 @@ router.put('/:id', function (req, res, next) {
 })
 
 router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function (req, res, next) {
-    // Update the card having the id given in parameter
+    // move a card from one list to another
     const id = req.params.id
     const idOldList = req.params.idOldList
     const idNewList = req.params.idNewList
