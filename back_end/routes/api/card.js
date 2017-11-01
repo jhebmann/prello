@@ -2,6 +2,7 @@ const models = require('../../models')
 const Card = models.cards
 const Board = models.boards
 const Label = models.labels
+const ObjectId = require('mongoose').Types.ObjectId
 const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
@@ -106,39 +107,65 @@ router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function
         {_id: idBoard, "lists._id": idOldList},
         {$pull: {"lists.$.cards": {_id: id, pos: oldPos}}},
         (err, result) =>{
-            console.log(result)
             if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + idOldList)
             else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + idOldList)
             else{
-                Board.update(
-                    {_id: idBoard, "lists._id": idOldList, "lists.$.cards.pos": {$lt: oldPos}},
-                    {$set: {"lists.$.cards.pos": {pos: lists.$.cards.pos-1}}},
-                    {multi: true},
-                    (err, result) =>{
-                        console.log(result)
-                        if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + idOldList)
-                        else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + idOldList)
-                        Board.update(
-                            {_id: idBoard, "lists._id": idNewList},
-                            {$push: {"lists.$.cards": {_id: id, pos: newPos}}},
-                            {new: true},
-                            (err, result) => {
-                                if (err) res.status(401).send("Couldn't add the card of id " + id + " to the list of id " + idNewList)
-                                else {
-                                    Board.update(
-                                        {_id: idBoard, "lists._id": idOldList, "lists.$.cards.pos": {$lt: oldPos}},
-                                        {$set: {"lists.$.cards.pos": {pos: lists.$.cards.pos-1}}},
-                                        {multi: true},
-                                        (err, board) =>{
-                                            if (err) res.status(401).send("Couldn't add the card of id " + id + " to the list of id " + idNewList)
-                                            else res.status(200).send(board)
-                                        }
-                                    )
+                Board.findById(idBoard, function(err, data){
+                    data.lists.id(idOldList).cards.forEach((card) => {
+                        if (card.pos > oldPos){
+                            card.pos--
+                        }
+                    })
+                    data.save((err, result) => {
+                        //Couldn't save the new positions, so trying to revert the card deletion
+                        if (err){
+                            Board.update(
+                                {_id: idBoard, "lists._id": idOldList},
+                                {$push: {"lists.$.cards": {_id: id, pos: oldPos}}},
+                                (err) =>{
+                                    if (err) res.status(401).send("Couldn't change the positions of the cards and couldn't revert the deletion of the card")
+                                    else res.status(401).send("Couldn't change the positions of the cards but could revert the deletion of the card")
                                 }
-                            }
-                        )
-                    }
-                )
+                            )
+                        }
+                        //First list saved, now is time to update the other list
+                        else{
+                            Board.findOneAndUpdate(
+                                {_id: idBoard, "lists._id": idNewList},
+                                {$push: {"lists.$.cards": {_id: id, pos: newPos}}},
+                                {new: true},
+                                (err, result) =>{
+                                    if (err) res.status(401).send("Couldn't create the card of id " + id + " on the list of id " + idNewList)
+                                    else {
+                                        Board.findById(idBoard, function(err, data){
+                                            data.lists.id(idNewList).cards.forEach((card) => {
+                                                if (card.pos >= newPos && !card._id.equals(id)){
+                                                    card.pos++
+                                                }
+                                            })
+                                            data.save().then(() => {
+                                                //Couldn't save the new positions, so trying to revert the card addition
+                                                if (err){
+                                                    Board.findOneAndUpdate(
+                                                        {_id: idBoard, "lists._id": idNewList},
+                                                        {$pull: {"lists.$.cards": {_id: id, pos: newPos}}},
+                                                        (err) =>{
+                                                            if (err) res.status(401).send("Couldn't change the positions of the cards and couldn't revert the addition of the card")
+                                                            else res.status(401).send("Couldn't change the positions of the cards but could revert the addition of the card")
+                                                        }
+                                                    )
+                                                }
+                                                else {
+                                                    res.status(200).send(data)
+                                                }
+                                            })
+                                        })
+                                    }
+                                }
+                            )
+                        }
+                    })
+                })
             }            
         }
     )
