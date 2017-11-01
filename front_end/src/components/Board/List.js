@@ -35,9 +35,10 @@ class List extends React.Component{
   }
 
   componentDidMount() {
-    console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
+    // console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     .then((response) => {
+      console.log(response.data)
       this.getAllCards(response.data, this.props.id)
     })
     .catch((error) => {
@@ -80,6 +81,7 @@ class List extends React.Component{
 
   getAllCards(cards, id){
     if(id === this.props.id){
+      cards.sort(function(a, b){ return a.pos - b.pos})
       this.setState({cards: cards})
     }
   }
@@ -109,7 +111,6 @@ class List extends React.Component{
       }).then((response) => {
         this.socket.emit('updateListTitle', response.data._id, e.target.value)
         this.updateListTitle(response.data._id, e.target.value)
-
       })
       .catch((error) => {
         alert('An error occured when updating the list')

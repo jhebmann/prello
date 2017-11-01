@@ -70,8 +70,11 @@ router.put('/:id/board/:idBoard', function (req, res, next) {
             if ('undefined' !== typeof req.body.title) board.lists.id(id).title = req.body.title
             board.save()
         }
-    ).then(function() {
-        res.status(200).send("The list of id " + id + " has been successfully updated")
+    ).then(function(board) {
+        console.log("The list of id " + id + " has been successfully updated")
+        res.status(200).send(board.lists.filter(function(list){
+            return String(list._id) === req.params.id
+        })[0])
     }).catch(function(err) {
         res.status(401).send(err)
     })
