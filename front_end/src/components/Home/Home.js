@@ -11,7 +11,8 @@ class Home extends React.Component{
     super(props);    
     //Default State
     this.state={
-      boards: [],
+      boards: this.props.boards,
+      teamId: this.props.teamId,
       titleNewBoard: null
     }
     this.socket = SocketIOClient('http://localhost:8000')
@@ -22,25 +23,15 @@ class Home extends React.Component{
     this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)    
     this.addBoard = this.addBoard.bind(this)
     this.deleteBoard = this.deleteBoard.bind(this)
+    this.onClickAddTeam = this.onClickAddTeam.bind(this) 
     this.socket.on('addBoard', this.addBoard)
     this.socket.on('deleteBoard', this.deleteBoard)
     this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this)
   }
 
   componentWillMount() {
-    axios.get(url.api + 'board/user',{
-      params: {
-        user: Auth.getUserID()
-      }
-    })
-    .then((response) => {
-      this.setState({boards:response.data})
-    })
-    .catch((error) => {
-      alert('An error occured when getting the boards!\nHint: check that the server is running')
-    })}
-
-  
+    this.setState()
+  }
 
   render(){
     return(
@@ -59,13 +50,15 @@ class Home extends React.Component{
   
   
   postBoard(isPublic){
-    axios.post(url.api + 'board', {
+    axios.post(url.api + 'board/team/' + this.state.teamId, {
       title: this.state.titleNewBoard,
       admins:Auth.getUserID(),
+      users:Auth.getUserID(),
       isPublic:isPublic
     }).then((response) => {
-      this.socket.emit("newBoard", response.data)
-      this.addBoard(response.data)
+      console.log(response.data)
+      this.socket.emit("newBoard", response.data, this.state.teamId)
+      this.addBoard(response.data, this.state.teamId)
     })
     .catch((error) => {
       alert('An error occured when adding the board')
@@ -80,12 +73,25 @@ class Home extends React.Component{
     this.postBoard(false)
   }
 
-  addBoard(board){
-    this.setState(prevState=>({
-        boards: prevState.boards.concat(board)
-    }))
+  addBoard(board,teamId){
+    if (teamId===this.state.teamId)
+      this.setState(prevState=>({
+          boards: prevState.boards.concat(board)
+      }))
   }
 
+  onClickAddTeam(){
+ axios.post(url.api + 'team', {
+      name: this.state.titleNewBoard,
+      admins:Auth.getUserID(),
+      users:Auth.getUserID()
+    }).then((response) => {
+      
+    })
+    .catch((error) => {
+      alert('An error occured when adding the board')
+    })
+  }
 
   handleCardTitleInputChange(e) {  
     this.setState({titleNewBoard: e.target.value});
