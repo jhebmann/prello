@@ -24,10 +24,10 @@ router.get('/:id', function (req, res, next) {
     })
 })
 
-router.get('/:id/teams', function (req, res, next) {
+router.get('/all/teams', function (req, res, next) {
     // Get all teams of the user having the id given in parameter
     User.findOne(
-        {_id: req.params.id},
+        {_id: req.query.id},
         (err, user) => {
             if (err) res.status(401).send("There was an error retrieving the user of id " + req.params.id)
             else {

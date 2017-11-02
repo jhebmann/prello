@@ -52,6 +52,7 @@ router.get('/:teamId/admins', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     // Post a new team
+    console.log("Adding team")
     Team.create({ 
         name: req.body.name,
         description: req.body.description,
