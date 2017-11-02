@@ -38,7 +38,6 @@ class List extends React.Component{
     // console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     .then((response) => {
-      console.log(response.data)
       this.getAllCards(response.data, this.props.id)
     })
     .catch((error) => {
@@ -61,7 +60,7 @@ class List extends React.Component{
           <div className="listBody">
             {this.cardList(this.state.cards)} 
             <p>
-              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard"/>
+              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" value={this.state.titleNewCard}/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
             </p>
@@ -132,11 +131,11 @@ class List extends React.Component{
     }).then((response) => {
       this.socket.emit('newCard', response.data, this.props.id)
       this.addCard(response.data, this.props.id)
+      this.setState({titleNewCard : ""})
     })
     .catch((error) => {
       alert('An error occured when adding the card')
     })
-    this.setState({titleNewCard : null})
   }
 
   onClickDeleteList(){
