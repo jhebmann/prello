@@ -80,7 +80,7 @@ class HomeUser extends React.Component{
           <div key = {index}>
           <hr />
           <h3> TEAM {team.name}</h3>
-          <Home key={index} boards={team.boards} teamId={team.id} socket={this.socket}/>
+          <Home key={index} boards={team.boards} teamId={team._id} socket={this.socket}/>
          </div>
         );
         return teamItems

@@ -1,5 +1,6 @@
 const models = require('../../models')
-const Board = require('../../models').boards
+const Board = models.boards
+const Team = models.teams
 const router = require('express').Router()
 const ObjectId = require('mongodb').ObjectID;
 
@@ -15,7 +16,34 @@ router.get('/', function (req, res, next) {
 router.get('/user', function (req, res, next) {
     // Get all boards of a user
     console.log('Getting boards from User ID '+req.query.user)
-    Board.find({$or:[ {admins:ObjectId(req.query.user)}, {'isPublic':true}]}).then(function(board){
+    Board.find(
+        {$or:[
+            {users:ObjectId(req.query.user)},
+            {'isPublic':true}
+        ]}
+    ).then(function(board){
+        res.status(200).send(board)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.get('/team/:idTeam', function (req, res, next) {
+    // Get all boards of a team
+    Board.find(
+        {teams: req.params.idTeam}
+    ).then(function(board){
+        res.status(200).send(board)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.get('/public', function (req, res, next) {
+    // Get all public boards
+    Board.find(
+        {isPublic: true}
+    ).then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
         res.status(401).send(err)
@@ -58,7 +86,7 @@ router.get('/:id/admins', function (req, res, next) {
     })
 })
 
-router.post('/', function (req, res, next) {
+router.post('/team/:idTeam', function (req, res, next) {
     // Post a new board
     const newBoard = new Board({
         title: req.body.title,
@@ -68,11 +96,19 @@ router.post('/', function (req, res, next) {
     newBoard.save(
         {},
         (err, insertedBoard) => {
-            if (err)
-                res.status(401).send(err)
+            if (err) res.status(401).send(err)
             else {
-                console.log("Board of id " + insertedBoard._id + " Added")
-                res.status(200).send(insertedBoard)
+                Team.findOneAndUpdate(
+                    {_id: req.params.idTeam},
+                    {$push: {boards: insertedBoard._id}},
+                    (err) => {
+                        if (err) res.status(401).send(err)
+                        else {
+                            console.log("Board of id " + insertedBoard._id + " Added")
+                            res.status(200).send(insertedBoard)
+                        }
+                    }
+                )
             }
         }
     )

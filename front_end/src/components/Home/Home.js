@@ -11,8 +11,8 @@ class Home extends React.Component{
     super(props);    
     //Default State
     this.state={
-      boards: props.boards,
-      teamId:this.props.team,
+      boards: this.props.boards,
+      teamId: this.props.teamId,
       titleNewBoard: null
     }
     this.socket = SocketIOClient('http://localhost:8000')
@@ -50,9 +50,10 @@ class Home extends React.Component{
   
   
   postBoard(isPublic){
-    axios.post(url.api + 'board', {
+    axios.post(url.api + 'board/team/' + this.state.teamId, {
       title: this.state.titleNewBoard,
       admins:Auth.getUserID(),
+      users:Auth.getUserID(),
       isPublic:isPublic
     }).then((response) => {
       console.log(response.data)
