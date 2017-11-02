@@ -30,13 +30,21 @@ router.get('/user', function (req, res, next) {
 
 router.get('/team/:idTeam', function (req, res, next) {
     // Get all boards of a team
-    Board.find(
-        {teams: req.params.idTeam}
-    ).then(function(board){
-        res.status(200).send(board)
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    Team.findOne(
+        {_id: req.params.idTeam},
+        (err, team) => {
+            if (err) res.status(401).send(err)
+            else{
+                Board.find(
+                    {_id:{$in: team.boards}},
+                    (err, boards) => {
+                        if (err) res.status(401).send(err)
+                        else res.status(200).send(boards)
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.get('/public', function (req, res, next) {
