@@ -1,6 +1,7 @@
 const models = require('../../models')
 const Team = models.teams
 const Board = models.boards
+const User = models.users
 const router = require('express').Router()
 
 // Done
@@ -42,44 +43,98 @@ router.get('/:id/boards', function (req, res, next) {
     )
 })
 
-router.get('/:teamId/users', function (req, res, next) {
+router.get('/:id/users', function (req, res, next) {
     // Get all members of the team having the id given in parameter
+    Team.findOne(
+        {_id: req.params.id},
+        (err, team) => {
+            if (err) res.status(401).send(err)
+            else res.status(200).send(team.users)
+        }
+    )
 })
 
-router.get('/:teamId/admins', function (req, res, next) {
+router.get('/:id/admins', function (req, res, next) {
     // Get all admins of the team having the id given in parameter
+    Team.findOne(
+        {_id: req.params.id},
+        (err, team) => {
+            if (err) res.status(401).send(err)
+            else res.status(200).send(team.admins)
+        }
+    )
 })
 
 router.post('/', function (req, res, next) {
     // Post a new team
-    Team.create({ 
-        name: req.body.name,
-        description: req.body.description,
-        users: ('undefined' !== typeof req.body.users) ? req.body.users : [],
-        admins: req.body.admins
-    }).then(function(team) {
-        res.status(200).send(team)
-    }).catch(function(err) {
-        res.status(401).send(err);
-    })
+    Team.create(
+        { 
+            name: req.body.name,
+            description: req.body.description,
+            users: ('undefined' !== typeof req.body.users) ? req.body.users : [],
+            admins: req.body.admins
+        },
+        (err, team) => {
+            if (err) res.status(401).send(err)
+            else{
+                User.findOneAndUpdate(
+                    {_id: team.admins[0]},
+                    {$push: {teams: team._id}},
+                    (err) => {
+                        if (err) res.status(401).send(err)
+                        else res.status(200).send(team)
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.delete('/:id', function (req, res, next) {
     // Delete the team having the id given in parameter
-    Team.findByIdAndRemove(req.params.id).then(function() {
-        res.status(200).send("Successfully destroyed")
-    }).catch(function(err) {
-        res.status(401).send(err)
-    });
+    const id = req.params.id
+    Team.findOneAndRemove(
+        {_id: id},
+        (err, res) => {
+            if (err) res.status(401).send(err)
+            else{
+                User.update(
+                    {"teams._id": id},
+                    {$pull: {teams: id}},
+                    {multi: true},
+                    (err) => {
+                        if (err) res.status(401).send(err)
+                        else{
+                            res.status(200).send("Successfully destroyed the team of id " + id)
+                        }
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.delete('/', function (req, res, next) {
-    // Delete all the users
-    Team.remove().then(function() {
-        res.status(200).send("Successfully destroyed")
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    // Delete all the teams
+    Team.remove(
+        {},
+        (err) => {
+            if (err) res.status(401).send(err)
+            else{
+                User.update(
+                    {},
+                    {teams: []},
+                    {multi: true},
+                    (err) => {
+                        if (err) res.status(401).send(err)
+                        else{
+                            res.status(200).send("Successfully destroyed all the teams")
+                        }
+                    }
+                )
+            }
+        }
+    )
 })
 
 
