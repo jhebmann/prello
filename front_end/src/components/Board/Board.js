@@ -46,6 +46,7 @@ class Board extends React.Component{
     }
 
     getAllLists(data){
+        data.sort(function(a, b){ return a.pos - b.pos})
         this.setState({lists: data})
     }
 

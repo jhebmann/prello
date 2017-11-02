@@ -11,7 +11,7 @@ class List extends React.Component{
     //Default State
     this.state={
       cards: [],
-      titleNewCard: null,
+      titleNewCard: "",
       showInput: false,
       title: this.props.title,
       pos: this.props.pos // always undefined for now
@@ -35,7 +35,7 @@ class List extends React.Component{
   }
 
   componentDidMount() {
-    console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
+    // console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     .then((response) => {
       this.getAllCards(response.data, this.props.id)
@@ -50,7 +50,8 @@ class List extends React.Component{
       if(!this.state.showInput) {
         headList = <h4 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h4>
       } else{
-        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} type="text" name="title" value={this.state.title}/>
+        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} 
+                          type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
         <Panel bsSize="small" className='list'>
@@ -60,7 +61,8 @@ class List extends React.Component{
           <div className="listBody">
             {this.cardList(this.state.cards)} 
             <p>
-              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard"/>
+              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
+                            value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
             </p>
@@ -79,7 +81,9 @@ class List extends React.Component{
   }
 
   getAllCards(cards, id){
+    console.log(cards)
     if(id === this.props.id){
+      cards.sort(function(a, b){ return a.pos - b.pos})
       this.setState({cards: cards})
     }
   }
@@ -100,16 +104,21 @@ class List extends React.Component{
     this.setState({[e.target.name]: e.target.value})
   }
 
-  onClickUpdateList(e) {
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      if ("title" === e.target.name) this.onClickUpdateList()
+      else if ("titleNewCard" === e.target.name) this.onClickAddCard()
+    }
+  }
+
+  onClickUpdateList() {
     if (this.state.showInput){
-      e.persist()
       axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
         title: this.state.title,
         pos : this.state.pos
       }).then((response) => {
-        this.socket.emit('updateListTitle', response.data._id, e.target.value)
-        this.updateListTitle(response.data._id, e.target.value)
-
+        this.socket.emit('updateListTitle', response.data._id, this.state.title)
+        this.updateListTitle(response.data._id, this.state.title)
       })
       .catch((error) => {
         alert('An error occured when updating the list')
@@ -124,18 +133,18 @@ class List extends React.Component{
     }
   }
 
-  onClickAddCard(e){
+  onClickAddCard(){
     axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
       title: this.state.titleNewCard,
       pos: this.state.cards.length
     }).then((response) => {
       this.socket.emit('newCard', response.data, this.props.id)
       this.addCard(response.data, this.props.id)
+      this.setState({titleNewCard : ""})
     })
     .catch((error) => {
       alert('An error occured when adding the card')
     })
-    this.setState({titleNewCard : null})
   }
 
   onClickDeleteList(){
