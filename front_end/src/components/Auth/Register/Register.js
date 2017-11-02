@@ -26,9 +26,9 @@ class Register extends React.Component{
     }
 
     handleSubmit(event) {
-        console.log(this.props)
+        /*console.log(this.props)
         console.log(event)
-        /*const newUser = {
+        const newUser = {
             nickname: this.state.nickname,
             mail: this.state.email,
             password: this.state.password
@@ -152,7 +152,7 @@ class Register extends React.Component{
             
             const errors = xhr.response.errors ? xhr.response.errors : {};
             errors.summary = xhr.response.errors.password||xhr.response.errors.email
-            console.log('Failed ', errors.summary)
+            //console.log('Failed ', errors.summary)
             this.setState({
                 error:true,
                 errorMssge:errors.summary

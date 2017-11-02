@@ -1,12 +1,12 @@
 import React from 'react'
 import { Button,FormGroup,FormControl, Nav, Navbar, NavItem} from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
-import Auth from '../Auth/Auth.js';
+import Auth from '../Auth/Auth.js'
 
 class Header extends React.Component{
   render(){
     const guestNavbar = (
-      <Navbar className="navbar navbar-default navbar-fixed-top" responsive='true' collapseable='true'>
+      <Navbar className="navbar-fixed-top" responsive='true' collapseable='true'>
         <Navbar.Header>
           <Navbar.Brand>
             <a href="/"> Prello </a>
@@ -48,7 +48,7 @@ class Header extends React.Component{
     )
 
     return(
-      <div>{guestNavbar}</div>
+      <div className="headerMenu">{guestNavbar}</div>
     )}
   }
 

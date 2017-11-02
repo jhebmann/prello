@@ -74,3 +74,19 @@ body{
     margin-top: 10px;
     margin-left: 4px;
 }
+
+.popupLeft {
+    float: left;
+    width: 75%;
+}
+
+.popupRight {
+    float: right;
+    width: 25%;
+}
+
+.popupButton {
+    display: block;
+    margin-top: 5px;
+    width: 60%;
+}
