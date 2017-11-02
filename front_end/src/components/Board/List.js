@@ -81,6 +81,7 @@ class List extends React.Component{
   }
 
   getAllCards(cards, id){
+    console.log(cards)
     if(id === this.props.id){
       cards.sort(function(a, b){ return a.pos - b.pos})
       this.setState({cards: cards})

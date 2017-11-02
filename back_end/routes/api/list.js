@@ -22,19 +22,34 @@ router.get('/:id/board/:boardId', function (req, res, next) {
 
 router.get('/:id/board/:boardId/cards', function (req, res, next) {
     // Get the cards in the list and board having the id given in parameter
-    Board.findOne({_id: req.params.boardId, "lists._id": req.params.id}, {"lists.$": 1, _id: 0},
+    let cardsWithPos = []
+    Board.findOne(
+        {_id: req.params.boardId, "lists._id": req.params.id},
+        {"lists.$": 1, _id: 0},
         (err, board) => {
             if (board === null)
                 res.status(401).send(err)
             else {
-                const cards = board.lists[0].cards
-                const cardsIds = cards.map((card) => card._id)
+                const cardsIdPos = board.lists[0].cards
+                const cardsIds = cardsIdPos.map((card) => card._id)
                 Card.find(
                     {_id: {$in: cardsIds}},
                     (err, cards) => {
-                        res.status(200).send(cards)
+                        cards.forEach(function(card){
+                            cardsIdPos.forEach(function(cardIdPos){
+                                if (cardIdPos._id.equals(card._id)){
+                                    let newCard = JSON.parse(JSON.stringify(card))
+                                    newCard.pos = cardIdPos.pos
+                                    cardsWithPos.push(newCard)
+                                }
+                            })
+                        })
                     }
-                )
+                ).then(function(){
+                    res.status(200).send(cardsWithPos)
+                }).catch(function(err) {
+                    res.status(401).send(err);
+                })
             }
         }
     )
