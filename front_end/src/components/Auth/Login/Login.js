@@ -131,7 +131,7 @@ class Register extends React.Component{
             this.setState({ redirect: true })
           } else {
             // failure
-            console.log(xhr.status)
+            // console.log(xhr.status)
             // change the component state
             const errors = xhr.response.errors ? xhr.response.errors : {};
             errors.summary = xhr.response.message;

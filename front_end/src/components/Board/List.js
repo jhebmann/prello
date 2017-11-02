@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button,Panel,FormControl} from 'react-bootstrap'
+import {Button, Panel, FormControl} from 'react-bootstrap'
 import axios from 'axios'
 import Card from './Card.js'
 import url from '../../config'
@@ -75,13 +75,12 @@ class List extends React.Component{
   cardList(list){
     const cards=this.state.cards
     const cardItems= cards.map((card, index)=>
-      <Card key={index} title={card.title} description={card.description} date={card.date}/>
+      <Card listTitle={this.state.title} key={index} title={card.title} description={card.description} date={card.date}/>
     )
     return cardItems
   }
 
   getAllCards(cards, id){
-    console.log(cards)
     if(id === this.props.id){
       cards.sort(function(a, b){ return a.pos - b.pos})
       this.setState({cards: cards})

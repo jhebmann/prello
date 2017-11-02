@@ -64,7 +64,6 @@ class Home extends React.Component{
       admins:Auth.getUserID(),
       isPublic:isPublic
     }).then((response) => {
-      console.log(response.data)
       this.socket.emit("newBoard", response.data)
       this.addBoard(response.data)
     })

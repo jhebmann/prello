@@ -1,29 +1,47 @@
 import React from 'react'
 import { Thumbnail, ProgressBar } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
+import Popup from './Popup.js'
 
 
 class Card extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {
+            title: this.props.title ? this.props.title : undefined,
+            description: this.props.description ? this.props.description : undefined,
+            date: this.props.date ? this.props.date : undefined,
+            labels: this.props.labels ? this.props.labels : undefined,
+            listTitle: this.props.listTitle ? this.props.listTitle : undefined
+        }
+    }
 
     render(){
-        let descr;
-        if (typeof this.props.description !== 'undefined' && this.props.description.trim().length > 0){
-            descr = this.props.description
-        }else {
-            descr = "No description"
+
+        const bigPopup = {
+            width: '70%',
+            height: '100%',
+            marginTop: '-19%',
+            marginLeft: '-35%',
+            overflow: 'hidden',
+            overflowY: 'auto'
         }
+        
         return(
-            <Thumbnail onClick={() => this.simpleDialog.show()} className='card' >
-                <ProgressBar bsStyle="danger" now={100} />
-                <h4>{this.props.title}</h4>
-                <p> {descr} </p>
-         <SkyLight hideOnOverlayClicked ref={ref => this.simpleDialog = ref} title="Hi, I'm a simple modal">
-          Hello, I dont have any callback.
-        </SkyLight>                               
-            </Thumbnail>
+            <div>
+                <Thumbnail onClick={() => this.customDialog.show()} className='card' >
+                    <ProgressBar bsStyle="danger" now={100} />
+                    <h4>{this.state.title}</h4>
+                    <p> {this.state.description} </p>
+                </Thumbnail>
+                
+                <SkyLight dialogStyles={bigPopup} hideOnOverlayClicked ref={ref => this.customDialog = ref} title={this.state.title} propsi={this.state.description}>
+                    <Popup state={this.state}/>
+                </SkyLight>                               
+            </div>
             
         )
     }
 }
 
-export default Card;
+export default Card
