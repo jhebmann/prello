@@ -33,8 +33,6 @@ class Home extends React.Component{
     this.setState()
   }
 
-  
-
   render(){
     return(
         <div>

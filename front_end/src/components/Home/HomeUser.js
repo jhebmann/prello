@@ -16,13 +16,11 @@ class HomeUser extends React.Component{
       titleNewTeam: null
     }
     this.socket = SocketIOClient('http://localhost:8000')
-   
-   // this.renderBoards = this.renderBoards.bind(this)
-    this.addTeam = this.addTeam.bind(this);
+    this.addTeam = this.addTeam.bind(this);   
     this.onClickAddTeam = this.onClickAddTeam.bind(this) 
     this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this)
-
-   }
+    this.socket.on("addTeam", this.addTeam)
+    }
 
     componentWillMount() {
         axios.get(url.api + 'user/all/teams',{
@@ -45,7 +43,7 @@ class HomeUser extends React.Component{
           admins:Auth.getUserID()
         }).then((response) => {
           console.log(response.data)
-          //this.socket.emit("newBoard", response.data)
+          this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
         })
         .catch((error) => {
@@ -53,15 +51,15 @@ class HomeUser extends React.Component{
         })
       }
 
-      addTeam(team){
-        this.setState(prevState=>({
-            teams: prevState.teams.concat(team)
-        }))
-      }
+    addTeam(team){
+    this.setState(prevState=>({
+        teams: prevState.teams.concat(team)
+    }))
+    }
 
-      handleCardTitleInputChange(e) {  
-        this.setState({titleNewTeam: e.target.value});
-      }
+    handleCardTitleInputChange(e) {  
+    this.setState({titleNewTeam: e.target.value});
+    }
 
     render(){
         return(<div>
@@ -83,7 +81,6 @@ class HomeUser extends React.Component{
           <hr />
           <h3> TEAM {team.name}</h3>
           <Home key={index} boards={team.boards} teamId={team.id} socket={this.socket}/>
-          
          </div>
         );
         return teamItems

@@ -85,7 +85,9 @@ io.on('connection', (client) => {
     client.on('newBoard', (board,teamId) => {
         client.broadcast.emit('addBoard', board,teamId)
     })
-    
+    client.on('newTeam', (team) => {
+        client.broadcast.emit('addTeam', team)
+    })
     client.on('deleteBoard', (idBoard) => {
         client.broadcast.emit('deleteBoard', idBoard)
     })
