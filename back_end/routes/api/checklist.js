@@ -1,5 +1,7 @@
-const Checklist = require('../../models').checklists
-const Card = require('../../models').cards
+const models = require('../../models')
+const Checklist = models.checklists
+const Card = models.cards
+const Label = models.labels
 const router = require('express').Router()
 
 router.get('/:id/card/:idCard', function (req, res, next) {
