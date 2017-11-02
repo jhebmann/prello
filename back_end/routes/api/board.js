@@ -131,25 +131,37 @@ router.put('/:id', function (req, res, next) {
 
 router.delete('/:id', function (req, res, next) {
     //delete the board of the given id
+    const id = req.params.id
     Board.findOne(
-        {_id: req.params.id},
+        {_id: id},
         (err, board) => {
             if (board === null)
                 res.status(401).send("No board of id " + req.params.id + " could be found")
+            else if(err) res.status(401).send(err)
             else {
-                const allLists = board.lists
-                const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b),0) : []
-                models.cards.remove(
-                    {_id: {$in: allCards}},
+                Team.update(
+                    {},
+                    {$pull: {boards: id}},
+                    {multi: true},
                     (err) => {
-                        if (err) res.status(401).send("Couldn't delete the cards of the board with id " + board._id)
-                        Board.remove(
-                            {_id: board._id}
-                        ).then(function() {
-                            res.status(200).send("The board of id " + req.params.id + " was successfully destroyed")
-                        }).catch(function(err) {
-                            res.status(401).send(err)
-                        })
+                        if(err) res.status(401).send(err)
+                        else{
+                            const allLists = board.lists
+                            const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b),0) : []
+                            models.cards.remove(
+                                {_id: {$in: allCards}},
+                                (err) => {
+                                    if (err) res.status(401).send("Couldn't delete the cards of the board with id " + board._id)
+                                    Board.remove(
+                                        {_id: board._id}
+                                    ).then(function() {
+                                        res.status(200).send("The board of id " + id + " was successfully destroyed")
+                                    }).catch(function(err) {
+                                        res.status(401).send(err)
+                                    })
+                                }
+                            )
+                        }
                     }
                 )
             }
@@ -162,21 +174,34 @@ router.delete('/', function (req, res, next) {
     Board.find(
         {},
         (err, boards) => {
-            const allLists = boards.length !== 0 ? boards.map(b => b.lists).reduce((a, b) => a.concat(b)) : []
-            const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b)) : []
-            models.cards.remove(
-                {_id: {$in: allCards}},
-                (err) => {
-                    const boardsIds = boards.length !== 0 ? boards.map((b) => b._id) : []
-                    Board.remove(
-                        {_id: {$in: boardsIds}}
-                    ).then(function() {
-                        res.status(200).send("All boards were successfully destroyed")
-                    }).catch(function(err) {
-                        res.status(401).send(err)
-                    })
-                }
-            )
+            if (err) res.status(401).send(err)
+            else{
+                Team.update(
+                    {},
+                    {$set: {boards: []}},
+                    {multi: true},
+                    (err) => {
+                        if (err) res.status(401).send(err)
+                        else{
+                            const allLists = boards.length !== 0 ? boards.map(b => b.lists).reduce((a, b) => a.concat(b)) : []
+                            const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b)) : []
+                            models.cards.remove(
+                                {_id: {$in: allCards}},
+                                (err) => {
+                                    const boardsIds = boards.length !== 0 ? boards.map((b) => b._id) : []
+                                    Board.remove(
+                                        {_id: {$in: boardsIds}}
+                                    ).then(function() {
+                                        res.status(200).send("All boards were successfully destroyed")
+                                    }).catch(function(err) {
+                                        res.status(401).send(err)
+                                    })
+                                }
+                            )
+                        }
+                    }
+                )
+            }
         }
     )
 })
