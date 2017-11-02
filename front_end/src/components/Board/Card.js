@@ -24,7 +24,8 @@ class Card extends React.Component{
             marginTop: '-19%',
             marginLeft: '-30%',
             overflow: 'hidden',
-            overflowY: 'auto'
+            overflowY: 'auto',
+            backgroundColor: '#EDEFF0'
         }
         
         return(
@@ -35,8 +36,10 @@ class Card extends React.Component{
                     <p> {this.state.description} </p>
                 </Thumbnail>
                 
-                <SkyLight dialogStyles={bigPopup} hideOnOverlayClicked ref={ref => this.customDialog = ref} title={this.state.title}>
-                    <Popup state={this.state}/>
+                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} title={this.state.title}>
+                    <Popup listTitle = {this.state.listTitle} title = {this.state.title} listTitle = {this.state.listTitle} members = {[]}
+                            labels = {[]} date = {undefined} description = {this.state.description} checklists = {[]} 
+                            comments = {[]} activities = {[]}/>
                 </SkyLight>
             </div>
             

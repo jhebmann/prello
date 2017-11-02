@@ -51,9 +51,6 @@ body{
     overflow-y: auto;
 }
 
-.listBody
-
-
 .listHead{
     padding-bottom: 5px;
 }
@@ -94,4 +91,9 @@ body{
 
 .glyphicon {
     margin-right: 8px;
+}
+
+.inline {
+    display: inline;
+    color: #838c91;
 }

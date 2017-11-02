@@ -9,7 +9,7 @@ class List extends React.Component{
   constructor(props){
     super(props)
     //Default State
-    this.state={
+    this.state = {
       cards: [],
       titleNewCard: "",
       showInput: false,
