@@ -19,10 +19,10 @@ class Card extends React.Component{
     render(){
 
         const bigPopup = {
-            width: '70%',
+            width: '60%',
             height: '100%',
             marginTop: '-19%',
-            marginLeft: '-35%',
+            marginLeft: '-30%',
             overflow: 'hidden',
             overflowY: 'auto'
         }
@@ -35,9 +35,9 @@ class Card extends React.Component{
                     <p> {this.state.description} </p>
                 </Thumbnail>
                 
-                <SkyLight dialogStyles={bigPopup} hideOnOverlayClicked ref={ref => this.customDialog = ref} title={this.state.title} propsi={this.state.description}>
+                <SkyLight dialogStyles={bigPopup} hideOnOverlayClicked ref={ref => this.customDialog = ref} title={this.state.title}>
                     <Popup state={this.state}/>
-                </SkyLight>                               
+                </SkyLight>
             </div>
             
         )
