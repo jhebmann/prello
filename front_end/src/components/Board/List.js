@@ -91,6 +91,7 @@ class List extends React.Component{
     if(id === this.props.id){
       this.setState(prevState=>({
         cards: prevState.cards.concat({
+          _id: card._id,
           title: card.title,
           description: card.description,
           date: card.date

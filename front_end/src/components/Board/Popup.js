@@ -7,6 +7,8 @@ import DueDate from './popups/DueDate'
 import Label from './popups/Label'
 import Member from './popups/Member'
 import MoveCard from './popups/MoveCard'
+import axios from 'axios'
+import url from '../../config'
 
 class Popup extends React.Component{
     constructor(props){
@@ -16,7 +18,9 @@ class Popup extends React.Component{
             title: this.props.title,
             members: this.props.members,
             labels: this.props.labels,
-            date: this.props.date,
+            dueDate: this.props.date,
+            doneDate: undefined,
+            isArchived: false,
             description: this.props.description,
             checklists: this.props.checklists,        
             comments: this.props.comments,
@@ -147,25 +151,25 @@ class Popup extends React.Component{
 
     updateDescritpionInput() {
         if (this.state.showDescriptionInput){
-            /*axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
-                title: this.state.title,
-                pos : this.state.pos
+            axios.put(url.api + 'card/' + this.props.cardId, {
+                title : this.state.title,
+                description : this.state.description,
+                dueDate : this.state.dueDate,
+                doneDate : this.state.doneDate,
+                isArchived : this.state.isArchived
             }).then((response) => {
-                this.socket.emit('updateListTitle', response.data._id, this.state.title)
-                this.updateListTitle(response.data._id, this.state.title)
+                // this.socket.emit('updateCard', response.data) not implemented yet
+                this.updateDescription(response.data)
             })
             .catch((error) => {
-                'An error occured when updating the list')
-            })*/
-            this.updateDescription(this.props.cardId, this.state.description)
+                alert('An error occured when updating the list')
+            })
         }
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
     }
 
-    updateDescription(id, description){
-        if(id === this.props.id){
-            this.setState({description: description})
-        }
+    updateDescription(card){
+        this.setState({description: card.description})
     }
 
     deleteCard(e){

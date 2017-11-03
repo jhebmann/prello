@@ -1,0 +1,10 @@
+#mainPage {
+}
+
+#teamForm {
+    padding-left: 50px;
+}
+
+.addTeamButton, .addBoardButton {
+    margin-left: 10px;
+}
