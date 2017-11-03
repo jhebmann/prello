@@ -25,7 +25,8 @@ class Popup extends React.Component{
             checklists: this.props.checklists,        
             comments: this.props.comments,
             activities: this.props.activities,
-            showDescriptionInput: false
+            showDescriptionInput: false,
+            card: this.props.card
         }
         this.deleteCard = this.deleteCard.bind(this)
         this.updateDescritpionInput = this.updateDescritpionInput.bind(this)
@@ -169,7 +170,7 @@ class Popup extends React.Component{
     }
 
     updateDescription(card){
-        this.setState({description: card.description})
+        this.state.card.setState({description: card.description})
     }
 
     deleteCard(e){
