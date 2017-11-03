@@ -37,7 +37,7 @@ class Card extends React.Component{
                 </Thumbnail>
                 
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} title={this.state.title}>
-                    <Popup listTitle = {this.state.listTitle} title = {this.state.title} listTitle = {this.state.listTitle} members = {[]}
+                    <Popup cardId = {this.props.cardId} title = {this.state.title} listTitle = {this.state.listTitle} members = {[]}
                             labels = {[]} date = {undefined} description = {this.state.description} checklists = {[]} 
                             comments = {[]} activities = {[]}/>
                 </SkyLight>

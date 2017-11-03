@@ -75,7 +75,7 @@ class List extends React.Component{
   cardList(list){
     const cards=this.state.cards
     const cardItems= cards.map((card, index)=>
-      <Card listTitle={this.state.title} key={index} title={card.title} description={card.description} date={card.date}/>
+      <Card listTitle={this.state.title} key={index} title={card.title} description={card.description} date={card.date} cardId={card._id}/>
     )
     return cardItems
   }
