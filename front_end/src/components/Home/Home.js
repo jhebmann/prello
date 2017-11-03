@@ -11,7 +11,7 @@ class Home extends React.Component{
     super(props);    
     //Default State
     this.state={
-      boards: this.props.boards,
+      boards: [],
       teamId: this.props.teamId,
       titleNewBoard: null
     }
@@ -30,7 +30,14 @@ class Home extends React.Component{
   }
 
   componentWillMount() {
-    this.setState()
+    axios.get(url.api + 'team/' + this.state.teamId + '/boards',{
+    })
+    .then((response) => {
+      this.setState({boards:response.data})
+    })
+    .catch((error) => {
+      alert('An error occured when getting the boards!\nHint: check that the server is running')
+    })
   }
 
   render(){
@@ -56,7 +63,6 @@ class Home extends React.Component{
       users:Auth.getUserID(),
       isPublic:isPublic
     }).then((response) => {
-      console.log(response.data)
       this.socket.emit("newBoard", response.data, this.state.teamId)
       this.addBoard(response.data, this.state.teamId)
     })

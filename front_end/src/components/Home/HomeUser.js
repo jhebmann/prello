@@ -23,14 +23,10 @@ class HomeUser extends React.Component{
     }
 
     componentWillMount() {
-        axios.get(url.api + 'user/all/teams',{
-          params: {
-            id: Auth.getUserID()
-          }
+        axios.get(url.api + 'user/' + Auth.getUserID() + '/teams',{
         })
         .then((response) => {
           this.setState({teams:response.data})
-          console.log(response.data)
         })
         .catch((error) => {
           alert('An error occured when getting the teams!\nHint: check that the server is running')
@@ -42,7 +38,6 @@ class HomeUser extends React.Component{
           name: this.state.titleNewTeam,
           admins:Auth.getUserID()
         }).then((response) => {
-          console.log(response.data)
           this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
         })
@@ -74,13 +69,12 @@ class HomeUser extends React.Component{
         )
     }
 
-    renderTeams(list){
-        const teams = this.state.teams
+    renderTeams(teams){
         const teamItems = teams.map((team, index)=>
           <div key = {index}>
           <hr />
           <h3> TEAM {team.name}</h3>
-          <Home key={index} boards={team.boards} teamId={team._id} socket={this.socket}/>
+          <Home key={index} teamId={team._id} socket={this.socket}/>
          </div>
         );
         return teamItems
