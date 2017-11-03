@@ -35,24 +35,30 @@ router.post('/board/:idBoard', function (req, res, next) {
     })
 })
 
-router.put('/:id/board/:boardId', function (req, res, next) {
+router.put('/:id/board/:idBoard', function (req, res, next) {
     // Update the label having the id given in parameter and that is contained in the board having the id given in parameter
     const id = req.params.id
-    const boardId = req.params.boardId
-    Board.findOneAndUpdate(
+    const idBoard = req.params.idBoard
+    Board.findOne(
         {
-            _id : boardId,
+            _id : idBoard,
             labels: {$elemMatch: {_id: id}}
         },
-        {
-            "labels.$.title" : ('undefined' !== typeof req.body.title) ? req.body.title : undefined,
-            "labels.$.color": ('undefined' !== typeof req.body.color) ? req.body.color : undefined
+        (err, board) => {
+            if (err) res.status(401).send(err)
+            else{
+                if ('undefined' !== typeof req.body.color) board.labels.id(id).color = req.body.color
+                if ('undefined' !== typeof req.body.title) board.labels.id(id).title = req.body.title
+                board.save((err, board) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The label of id " + id + " has been successfully updated")
+                        res.status(200).send(board.labels.id(id))
+                    }                
+                })
+            }
         }
-    ).then(function() {
-        res.status(200).send("The label of id " + id + " has been successfully updated")
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    )
 })
 
 /**

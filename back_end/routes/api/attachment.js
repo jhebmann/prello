@@ -66,8 +66,29 @@ router.post('/card/:idCard', function (req, res, next) {
     })
 })
 
-router.put('/:id', function (req, res, next) {
+router.put('/:id/card/:idCard', function (req, res, next) {
     // Update the attachment having the id given in parameter
+    const id = req.params.id
+    const idCard = req.params.idCard
+    Card.findOne(
+        {
+            _id : idCard,
+            attachments: {$elemMatch: {_id: id}}
+        },
+        (err, card) => {
+            if (err) res.status(401).send(err)
+            else{
+                if ('undefined' !== typeof req.body.title) card.attachments.id(id).title = req.body.title
+                card.save((err, card) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The attachment of id " + id + " has been successfully updated")
+                        res.status(200).send(card.attachments.id(id))
+                    }                
+                })
+            }
+        }
+    )
 })
 
 router.delete('/:id', function (req, res, next) {

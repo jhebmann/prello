@@ -140,16 +140,26 @@ router.delete('/', function (req, res, next) {
 
 router.put('/:id', function (req, res, next) {
     // Update the team with the id given in parameter
-    Team.findOneAndUpdate({_id : req.params.id},
+    const id = req.params.id
+    Team.findOne(
         {
-            "name": ('undefined' !== typeof req.body.name) ? req.body.name : null ,
-            "description" : ('undefined' !== typeof req.body.description) ? req.body.description : null
+            _id : id,
+        },
+        (err, team) => {
+            if (err) res.status(401).send(err)
+            else {
+                if ('undefined' !== typeof req.body.name) team.name = req.body.name
+                if ('undefined' !== typeof req.body.description) team.description = req.body.description
+                team.save((err, team) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The team of id " + id + " has been successfully updated")
+                        res.status(200).send(team)
+                    }                
+                })
+            }
         }
-    ).then(function(team) {
-        res.status(200).send(team)
-    }).catch(function(err) {
-        res.send(err)
-    })
+    )
 })
 
 

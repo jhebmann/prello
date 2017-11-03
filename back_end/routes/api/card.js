@@ -74,24 +74,42 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
 
 router.put('/:id', function (req, res, next) {
     // Update the card having the id given in parameter
-    Card.findOneAndUpdate({_id : req.params.id},
+    const id = req.params.id
+    Card.findOne(
         {
-            "title": ('undefined' !== typeof req.body.title) ? req.body.title : undefined,
-            "description" : ('undefined' !== typeof req.body.description) ? req.body.description : undefined,
-            "dueDate" : ('undefined' !== typeof req.body.dueDate) ? req.body.dueDate : undefined,
-            "doneDate" : ('undefined' !== typeof req.body.doneDate) ? req.body.doneDate : undefined,
-            "createdAt" : ('undefined' !== typeof req.body.createdAt) ? req.body.createdAt : undefined,
-            "isArchived" : ('undefined' !== typeof req.body.isArchived) ? req.body.isArchived : undefined,
-            "checklists" : ('undefined' !== typeof req.body.checklists) ? req.body.checklists : undefined,
-            "attachments" : ('undefined' !== typeof req.body.attachments) ? req.body.attachments : undefined,
-            "comments" : ('undefined' !== typeof req.body.comments) ? req.body.comments : undefined,
-            "labels" : ('undefined' !== typeof req.body.labels) ? req.body.labels : undefined
+            _id : id,
         },
+        (err, card) => {
+            if (err) res.status(401).send(err)
+            else{
+                if ('undefined' !== typeof req.body.title) card.title = req.body.title
+                if ('undefined' !== typeof req.body.description) card.description = req.body.description
+                if ('undefined' !== typeof req.body.dueDate) card.dueDate = req.body.dueDate
+                if ('undefined' !== typeof req.body.doneDate) card.doneDate = req.body.doneDate
+                if ('undefined' !== typeof req.body.isArchived) card.isArchived = req.body.isArchived
+                card.save((err, card) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The card of id " + id + " has been successfully updated")
+                        res.status(200).send(card)
+                    }                
+                })
+            }
+        }
+    )
+})
+
+router.put('/:id/user/:idUser', function (req, res, next) {
+    // Update the card having the id given in parameter to add a user to it
+    const id = req.params.id
+    const idUser = req.params.idUser
+    Card.findOneAndUpdate({_id : id},
+        {$push: {$users: idUser}},
         {new: true}
     ).then(function(card) {
         res.status(200).send(card)
     }).catch(function(err) {
-        res.send(err)
+        res.status(401).send(err)
     })
 })
 

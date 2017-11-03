@@ -81,18 +81,20 @@ router.put('/:id/board/:idBoard', function (req, res, next) {
             lists: {$elemMatch: {_id: id}}
         },
         (err, board) => {
-            if ('undefined' !== typeof req.body.pos) board.lists.id(id).pos = req.body.pos
-            if ('undefined' !== typeof req.body.title) board.lists.id(id).title = req.body.title
-            board.save()
+            if (err) res.status(401).send(err)
+            else {
+                if ('undefined' !== typeof req.body.pos) board.lists.id(id).pos = req.body.pos
+                if ('undefined' !== typeof req.body.title) board.lists.id(id).title = req.body.title
+                board.save((err, board) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The list of id " + id + " has been successfully updated")
+                        res.status(200).send(board.lists.id(id))
+                    }                
+                })
+            }
         }
-    ).then(function(board) {
-        console.log("The list of id " + id + " has been successfully updated")
-        res.status(200).send(board.lists.filter(function(list){
-            return String(list._id) === req.params.id
-        })[0])
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    )
 })
 
 /**

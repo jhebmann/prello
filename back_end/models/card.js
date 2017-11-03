@@ -27,6 +27,10 @@ const CardSchema = new Schema({
       type: Boolean,
       default: false
     },
+    users: {
+        type: [Schema.ObjectId],
+        ref: 'User'
+    },
     checklists : {
       type: [CheckListSchema],
       default: []

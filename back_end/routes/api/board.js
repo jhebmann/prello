@@ -133,17 +133,26 @@ router.post('/team/:idTeam', function (req, res, next) {
 
 router.put('/:id', function (req, res, next) {  
     // Update the board having the id given in parameter
-    Board.findOneAndUpdate({_id : req.params.id},
+    const id = req.params.id
+    Board.findOne(
         {
-            "title": ('undefined' !== typeof req.body.title) ? req.body.title : undefined ,
-            "isPublic" : ('undefined' !== typeof req.body.isPublic) ? req.body.isPublic : undefined
+            _id : id,
         },
-        {new: true}
-    ).then(function(board) {
-        res.status(200).send(board)
-    }).catch(function(err) {
-        res.send(err)
-    })
+        (err, board) => {
+            if (err) res.status(401).send(err)
+            else{
+                if ('undefined' !== typeof req.body.title) board.title = req.body.title
+                if ('undefined' !== typeof req.body.isPublic) board.isPublic = req.body.isPublic
+                board.save((err, board) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The board of id " + id + " has been successfully updated")
+                        res.status(200).send(board)
+                    }                
+                })
+            }
+        }
+    )
 })
 
 router.delete('/:id', function (req, res, next) {

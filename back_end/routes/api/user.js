@@ -51,7 +51,7 @@ router.post('/', function (req, res, next) {
             password : req.body.local.password,
             mail : req.body.local.mail,
             firstname : req.body.local.firstname,
-            lastnamme : req.body.local.lastnamme
+            lastname : req.body.local.lastname
         },
         ldap : {
             nickname : req.body.ldap.nickname,
@@ -84,17 +84,26 @@ router.delete('/', function (req, res, next) {
 
 
 router.put('/:id', function (req, res, next) {
-    // Update the user having the id given in parameter (not completed)
-    User.findOneAndUpdate({_id : req.params.id},
+    // Update the user having the id given in parameter
+    const id = req.params.id
+    User.findOne(
         {
-            "local.nickname": ('undefined' !== typeof req.body.local.nickname) ? req.body.local.nickname : null ,
-            "local.password" : ('undefined' !== typeof req.body.local.password) ? req.body.local.password : null
+            _id : id,
+        },
+        (err, user) => {
+            if (err) res.status(401).send(err)
+            else{
+                if ('undefined' !== typeof req.body.local.password) user.local.password = req.body.local.password
+                user.save((err, user) => {
+                    if (err) res.status(401).send(err)
+                    else {
+                        console.log("The user of id " + id + " has been successfully updated")
+                        res.status(200).send(user)
+                    }                
+                })
+            }
         }
-    ).then(function(user) {
-        res.status(200).send(user)
-    }).catch(function(err) {
-        res.send(err)
-    })
+    )
 })
 
 
