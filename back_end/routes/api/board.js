@@ -173,7 +173,7 @@ router.delete('/:id', function (req, res, next) {
                         if(err) res.status(401).send(err)
                         else{
                             const allLists = board.lists
-                            const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b),0) : []
+                            const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b), []) : []
                             models.cards.remove(
                                 {_id: {$in: allCards}},
                                 (err) => {
