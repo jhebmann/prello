@@ -12,7 +12,7 @@ class Popup extends React.Component{
     constructor(props){
         super(props)
         this.state = {
-            listTitle: this.props.title,
+            listTitle: this.props.listTitle,
             title: this.props.title,
             members: this.props.members,
             labels: this.props.labels,
@@ -20,9 +20,13 @@ class Popup extends React.Component{
             description: this.props.description,
             checklists: this.props.checklists,        
             comments: this.props.comments,
-            activities: this.props.activities
+            activities: this.props.activities,
+            showDescriptionInput: false
         }
         this.deleteCard = this.deleteCard.bind(this)
+        this.updateDescritpionInput = this.updateDescritpionInput.bind(this)
+        this.handleInputChange = this.handleInputChange.bind(this)
+        this.updateDescription = this.updateDescription.bind(this)
 
     }
 
@@ -51,32 +55,52 @@ class Popup extends React.Component{
         const movePopup = {
             overflow: 'hidden'
         }
+
+        let descriptionInput  = null
+        if(!this.state.showDescriptionInput) {
+            descriptionInput = <p onClick={this.updateDescritpionInput} id="textDescription">{this.state.description || 'Edit the description'}</p>
+        } else{
+            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescritpionInput} 
+                            type="text" name="description" onKeyPress={this.handleKeyPress}>{this.state.description}</textarea>
+        }
         
         return(
             <div className="popup">
                 <div className="popupLeft">
                     <div className="inList"> In list {this.state.listTitle} </div>
-                    <div id="inlineElements">
-                        <div className="members inline"> members </div>
-                        <div className="labels inline"> labels </div>
-                        <div className="dueDate inline"> Due date </div>
+                    <div id="inlineElements" className="space">
+                        <div className="members inline"> <span className="spanTitle2"> members </span> 
+                        
+                        </div>
+                        <div className="labels inline"> <span className="spanTitle2">labels </span> 
+                        
+                        </div>
+                        <div className="dueDate inline"> <span className="spanTitle2">Due date </span> 
+                        
+                        </div>
                     </div>
-                    <div className="descritpion"> description </div>
-                    <div className="checklists"> checklists </div>
-                    <div className="comments">
-                        comments 
+                    <div className="descritpion space"> <span className="spanTitle">description </span>
+                        {descriptionInput}
+                    </div>
+                    <div className="checklists space"> <span className="spanTitle">checklists </span> 
+                    
+                    </div>
+                    <div className="comments space">
+                        <span className="spanTitle">comments </span>
                         <textarea>
 
                         </textarea>    
                     </div>
-                    <div className="activities"> activities </div>
+                    <div className="activities space"> <span className="spanTitle">activities </span> 
+                    
+                    </div>
                 </div>
 
                 <div className="popupRight">
                     <div className="popupAdd"> 
                         <h3> Add </h3>
                         <Button className='popupButton' onClick={() => this.addMember.show()}><Glyphicon glyph="user"/> Members</Button>
-                        <Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tag"/> Labels</Button>
+                        <Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tags"/> Labels</Button>
                         <Button className='popupButton' onClick={() => this.addChecklist.show()}><Glyphicon glyph="check"/> Checklists</Button>
                         <Button className='popupButton' onClick={() => this.addDueDate.show()}><Glyphicon glyph="time"/> Due date</Button>
                         <Button className='popupButton' onClick={() => this.addAttachment.show()}><Glyphicon glyph="paperclip"/> Attachment</Button>
@@ -109,6 +133,39 @@ class Popup extends React.Component{
 
             </div>
         )
+    }
+
+    handleInputChange = (e) => {
+        this.setState({[e.target.name]: e.target.value})
+    }
+
+    handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            if ("description" === e.target.name) this.updateDescritpionInput()
+        }
+    }
+
+    updateDescritpionInput() {
+        if (this.state.showDescriptionInput){
+            /*axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
+                title: this.state.title,
+                pos : this.state.pos
+            }).then((response) => {
+                this.socket.emit('updateListTitle', response.data._id, this.state.title)
+                this.updateListTitle(response.data._id, this.state.title)
+            })
+            .catch((error) => {
+                'An error occured when updating the list')
+            })*/
+            this.updateDescription(this.props.cardId, this.state.description)
+        }
+        this.setState({showDescriptionInput: !this.state.showDescriptionInput})
+    }
+
+    updateDescription(id, description){
+        if(id === this.props.id){
+            this.setState({description: description})
+        }
     }
 
     deleteCard(e){

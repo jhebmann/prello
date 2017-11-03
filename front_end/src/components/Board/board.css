@@ -1,4 +1,4 @@
-body{
+body {
     font: 13px "Helvetica Neue", Arial, Helvetica, sans-serif;
 	line-height: 18px;
 	color: #4d4d4d;
@@ -15,7 +15,7 @@ body{
     padding-top: 40px;
 }
 
-.board{
+.board {
     padding-left: 20px;
     padding-bottom: 15px;
     padding-right: 15px;
@@ -25,7 +25,7 @@ body{
     height: 85vh;
 }
 
-.addListButton{
+.addListButton {
     display: inline;
     text-decoration: none;
     font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
@@ -51,25 +51,29 @@ body{
     overflow-y: auto;
 }
 
-.listHead{
+.listHead {
     padding-bottom: 5px;
 }
 
-.listTitle{
+.listTitle {
     text-align: center;
     padding-top: 0px;
     cursor: pointer;
 }
 
-.card{
+.card {
     overflow-y: auto;
     height: 100%;
     cursor: pointer;
 }
 
-.cardButton{
+.cardButton {
     margin-top: 10px;
     margin-left: 4px;
+}
+
+.popup {
+    padding-left: 15px;
 }
 
 .popupLeft {
@@ -96,4 +100,24 @@ body{
 .inline {
     display: inline;
     color: #838c91;
+    padding-right: 50px;
+}
+
+.spanTitle {
+    display: block;
+    font-size: 150%;
+    font-weight: bold;
+}
+
+.spanTitle2 {
+    font-size: 150%;
+    font-weight: bold;
+}
+
+.space {
+    padding-top: 20px;
+}
+
+#textDescription {
+    cursor: pointer;
 }
