@@ -94,6 +94,15 @@ router.get('/:id/admins', function (req, res, next) {
     })
 })
 
+router.get('/:id/users', function (req, res, next) {
+    // Get all users of the board having the id given in parameter
+    Board.findById(req.params.id).then(function(board){
+        res.status(200).send(board.users)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
 router.post('/team/:idTeam', function (req, res, next) {
     // Post a new board
     const newBoard = new Board({
