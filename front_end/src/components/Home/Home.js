@@ -1,5 +1,4 @@
 import React from 'react'
-import SocketIOClient from 'socket.io-client'
 import {Button,FormControl,Grid,Row,Col,Thumbnail} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
@@ -15,40 +14,39 @@ class Home extends React.Component{
       teamId: this.props.teamId,
       titleNewBoard: null
     }
-    this.socket = SocketIOClient('http://localhost:8000')
+    this.socket = this.props.socket
    
     //Event Listeners
     this.renderBoards = this.renderBoards.bind(this)
-    this.onClickAddPrivateBoard = this.onClickAddPrivateBoard.bind(this)
-    this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)    
+    this.onClickAddBoard = this.onClickAddBoard.bind(this)
     this.addBoard = this.addBoard.bind(this)
     this.deleteBoard = this.deleteBoard.bind(this)
-    this.onClickAddTeam = this.onClickAddTeam.bind(this) 
     this.socket.on('addBoard', this.addBoard)
     this.socket.on('deleteBoard', this.deleteBoard)
     this.handleBoardTitleInputChange = this.handleBoardTitleInputChange.bind(this)
   }
 
   componentWillMount() {
-    axios.get(url.api + 'team/' + this.state.teamId + '/boards',{
+    let route ='team/' + this.state.teamId + '/boards'
+    if(this.props.public)
+      route='board/public'
+    axios.get(url.api + route,{
     })
     .then((response) => {
       this.setState({boards:response.data})
     })
     .catch((error) => {
-      alert('An error occured when getting the boards!\nHint: check that the server is running')
+      alert('An error occured when getting the teams!\nHint: check that the server is running')
     })
   }
 
   render(){
     return(
         <div>
-          <p style={{display: "inline-flex"}}>
+          {Auth.isUserAuthenticated() ? (<p style={{display: "inline-flex"}}>
             <FormControl name="board" type="text" onChange={this.handleBoardTitleInputChange} 
-                        value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress}/>
-          </p>
-          {Auth.isUserAuthenticated() ? (<Button bsStyle="success" className='addBoardButton' onClick={this.onClickAddPrivateBoard}>Add Board</Button>):(<div></div>)}
-          <Button bsStyle="primary" className='addBoardButton' onClick={this.onClickAddPublicBoard}>Add Public Board</Button>
+                value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress}/>
+            <Button bsStyle="success" className='addBoardButton' onClick={this.onClickAddBoard}>Add Board</Button></p>):(<div></div>)}
           <Grid>
             <Row>
               {this.renderBoards(this.state.boards)}
@@ -58,13 +56,15 @@ class Home extends React.Component{
     )
 }
   
-  
-  postBoard(isPublic){
-    axios.post(url.api + 'board/team/' + this.state.teamId, {
+onClickAddBoard(){
+    let route='board'
+    if(!this.props.public)
+      route='board/team/' + this.state.teamId
+    axios.post(url.api + route , {
       title: this.state.titleNewBoard,
       admins:Auth.getUserID(),
       users:Auth.getUserID(),
-      isPublic:isPublic
+      isPublic:this.props.public
     }).then((response) => {
       this.socket.emit("newBoard", response.data, this.state.teamId)
       this.addBoard(response.data, this.state.teamId)
@@ -75,38 +75,17 @@ class Home extends React.Component{
     })
   }
 
-  onClickAddPublicBoard(){
-    this.postBoard(true)
-  }
-
-  onClickAddPrivateBoard(){
-    this.postBoard(false)
-  }
-
   handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      if ("board" === e.target.name) this.onClickAddPublicBoard()
+      if ("board" === e.target.name) this.onClickAddBoard()
     }
   }
 
   addBoard(board,teamId){
-    if (teamId===this.state.teamId)
+    if (teamId===this.state.teamId || (board.isPublic && this.props.public))
       this.setState(prevState=>({
           boards: prevState.boards.concat(board)
       }))
-  }
-
-  onClickAddTeam(){
-    axios.post(url.api + 'team', {
-      name: this.state.titleNewBoard,
-      admins:Auth.getUserID(),
-      users:Auth.getUserID()
-    }).then((response) => {
-      
-    })
-    .catch((error) => {
-      alert('An error occured when adding the board')
-    })
   }
 
   handleBoardTitleInputChange(e) {  
@@ -147,6 +126,5 @@ class Home extends React.Component{
     return boardItems
   }
 }
-
 
 export default Home

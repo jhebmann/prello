@@ -14,34 +14,39 @@ class HomeUser extends React.Component{
     //Default State
     this.state={
       teams: [],
-      titleNewTeam: null
+      textImput: null,
+      publicBoards:null
     }
     this.socket = SocketIOClient('http://localhost:8000')
     this.addTeam = this.addTeam.bind(this);   
-    this.onClickAddTeam = this.onClickAddTeam.bind(this) 
+    this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)    
+    this.onClickAddTeam = this.onClickAddTeam.bind(this)
+    this.renderPublicBoards = this.renderPublicBoards.bind(this) 
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
     this.socket.on("addTeam", this.addTeam)
     }
 
     componentWillMount() {
-        axios.get(url.api + 'user/' + Auth.getUserID() + '/teams',{
-        })
-        .then((response) => {
-          this.setState({teams:response.data})
-        })
-        .catch((error) => {
-          alert('An error occured when getting the teams!\nHint: check that the server is running')
-        })
+        if(Auth.isUserAuthenticated()){
+            axios.get(url.api + 'user/' + Auth.getUserID() + '/teams',{
+            })
+            .then((response) => {
+            this.setState({teams:response.data})
+            })
+            .catch((error) => {
+            alert('An error occured when getting the teams!\nHint: check that the server is running')
+            })
+        }
     }
 
     onClickAddTeam(){
         axios.post(url.api + 'team', {
-          name: this.state.titleNewTeam,
+          name: this.state.textImput,
           admins:Auth.getUserID()
         }).then((response) => {
           this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
-          this.setState({titleNewTeam: ""})
+          this.setState({textImput: ""})
         })
         .catch((error) => {
           alert('An error occured when adding the board')
@@ -54,21 +59,36 @@ class HomeUser extends React.Component{
       }))
     }
 
+    onClickAddPublicBoard(){
+        axios.post(url.api + 'board', {
+          title: this.state.textImput,
+          admins:Auth.getUserID(),
+          users:Auth.getUserID(),
+          isPublic:true
+        }).then((response) => {
+          this.socket.emit("newBoard", response.data)
+          this.setState({textImput: ""})
+        })
+        .catch((error) => {
+          alert('An error occured when adding the board')
+        })
+      }
+
     handleTeamInputChange(e) {  
-      this.setState({titleNewTeam: e.target.value});
+      this.setState({textImput: e.target.value});
     }
 
     render(){
         return(
           <div id="mainPage">
-            <div id="teamForm" style={{display: "inline-flex"}}>
-              <FormControl name="team" type="text" onChange={this.handleTeamInputChange} placeholder="Team Title" 
-                            value={this.state.titleNewTeam} onKeyPress={this.handleKeyPress}/>
-            </div>
-            <Button bsStyle="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button>
+            {Auth.isUserAuthenticated() ? (<div id="teamForm" style={{display: "inline-flex"}}>
+            <FormControl name="team" type="text" onChange={this.handleTeamInputChange} placeholder="Title" 
+                value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
+                <Button bsStyle="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
             <Grid>
               <Row>
                 {this.renderTeams(this.state.teams)}
+                {this.renderPublicBoards(this.state.publicBoards)}
               </Row>
             </Grid>
           </div> 
@@ -80,10 +100,18 @@ class HomeUser extends React.Component{
           <div key = {index}>
             <hr />
             <h3> TEAM {team.name}</h3>
-            <Home key={index} teamId={team._id} socket={this.socket}/>
+            <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
           </div>
         )
         return teamItems
+    }
+
+    renderPublicBoards(publicBoards){
+        return <div>
+        <hr />
+        <h3> Public Boards</h3>
+        <Home public={true} socket={this.socket}/>
+        </div>
     }
 
     handleKeyPress = (e) => {
@@ -91,7 +119,6 @@ class HomeUser extends React.Component{
         if ("team" === e.target.name) this.onClickAddTeam()
       }
     }
-
 }
 
 export default HomeUser
