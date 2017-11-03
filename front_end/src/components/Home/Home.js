@@ -26,7 +26,7 @@ class Home extends React.Component{
     this.onClickAddTeam = this.onClickAddTeam.bind(this) 
     this.socket.on('addBoard', this.addBoard)
     this.socket.on('deleteBoard', this.deleteBoard)
-    this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this)
+    this.handleBoardTitleInputChange = this.handleBoardTitleInputChange.bind(this)
   }
 
   componentWillMount() {
@@ -43,9 +43,12 @@ class Home extends React.Component{
   render(){
     return(
         <div>
-          <p style={{display: "inline-flex"}}><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Board Title" /></p>
-          {Auth.isUserAuthenticated() ? (<Button bsStyle="success" className='addListButton' onClick={this.onClickAddPrivateBoard}>Add Board</Button>):(<div></div>)}
-          <Button bsStyle="primary" className='addListButton' onClick={this.onClickAddPublicBoard}>Add Public Board</Button>
+          <p style={{display: "inline-flex"}}>
+            <FormControl name="board" type="text" onChange={this.handleBoardTitleInputChange} 
+                        value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress}/>
+          </p>
+          {Auth.isUserAuthenticated() ? (<Button bsStyle="success" className='addBoardButton' onClick={this.onClickAddPrivateBoard}>Add Board</Button>):(<div></div>)}
+          <Button bsStyle="primary" className='addBoardButton' onClick={this.onClickAddPublicBoard}>Add Public Board</Button>
           <Grid>
             <Row>
               {this.renderBoards(this.state.boards)}
@@ -65,6 +68,7 @@ class Home extends React.Component{
     }).then((response) => {
       this.socket.emit("newBoard", response.data, this.state.teamId)
       this.addBoard(response.data, this.state.teamId)
+      this.setState({titleNewBoard: ""})
     })
     .catch((error) => {
       alert('An error occured when adding the board')
@@ -79,6 +83,12 @@ class Home extends React.Component{
     this.postBoard(false)
   }
 
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      if ("board" === e.target.name) this.onClickAddPublicBoard()
+    }
+  }
+
   addBoard(board,teamId){
     if (teamId===this.state.teamId)
       this.setState(prevState=>({
@@ -87,7 +97,7 @@ class Home extends React.Component{
   }
 
   onClickAddTeam(){
- axios.post(url.api + 'team', {
+    axios.post(url.api + 'team', {
       name: this.state.titleNewBoard,
       admins:Auth.getUserID(),
       users:Auth.getUserID()
@@ -99,7 +109,7 @@ class Home extends React.Component{
     })
   }
 
-  handleCardTitleInputChange(e) {  
+  handleBoardTitleInputChange(e) {  
     this.setState({titleNewBoard: e.target.value});
   }
 
@@ -124,16 +134,15 @@ class Home extends React.Component{
     const boards = this.state.boards
     const boardItems = boards.map((board, index)=>
       <Col key = {index} xs = {6} md = {4}>
-      <Button bsStyle="danger" onClick={() => this.onClickDeleteBoard(board._id)}>Delete Board</Button>
-      <Thumbnail style={{background:"aliceblue"}} href={"/board/" + board._id}>
-        <h3>{board.title || 'Undefined'}</h3>
-        <p>Description</p>
-        {(board.isPublic) ?(
-          <p>Public Board</p>):(
-          <p>Private Board</p>)
-        }</Thumbnail>
+        <Button bsStyle="danger" onClick={() => this.onClickDeleteBoard(board._id)}>Delete Board</Button>
+        <Thumbnail style={{background:"aliceblue"}} href={"/board/" + board._id}>
+          <h3>{board.title || 'Undefined'}</h3>
+          <p>Description</p>
+          {(board.isPublic) ?(
+            <p>Public Board</p>):(
+            <p>Private Board</p>)
+          }</Thumbnail>
     </Col>
-    
     );
     return boardItems
   }

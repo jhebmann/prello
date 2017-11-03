@@ -53,8 +53,9 @@ app.use('/api', require('./routes'))
 
 // Database declaration
 const mongoose = require('mongoose')
-mongoose.Promise = global.Promise;
 const configDb = require('./config/database')
+mongoose.Promise = global.Promise
+
 mongoose.connect(configDb.mongodbUri, configDb.options, function(err, db) {
     if (err) {
         console.log('Unable to connect to the server. Please start mongod.')

@@ -5,6 +5,7 @@ import {Button,FormControl,Grid,Row} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';
+import './home.css'
 
 class HomeUser extends React.Component{
     
@@ -18,7 +19,7 @@ class HomeUser extends React.Component{
     this.socket = SocketIOClient('http://localhost:8000')
     this.addTeam = this.addTeam.bind(this);   
     this.onClickAddTeam = this.onClickAddTeam.bind(this) 
-    this.handleCardTitleInputChange = this.handleCardTitleInputChange.bind(this)
+    this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
     this.socket.on("addTeam", this.addTeam)
     }
 
@@ -40,6 +41,7 @@ class HomeUser extends React.Component{
         }).then((response) => {
           this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
+          this.setState({titleNewTeam: ""})
         })
         .catch((error) => {
           alert('An error occured when adding the board')
@@ -47,19 +49,23 @@ class HomeUser extends React.Component{
       }
 
     addTeam(team){
-    this.setState(prevState=>({
-        teams: prevState.teams.concat(team)
-    }))
+      this.setState(prevState=>({
+          teams: prevState.teams.concat(team)
+      }))
     }
 
-    handleCardTitleInputChange(e) {  
-    this.setState({titleNewTeam: e.target.value});
+    handleTeamInputChange(e) {  
+      this.setState({titleNewTeam: e.target.value});
     }
 
     render(){
-        return(<div>
-            <p style={{display: "inline-flex"}}><FormControl type="text" onChange={this.handleCardTitleInputChange} placeholder="Team Title" /></p>
-            <Button bsStyle="primary" className='addListButton' onClick={this.onClickAddTeam}>Create Team</Button>
+        return(
+          <div id="mainPage">
+            <div id="teamForm" style={{display: "inline-flex"}}>
+              <FormControl name="team" type="text" onChange={this.handleTeamInputChange} placeholder="Team Title" 
+                            value={this.state.titleNewTeam} onKeyPress={this.handleKeyPress}/>
+            </div>
+            <Button bsStyle="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button>
             <Grid>
               <Row>
                 {this.renderTeams(this.state.teams)}
@@ -72,13 +78,20 @@ class HomeUser extends React.Component{
     renderTeams(teams){
         const teamItems = teams.map((team, index)=>
           <div key = {index}>
-          <hr />
-          <h3> TEAM {team.name}</h3>
-          <Home key={index} teamId={team._id} socket={this.socket}/>
-         </div>
-        );
+            <hr />
+            <h3> TEAM {team.name}</h3>
+            <Home key={index} teamId={team._id} socket={this.socket}/>
+          </div>
+        )
         return teamItems
+    }
+
+    handleKeyPress = (e) => {
+      if (e.key === 'Enter') {
+        if ("team" === e.target.name) this.onClickAddTeam()
       }
+    }
+
 }
 
 export default HomeUser
