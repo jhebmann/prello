@@ -103,6 +103,25 @@ router.get('/:id/users', function (req, res, next) {
     })
 })
 
+router.post('/', function (req, res, next) {
+    // Post a new board
+    const newBoard = new Board({
+        title: req.body.title,
+        admins: req.body.admins,
+        isPublic: req.body.isPublic
+    })
+    newBoard.save(
+        {},
+        (err, insertedBoard) => {
+            if (err) res.status(401).send(err)
+            else {
+                console.log("Board of id " + insertedBoard._id + " Added")
+                res.status(200).send(insertedBoard)
+                }
+            }
+    )
+})
+
 router.post('/team/:idTeam', function (req, res, next) {
     // Post a new board
     const newBoard = new Board({
