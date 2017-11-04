@@ -29,7 +29,7 @@ class Popup extends React.Component{
             card: this.props.card
         }
         this.deleteCard = this.deleteCard.bind(this)
-        this.updateDescritpionInput = this.updateDescritpionInput.bind(this)
+        this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
         this.updateDescription = this.updateDescription.bind(this)
 
@@ -63,9 +63,9 @@ class Popup extends React.Component{
 
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
-            descriptionInput = <p onClick={this.updateDescritpionInput} id="textDescription">{this.state.description || 'Edit the description'}</p>
+            descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.description || 'Edit the description'}</p>
         } else{
-            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescritpionInput} 
+            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
                             type="text" name="description" onKeyPress={this.handleKeyPress}>{this.state.description}</textarea>
         }
         
@@ -84,7 +84,7 @@ class Popup extends React.Component{
                         
                         </div>
                     </div>
-                    <div className="descritpion space"> <span className="spanTitle">description </span>
+                    <div className="description space"> <span className="spanTitle">description </span>
                         {descriptionInput}
                     </div>
                     <div className="checklists space"> <span className="spanTitle">checklists </span> 
@@ -146,11 +146,11 @@ class Popup extends React.Component{
 
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-            if ("description" === e.target.name) this.updateDescritpionInput()
+            if ("description" === e.target.name) this.updateDescriptionInput()
         }
     }
 
-    updateDescritpionInput() {
+    updateDescriptionInput() {
         if (this.state.showDescriptionInput){
             axios.put(url.api + 'card/' + this.props.cardId, {
                 title : this.state.title,
