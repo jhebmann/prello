@@ -15,24 +15,28 @@ class Popup extends React.Component{
         super(props)
         this.state = {
             listTitle: this.props.listTitle,
+            card: this.props.card,
             title: this.props.title,
+            description: this.props.description,
+            dueDate: this.props.dueDate,
+            doneDate: this.props.doneDate,
             members: this.props.members,
             labels: this.props.labels,
-            dueDate: this.props.date,
-            doneDate: undefined,
-            isArchived: false,
-            description: this.props.description,
             checklists: this.props.checklists,        
             comments: this.props.comments,
             activities: this.props.activities,
-            showDescriptionInput: false,
-            card: this.props.card
+            isArchived: false,            
+            showDescriptionInput: false
         }
+
+        this.socket = this.props.io
         this.deleteCard = this.deleteCard.bind(this)
         this.updateDescritpionInput = this.updateDescritpionInput.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
-        this.updateDescription = this.updateDescription.bind(this)
+        this.updateCard = this.updateCard.bind(this)
 
+        //Event Listeners
+        this.socket.on('updateCardClient', this.updateCard)
     }
 
     render(){
@@ -66,7 +70,7 @@ class Popup extends React.Component{
             descriptionInput = <p onClick={this.updateDescritpionInput} id="textDescription">{this.state.description || 'Edit the description'}</p>
         } else{
             descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescritpionInput} 
-                            type="text" name="description" onKeyPress={this.handleKeyPress}>{this.state.description}</textarea>
+                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.description}></textarea>
         }
         
         return(
@@ -88,7 +92,7 @@ class Popup extends React.Component{
                         {descriptionInput}
                     </div>
                     <div className="checklists space"> <span className="spanTitle">checklists </span> 
-                    
+                        
                     </div>
                     <div className="comments space">
                         <span className="spanTitle">comments </span>
@@ -124,9 +128,9 @@ class Popup extends React.Component{
                     <Label state={this.state}/>
                 </SkyLight>
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
-                    <Checklist state={this.state}/>
+                    <Checklist checklists={this.state.checklists}/>
                 </SkyLight>
-                <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Add Due Date'>
+                <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Change Due Date'>
                     <DueDate state={this.state}/>
                 </SkyLight>
                 <SkyLight dialogStyles={attachmentPopup} hideOnOverlayClicked ref={ref => this.addAttachment = ref} title='Add Attachment'>
@@ -159,8 +163,8 @@ class Popup extends React.Component{
                 doneDate : this.state.doneDate,
                 isArchived : this.state.isArchived
             }).then((response) => {
-                // this.socket.emit('updateCard', response.data) not implemented yet
-                this.updateDescription(response.data)
+                this.socket.emit('updateCardServer', response.data)
+                this.updateCard(response.data)
             })
             .catch((error) => {
                 alert('An error occured when updating the list')
@@ -169,8 +173,16 @@ class Popup extends React.Component{
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
     }
 
-    updateDescription(card){
-        this.state.card.setState({description: card.description})
+    updateCard(card){
+        if (card._id === this.props.cardId){
+            this.state.card.setState({
+                title: card.title,
+                description: card.description,
+                dueDate: card.dueDate,
+                doneDate: card.doneDate,
+                isArchived: card.isArchived
+            })
+        }
     }
 
     deleteCard(e){

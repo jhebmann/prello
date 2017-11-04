@@ -114,6 +114,10 @@ io.on('connection', (client) => {
     client.on('deleteAllCards', (idList) => {
         client.broadcast.emit('deleteCards', idList)
     })
+
+    client.on('updateCardServer', (card) => {
+        client.broadcast.emit('updateCardClient', card)
+    })
 })
 
 // Server start
