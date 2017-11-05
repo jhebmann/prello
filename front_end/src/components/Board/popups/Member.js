@@ -11,6 +11,7 @@ class Member extends React.Component{
         
         return(
             <div className="member">
+                <hr/>
                 
             </div>
         )

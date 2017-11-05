@@ -58,7 +58,7 @@ class Popup extends React.Component{
         }
 
         const dueDatePopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         const movePopup = {
