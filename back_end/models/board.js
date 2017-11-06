@@ -24,6 +24,11 @@ const BoardSchema = new Schema({
     labels: {
       type: [LabelSchema],
       default: []
+    },
+    teams: {
+      type: [Schema.ObjectId],
+      default: [],
+      ref: 'Team'
     }
 })
 

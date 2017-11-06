@@ -42,7 +42,8 @@ class HomeUser extends React.Component{
     onClickAddTeam(){
         axios.post(url.api + 'team', {
           name: this.state.textImput,
-          admins:Auth.getUserID()
+          admins:Auth.getUserID(),
+          users:Auth.getUserID()
         }).then((response) => {
           this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
