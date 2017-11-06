@@ -15,6 +15,9 @@ body {
     padding-top: 40px;
 }
 
+.react-draggable, .cursor {
+    cursor: move;
+  }
 .board {
     padding-left: 20px;
     padding-bottom: 15px;

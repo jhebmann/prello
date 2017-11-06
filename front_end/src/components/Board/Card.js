@@ -3,9 +3,13 @@ import { Thumbnail, ProgressBar } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Popup from './Popup.js'
 import moment from 'moment'
-
+import Draggable from 'react-draggable';
 
 class Card extends React.Component{
+   eventLogger = (e: MouseEvent, data: Object) => {
+        console.log('Event: ', e);
+        console.log('Data: ', data);
+      };
     constructor(props){
         super(props)
         this.state = {
@@ -37,16 +41,24 @@ class Card extends React.Component{
         }
         
         const dueDateDiv = <p>{(this.state.dueDate) ? moment(this.state.dueDate).format('DD MMM') : ''}</p>
-
+        
         return(
+          
+            
+       
             <div>
+                <Draggable
+                >
+                <div>
                 <Thumbnail onClick={() => this.customDialog.show()} className='card' >
                     <ProgressBar bsStyle="danger" now={100} />
                     {dueDateDiv}
                     <h4>{this.state.title}</h4>
                     <p> {this.state.description} </p>
                 </Thumbnail>
-                
+                </div>
+                </Draggable>
+               
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} title={this.state.title}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardId = {this.props.cardId} title = {this.state.title}
                             description = {this.state.description} dueDate = {this.state.dueDate} doneDate = {this.state.doneDate} 
@@ -54,6 +66,7 @@ class Card extends React.Component{
                             io={this.socket}/>
                 </SkyLight>
             </div>
+           
             
         )
     }
