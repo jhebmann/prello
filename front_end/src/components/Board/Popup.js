@@ -9,30 +9,36 @@ import Member from './popups/Member'
 import MoveCard from './popups/MoveCard'
 import axios from 'axios'
 import url from '../../config'
+import moment from 'moment'
 
 class Popup extends React.Component{
     constructor(props){
         super(props)
         this.state = {
             listTitle: this.props.listTitle,
+            card: this.props.card,
+            cardId: this.props.cardId,
             title: this.props.title,
+            description: this.props.description,
+            dueDate: this.props.dueDate,
+            doneDate: this.props.doneDate,
             members: this.props.members,
             labels: this.props.labels,
-            dueDate: this.props.date,
-            doneDate: undefined,
-            isArchived: false,
-            description: this.props.description,
             checklists: this.props.checklists,        
             comments: this.props.comments,
             activities: this.props.activities,
-            showDescriptionInput: false,
-            card: this.props.card
+            isArchived: false,            
+            showDescriptionInput: false
         }
+
+        this.socket = this.props.io
         this.deleteCard = this.deleteCard.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
-        this.updateDescription = this.updateDescription.bind(this)
+        this.updateCard = this.updateCard.bind(this)
 
+        //Event Listeners
+        this.socket.on('updateCardClient', this.updateCard)
     }
 
     render(){
@@ -54,7 +60,7 @@ class Popup extends React.Component{
         }
 
         const dueDatePopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         const movePopup = {
@@ -65,8 +71,8 @@ class Popup extends React.Component{
         if(!this.state.showDescriptionInput) {
             descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.description || 'Edit the description'}</p>
         } else{
-            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
-                            type="text" name="description" onKeyPress={this.handleKeyPress}>{this.state.description}</textarea>
+            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescritpionInput} 
+                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.description}></textarea>
         }
         
         return(
@@ -74,21 +80,24 @@ class Popup extends React.Component{
                 <div className="popupLeft">
                     <div className="inList"> In list {this.state.listTitle} </div>
                     <div id="inlineElements" className="space">
-                        <div className="members inline"> <span className="spanTitle2"> members </span> 
-                        
+                        <div className="members inline"> 
+                            <span className="spanTitle2"> members </span> 
+                            {this.state.members + '+'}
                         </div>
-                        <div className="labels inline"> <span className="spanTitle2">labels </span> 
-                        
+                        <div className="labels inline"> 
+                            <span className="spanTitle2">labels </span> 
+                            {this.state.labels + '+'}
                         </div>
-                        <div className="dueDate inline"> <span className="spanTitle2">Due date </span> 
-                        
+                        <div className="dueDate inline"> 
+                            <span className="spanTitle2">Due date </span> 
+                            {(this.state.dueDate) ? moment(this.state.dueDate).format('DD MMM') : ''}
                         </div>
                     </div>
                     <div className="description space"> <span className="spanTitle">description </span>
                         {descriptionInput}
                     </div>
                     <div className="checklists space"> <span className="spanTitle">checklists </span> 
-                    
+                        
                     </div>
                     <div className="comments space">
                         <span className="spanTitle">comments </span>
@@ -124,10 +133,10 @@ class Popup extends React.Component{
                     <Label state={this.state}/>
                 </SkyLight>
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
-                    <Checklist state={this.state}/>
+                    <Checklist checklists={this.state.checklists}/>
                 </SkyLight>
-                <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Add Due Date'>
-                    <DueDate state={this.state}/>
+                <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Change Due Date'>
+                    <DueDate state={this.state} io={this.socket}/>
                 </SkyLight>
                 <SkyLight dialogStyles={attachmentPopup} hideOnOverlayClicked ref={ref => this.addAttachment = ref} title='Add Attachment'>
                     <Attachment state={this.state}/>
@@ -159,8 +168,8 @@ class Popup extends React.Component{
                 doneDate : this.state.doneDate,
                 isArchived : this.state.isArchived
             }).then((response) => {
-                // this.socket.emit('updateCard', response.data) not implemented yet
-                this.updateDescription(response.data)
+                this.socket.emit('updateCardServer', response.data)
+                this.updateCard(response.data)
             })
             .catch((error) => {
                 alert('An error occured when updating the list')
@@ -169,8 +178,16 @@ class Popup extends React.Component{
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
     }
 
-    updateDescription(card){
-        this.state.card.setState({description: card.description})
+    updateCard(card){
+        if (card._id === this.props.cardId){
+            this.state.card.setState({
+                title: card.title,
+                description: card.description,
+                dueDate: card.dueDate,
+                doneDate: card.doneDate,
+                isArchived: card.isArchived
+            })
+        }
     }
 
     deleteCard(e){

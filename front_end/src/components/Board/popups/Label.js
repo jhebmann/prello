@@ -11,6 +11,7 @@ class Label extends React.Component{
         
         return(
             <div className="label">
+                <hr/>
                 
             </div>
         )
