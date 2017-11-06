@@ -9,6 +9,7 @@ import Member from './popups/Member'
 import MoveCard from './popups/MoveCard'
 import axios from 'axios'
 import url from '../../config'
+import moment from 'moment'
 
 class Popup extends React.Component{
     constructor(props){
@@ -16,6 +17,7 @@ class Popup extends React.Component{
         this.state = {
             listTitle: this.props.listTitle,
             card: this.props.card,
+            cardId: this.props.cardId,
             title: this.props.title,
             description: this.props.description,
             dueDate: this.props.dueDate,
@@ -78,14 +80,17 @@ class Popup extends React.Component{
                 <div className="popupLeft">
                     <div className="inList"> In list {this.state.listTitle} </div>
                     <div id="inlineElements" className="space">
-                        <div className="members inline"> <span className="spanTitle2"> members </span> 
-                        
+                        <div className="members inline"> 
+                            <span className="spanTitle2"> members </span> 
+                            {this.state.members + '+'}
                         </div>
-                        <div className="labels inline"> <span className="spanTitle2">labels </span> 
-                        
+                        <div className="labels inline"> 
+                            <span className="spanTitle2">labels </span> 
+                            {this.state.labels + '+'}
                         </div>
-                        <div className="dueDate inline"> <span className="spanTitle2">Due date </span> 
-                        
+                        <div className="dueDate inline"> 
+                            <span className="spanTitle2">Due date </span> 
+                            {(this.state.dueDate) ? moment(this.state.dueDate).format('DD MMM') : ''}
                         </div>
                     </div>
                     <div className="descritpion space"> <span className="spanTitle">description </span>
@@ -131,7 +136,7 @@ class Popup extends React.Component{
                     <Checklist checklists={this.state.checklists}/>
                 </SkyLight>
                 <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Change Due Date'>
-                    <DueDate state={this.state}/>
+                    <DueDate state={this.state} io={this.socket}/>
                 </SkyLight>
                 <SkyLight dialogStyles={attachmentPopup} hideOnOverlayClicked ref={ref => this.addAttachment = ref} title='Add Attachment'>
                     <Attachment state={this.state}/>

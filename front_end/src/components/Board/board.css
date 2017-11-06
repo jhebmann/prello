@@ -97,8 +97,16 @@ body {
     margin-right: 8px;
 }
 
+#inlineElements {
+    display: flex;
+}
+
 .inline {
     display: inline;
+}
+
+.spanTitle2 {
+    display: block;
     color: #838c91;
     padding-right: 50px;
 }

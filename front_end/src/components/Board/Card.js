@@ -2,6 +2,7 @@ import React from 'react'
 import { Thumbnail, ProgressBar } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Popup from './Popup.js'
+import moment from 'moment'
 
 
 class Card extends React.Component{
@@ -10,7 +11,7 @@ class Card extends React.Component{
         this.state = {
             title: this.props.title ? this.props.title : undefined,
             description: this.props.description ? this.props.description : undefined,
-            dueDate: this.props.date ? this.props.date : undefined,
+            dueDate: this.props.dueDate ? this.props.dueDate : undefined,
             doneDate: this.props.doneDate ? this.props.doneDate : undefined,
             labels: this.props.labels ? this.props.labels : undefined,
             listTitle: this.props.listTitle ? this.props.listTitle : undefined
@@ -35,10 +36,13 @@ class Card extends React.Component{
             backgroundColor: '#EDEFF0'
         }
         
+        const dueDateDiv = <p>{(this.state.dueDate) ? moment(this.state.dueDate).format('DD MMM') : ''}</p>
+
         return(
             <div>
                 <Thumbnail onClick={() => this.customDialog.show()} className='card' >
                     <ProgressBar bsStyle="danger" now={100} />
+                    {dueDateDiv}
                     <h4>{this.state.title}</h4>
                     <p> {this.state.description} </p>
                 </Thumbnail>
