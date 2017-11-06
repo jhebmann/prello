@@ -30,7 +30,7 @@ router.get('/search/:text/user/:userId', function(req, res) {
   })
   */
 
-  let finalResult = []
+  let finalResult = {}
   models.users.findOne(
     {_id: userId},
     (err, user) => {
@@ -45,70 +45,68 @@ router.get('/search/:text/user/:userId', function(req, res) {
             else {
               let idAndNames = []
               teams.forEach((team) => {
-                console.log(team.name)
-                if (team.name.includes(text))
+                if (team.name && team.name.includes(text))
                   idAndNames.push({_id: team._id, name: team.name})
-                console.log(team.boards)
               })
-              finalResult.push({teams: idAndNames})
+              finalResult.teams = idAndNames
+
+              const allBoards = teams.size === 0 ? [] : teams.map((team) => team.boards).reduce((a, b) => a.concat(b), [])
 
               // then we search in the boards titles
               models.boards.find(
                 {
                   $or: [
-                    {_id: {$in: teams.boards}},
+                    {_id: {$in: allBoards}},
                     {isPublic: true}
-                  ],
-                  title: {$regex: text, $options: 'i'}
+                  ]
                 },
                 (err, boards) => {
                   if (err) res.status(401).send(err)
+                  else if (boards.size === 0) res.status.send([])
                   else {
                     let idAndTitles = []
                     boards.forEach((board) => {
-                      idAndTitles.push({_id: board._id, title: board.title})
+                      if (board.title.includes(text))
+                        idAndTitles.push({_id: board._id, title: board.title})
                     })
-                    finalResult.push({boards: idAndTitles})
+                    finalResult.boards = idAndTitles
 
-                    //then we search in the lists titles
-                    models.boards.find(
-                      {"lists.title": {$regex: text, $options: 'i'}},
-                      {"lists.$": 1},
-                      {multi: true},
-                      (err, boards) => {
+                    const allLists = boards.map((board) => board.lists).reduce((a, b) => a.concat(b), [])
+
+                    idAndTitles = []
+
+                    allLists.forEach((list) => {
+                      if (list.title.includes(text))
+                        idAndTitles.push({_id: list._id, title: list.title})
+                    })
+
+                    finalResult.lists = idAndTitles
+
+                    const allCardsIds = allLists.map((list) => list.cards).reduce((a, b) => a.concat(b), [])
+
+                    console.log(allCardsIds)
+
+                    models.cards.find(
+                      {
+                        _id: {$in: allCardsIds}
+                      },
+                      (err, cards) => {
                         if (err) res.status(401).send(err)
                         else {
                           idAndTitles = []
-                          boards.forEach((board) => {
-                            board.lists.forEach((list) => {
-                              idAndTitles.push({_id: list._id, title: list.title})
-                            })
-                          })
-                          finalResult.push({lists: idAndTitles})
-                          
-                          //Then we search in the cards names and titles
-                          models.cards.find(
-                            {$or: [{title: {$regex: text, $options: 'i'}}, {description: {$regex: text, $options: 'i'}}]},
-                            (err, cards) => {
-                              if (err) res.status(401).send(err)
-                              else {
-                                idAndTitles = []
-                                cards.forEach((card) => {
-                                  if (card.title.includes(text) && card.description.includes(text)){
-                                    idAndTitles.push({_id: card._id, title: card.title, description: card.description})
-                                  } else if (card.title.includes(text)){
-                                    idAndTitles.push({_id: card._id, title: card.title})
-                                  } else {
-                                    idAndTitles.push({_id: card._id, description: card.description})
-                                  }
-                                })
-                                finalResult.push({cards: idAndTitles})
-                                
-                                console.log(finalResult)
-                                res.status(200).send(finalResult)
-                              }
+                          cards.forEach((card) => {
+                            if (card.title.includes(text) && card.description.includes(text)){
+                              idAndTitles.push({_id: card._id, title: card.title, description: card.description})
+                            } else if (card.title.includes(text)){
+                              idAndTitles.push({_id: card._id, title: card.title})
+                            } else if (card.description.includes(text)){
+                              idAndTitles.push({_id: card._id, description: card.description})
                             }
-                          )
+                          })
+                          finalResult.cards = idAndTitles
+                          
+                          console.log(finalResult)
+                          res.status(200).send(finalResult)
                         }
                       }
                     )
