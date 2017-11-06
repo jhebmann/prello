@@ -96,11 +96,31 @@ router.get('/:id/admins', function (req, res, next) {
 
 router.get('/:id/users', function (req, res, next) {
     // Get all users of the board having the id given in parameter
-    Board.findById(req.params.id).then(function(board){
-        res.status(200).send(board.users)
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    const id = req.params.id
+    let allUsers = []
+
+    Board.findOne(
+        {_id: id},
+        (err, board) => {
+            if (err || board === null) res.status(401).send("Couldn't find the board of id " + id)
+            else{
+                const boardTeams = board.teams
+                Team.find(
+                    {_id: {$in: boardTeams}},
+                    (err, teams) => {
+                        if (err) res.status(401).send(err)
+                        else if (teams.length === 0) res.status(200).send([])
+                        else{
+                            teams.forEach((team) => {
+                                allUsers = allUsers.concat(team.users)
+                            })
+                            res.status(200).send(allUsers)
+                        }
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.post('/', function (req, res, next) {
@@ -127,7 +147,8 @@ router.post('/team/:idTeam', function (req, res, next) {
     const newBoard = new Board({
         title: req.body.title,
         admins: req.body.admins,
-        isPublic: req.body.isPublic
+        isPublic: req.body.isPublic,
+        teams: [req.params.idTeam]
     })
     newBoard.save(
         {},
