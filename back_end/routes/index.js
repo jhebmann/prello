@@ -20,15 +20,7 @@ router.get('/search/:text/user/:userId', function(req, res) {
   const text = req.params.text
   const userId = req.params.userId
 
-  /*
-  const boardKeys = Object.keys(models.boards.schema.obj)
-
-  let conditions = []
-
-  boardKeys.forEach(function(key){
-    conditions.push({[key]: {$regex: text, $options: 'i'}})
-  })
-  */
+  console.log("The user of id " + userId + " is searching for the text " + text)
 
   let finalResult = {}
   models.users.findOne(
@@ -36,6 +28,8 @@ router.get('/search/:text/user/:userId', function(req, res) {
     (err, user) => {
       if (err) res.status(401).send(err)
       else {
+
+        //First we search in the teams names
         models.teams.find(
           {
             _id: {$in: user.teams}
@@ -43,12 +37,12 @@ router.get('/search/:text/user/:userId', function(req, res) {
           (err, teams) => {
             if (err) res.status(401).send(err)
             else {
-              let idAndNames = []
+              let idsAndNames = []
               teams.forEach((team) => {
                 if (team.name && team.name.includes(text))
-                  idAndNames.push({_id: team._id, name: team.name})
+                  idsAndNames.push({_id: team._id, name: team.name})
               })
-              finalResult.teams = idAndNames
+              finalResult.teams = idsAndNames
 
               const allBoards = teams.size === 0 ? [] : teams.map((team) => team.boards).reduce((a, b) => a.concat(b), [])
 
@@ -64,27 +58,27 @@ router.get('/search/:text/user/:userId', function(req, res) {
                   if (err) res.status(401).send(err)
                   else if (boards.size === 0) res.status.send([])
                   else {
-                    let idAndTitles = []
+                    let idsAndTitles = []
                     boards.forEach((board) => {
                       if (board.title.includes(text))
-                        idAndTitles.push({_id: board._id, title: board.title})
+                        idsAndTitles.push({_id: board._id, title: board.title})
                     })
-                    finalResult.boards = idAndTitles
+                    finalResult.boards = idsAndTitles
 
+                    //Then we search in the lists title
                     const allLists = boards.map((board) => board.lists).reduce((a, b) => a.concat(b), [])
 
-                    idAndTitles = []
+                    idsAndTitles = []
 
                     allLists.forEach((list) => {
                       if (list.title.includes(text))
-                        idAndTitles.push({_id: list._id, title: list.title})
+                        idsAndTitles.push({_id: list._id, title: list.title})
                     })
 
-                    finalResult.lists = idAndTitles
+                    finalResult.lists = idsAndTitles
 
                     const allCardsIds = allLists.map((list) => list.cards).reduce((a, b) => a.concat(b), [])
 
-                    console.log(allCardsIds)
 
                     models.cards.find(
                       {
@@ -93,19 +87,64 @@ router.get('/search/:text/user/:userId', function(req, res) {
                       (err, cards) => {
                         if (err) res.status(401).send(err)
                         else {
-                          idAndTitles = []
+                          idsAndTitles = []
                           cards.forEach((card) => {
                             if (card.title.includes(text) && card.description.includes(text)){
-                              idAndTitles.push({_id: card._id, title: card.title, description: card.description})
+                              idsAndTitles.push({_id: card._id, title: card.title, description: card.description})
                             } else if (card.title.includes(text)){
-                              idAndTitles.push({_id: card._id, title: card.title})
+                              idsAndTitles.push({_id: card._id, title: card.title})
                             } else if (card.description.includes(text)){
-                              idAndTitles.push({_id: card._id, description: card.description})
+                              idsAndTitles.push({_id: card._id, description: card.description})
                             }
                           })
-                          finalResult.cards = idAndTitles
+                          finalResult.cards = idsAndTitles
                           
-                          console.log(finalResult)
+                          if (cards.length !== 0) {
+                            const allComments = cards.map((card) => card.comments).reduce((a, b) => a.concat(b), [])
+                            let idsAndContents = []
+                            allComments.forEach((comment) => {
+                              if (comment.content.includes(text)){
+                                idsAndContents.push({_id: comment._id, content: comment.content})
+                              }
+                            })
+                            finalResult.comments = idsAndContents
+                            
+                            const allAttachments = cards.map((card) => card.attachments).reduce((a, b) => a.concat(b), [])
+                            idsAndTitles = []
+                            allAttachments.forEach((attachment) => {
+                              if (attachment.title.includes(text)){
+                                idsAndTitles.push({_id: attachment._id, title: attachment.title})
+                              }
+                            })
+                            finalResult.attachments = idsAndTitles
+
+                            const allChecklists = cards.map((card) => card.checklists).reduce((a, b) => a.concat(b), [])
+                            idsAndTitles = []
+                            allChecklists.forEach((checklist) => {
+                              if (checklist.title.includes(text)){
+                                idsAndTitles.push({_id: checklist._id, title: checklist.title})
+                              }
+                            })
+                            finalResult.checklists = idsAndTitles
+
+                            if (allChecklists.size !== 0){
+                              const allItems = allChecklists.map((checklist) => checklist.items).reduce((a, b) => a.concat(b), [])
+                              idsAndTitles = []
+                              allItems.forEach((item) => {
+                                if (item.title.includes(text)){
+                                  idsAndTitles.push({_id: item._id, title: item.title})
+                                }
+                              })
+                              finalResult.items = idsAndTitles
+                            } else {
+                              finalResult.items = []
+                            }
+                          } else {
+                            finalResult.comments = []
+                            finalResult.attachments = []
+                            finalResult.checklists = []
+                            finalResult.items = []
+                          }
                           res.status(200).send(finalResult)
                         }
                       }
