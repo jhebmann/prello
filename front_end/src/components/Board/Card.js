@@ -1,5 +1,5 @@
 import React from 'react'
-import { Thumbnail, ProgressBar, Glyphicon } from 'react-bootstrap'
+import { Glyphicon, Thumbnail } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Popup from './Popup.js'
 import moment from 'moment'
@@ -38,8 +38,9 @@ class Card extends React.Component{
         return(
             <div>
                 <Draggable>
-                <div>
+                <div>{(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) ? <div>{this.state.cardInfos.labels.length} labels</div> : ''}
                 <Thumbnail onClick={() => this.customDialog.show()} className='card' >
+                    <div></div>
                     <h4>{this.state.cardInfos.title}</h4>
                     <div><p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p></div>
                     {dueDateDiv}

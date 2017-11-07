@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Glyphicon } from 'react-bootstrap'
+import { Button, Glyphicon, FormControl } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Attachment from './popups/Attachment'
 import Checklist from './popups/Checklist'
@@ -61,8 +61,8 @@ class Popup extends React.Component{
         if(!this.state.showDescriptionInput) {
             descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.cardInfos.description || 'Edit the description'}</p>
         } else{
-            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
-                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description}></textarea>
+            descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
+                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description}></FormControl>
         }
         
         return(
@@ -72,11 +72,11 @@ class Popup extends React.Component{
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
                             <span className="spanTitle2"> members </span> 
-                            {this.state.cardInfos.users + '+'}
+                            {this.state.cardInfos.users} <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
                         </div>
                         <div className="labels inline"> 
                             <span className="spanTitle2">labels </span> 
-                            {this.state.cardInfos.labels + '+'}
+                            {this.state.cardInfos.labels} <Button className='circularButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="plus"/></Button>
                         </div>
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
@@ -91,9 +91,9 @@ class Popup extends React.Component{
                     </div>
                     <div className="comments space">
                         <span className="spanTitle">comments </span>
-                        <textarea>
+                        <FormControl componentClass="textarea">
 
-                        </textarea>    
+                        </FormControl>    
                     </div>
                     <div className="activities space"> <span className="spanTitle">activities </span> 
                     
