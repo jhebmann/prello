@@ -10,6 +10,8 @@ class DueDate extends React.Component{
     constructor(props){
         super(props)
         this.state = {
+            popup: this.props.popup,
+            card: this.props.card,
             dueDate: this.props.dueDate
         }
 
@@ -45,16 +47,12 @@ class DueDate extends React.Component{
     }
 
     onClickUpdateDueDate = (e) => {
-        console.log(this.state.dueDate)
-        axios.put(url.api + 'card/' + this.props.state.cardId, {
+        axios.put(url.api + 'card/' + this.props.card.state.cardInfos._id, {
             dueDate : this.state.dueDate,
             doneDate : null
         }).then((response) => {
-            console.log(this.props)
             this.socket.emit('updateCardServer', response.data)
-            console.log('2')
             this.updateCard(response.data)
-            console.log('3')
         })
         .catch((error) => {
             alert('An error occured when updating the list')
@@ -62,14 +60,12 @@ class DueDate extends React.Component{
     }
 
     updateCard(card){
-        if (card._id === this.props.state.cardId){
-            this.props.state.card.setState({
-                title: card.title,
-                description: card.description,
-                dueDate: card.dueDate,
-                doneDate: card.doneDate,
-                isArchived: card.isArchived
-            })
+        if (card._id === this.props.card.state.cardInfos._id){
+            let newCardInfos = this.state.card.state.cardInfos
+            newCardInfos.dueDate = this.state.dueDate
+            this.state.card.setState({cardInfos: newCardInfos})
+            this.state.popup.setState({cardInfos: newCardInfos})
+            this.setState({dueDate: card.dueDate})
         }
     }
 

@@ -28,13 +28,14 @@ class HomeUser extends React.Component{
 
     componentWillMount() {
         if(Auth.isUserAuthenticated()){
+          console.dir(url.api + 'user/' + Auth.getUserID() + '/teams')
             axios.get(url.api + 'user/' + Auth.getUserID() + '/teams',{
             })
             .then((response) => {
-            this.setState({teams:response.data})
+              this.setState({teams:response.data})
             })
             .catch((error) => {
-            alert('An error occured when getting the teams!\nHint: check that the server is running')
+              alert('An error occured when getting the teams!\nHint: check that the server is running')
             })
         }
     }

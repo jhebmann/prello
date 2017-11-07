@@ -6,20 +6,13 @@ import moment from 'moment'
 import Draggable from 'react-draggable';
 
 class Card extends React.Component{
-   eventLogger = (e: MouseEvent, data: Object) => {
-        console.log('Event: ', e);
-        console.log('Data: ', data);
-      };
     constructor(props){
         super(props)
         this.state = {
-            title: this.props.title ? this.props.title : undefined,
-            description: this.props.description ? this.props.description : undefined,
-            dueDate: this.props.dueDate ? this.props.dueDate : undefined,
-            doneDate: this.props.doneDate ? this.props.doneDate : undefined,
-            labels: this.props.labels ? this.props.labels : undefined,
-            listTitle: this.props.listTitle ? this.props.listTitle : undefined
+            cardInfos: this.props.cardInfos,
+            listTitle: this.props.listTitle
         }
+
 
         this.socket = this.props.io
         this.updateCard = this.updateCard.bind(this)
@@ -40,7 +33,7 @@ class Card extends React.Component{
             backgroundColor: '#EDEFF0'
         }
         
-        const dueDateDiv = <p>{(this.state.dueDate) ? moment(this.state.dueDate).format('DD MMM') : ''}</p>
+        const dueDateDiv = <p>{(this.state.cardInfos.dueDate) ? moment(this.state.cardInfos.dueDate).format('DD MMM') : ''}</p>
         
         return(
           
@@ -53,17 +46,14 @@ class Card extends React.Component{
                 <Thumbnail onClick={() => this.customDialog.show()} className='card' >
                     <ProgressBar bsStyle="danger" now={100} />
                     {dueDateDiv}
-                    <h4>{this.state.title}</h4>
-                    <p> {this.state.description} </p>
+                    <h4>{this.state.cardInfos.title}</h4>
+                    <p> {this.state.cardInfos.description} </p>
                 </Thumbnail>
                 </div>
                 </Draggable>
                
-                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} title={this.state.title}>
-                    <Popup listTitle = {this.state.listTitle} card = {this} cardId = {this.props.cardId} title = {this.state.title}
-                            description = {this.state.description} dueDate = {this.state.dueDate} doneDate = {this.state.doneDate} 
-                            isArchived = {false} members = {[]} labels = {[]} checklists = {[]} comments = {[]} activities = {[]} 
-                            io={this.socket}/>
+                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} title={this.state.cardInfos.title}>
+                    <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} io={this.socket}/>
                 </SkyLight>
             </div>
            
@@ -72,13 +62,13 @@ class Card extends React.Component{
     }
 
     updateCard(card){
-        if (card._id === this.props.cardId){
+        if (card._id === this.state.cardInfos._id){
             this.setState({
-                title: card.title,
-                description: card.description,
-                dueDate: card.dueDate,
-                doneDate: card.doneDate,
-                isArchived: card.isArchived
+                "cardInfos.title": card.title,
+                "cardInfos.description": card.description,
+                "cardInfos.dueDate": card.dueDate,
+                "cardInfos.doneDate": card.doneDate,
+                "cardInfos.isArchived": card.isArchived
             })
         }
     }

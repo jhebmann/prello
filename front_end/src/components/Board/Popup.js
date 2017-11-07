@@ -17,17 +17,7 @@ class Popup extends React.Component{
         this.state = {
             listTitle: this.props.listTitle,
             card: this.props.card,
-            cardId: this.props.cardId,
-            title: this.props.title,
-            description: this.props.description,
-            dueDate: this.props.dueDate,
-            doneDate: this.props.doneDate,
-            members: this.props.members,
-            labels: this.props.labels,
-            checklists: this.props.checklists,        
-            comments: this.props.comments,
-            activities: this.props.activities,
-            isArchived: false,            
+            cardInfos: this.props.cardInfos,
             showDescriptionInput: false
         }
 
@@ -69,10 +59,10 @@ class Popup extends React.Component{
 
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
-            descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.description || 'Edit the description'}</p>
+            descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.cardInfos.description || 'Edit the description'}</p>
         } else{
-            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescritpionInput} 
-                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.description}></textarea>
+            descriptionInput = <textarea autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
+                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description}></textarea>
         }
         
         return(
@@ -82,15 +72,15 @@ class Popup extends React.Component{
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
                             <span className="spanTitle2"> members </span> 
-                            {this.state.members + '+'}
+                            {this.state.cardInfos.users + '+'}
                         </div>
                         <div className="labels inline"> 
                             <span className="spanTitle2">labels </span> 
-                            {this.state.labels + '+'}
+                            {this.state.cardInfos.labels + '+'}
                         </div>
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
-                            {(this.state.dueDate) ? moment(this.state.dueDate).format('DD MMM') : ''}
+                            {(this.state.cardInfos.dueDate) ? moment(this.state.cardInfos.dueDate).format('DD MMM') : '+'}
                         </div>
                     </div>
                     <div className="description space"> <span className="spanTitle">description </span>
@@ -133,10 +123,10 @@ class Popup extends React.Component{
                     <Label state={this.state}/>
                 </SkyLight>
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
-                    <Checklist checklists={this.state.checklists}/>
+                    <Checklist checklists={this.state.cardInfos.checklists}/>
                 </SkyLight>
                 <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Change Due Date'>
-                    <DueDate state={this.state} io={this.socket}/>
+                    <DueDate dueDate={this.state.cardInfos.dueDate} popup={this} card={this.state.card} io={this.socket}/>
                 </SkyLight>
                 <SkyLight dialogStyles={attachmentPopup} hideOnOverlayClicked ref={ref => this.addAttachment = ref} title='Add Attachment'>
                     <Attachment state={this.state}/>
@@ -150,7 +140,9 @@ class Popup extends React.Component{
     }
 
     handleInputChange = (e) => {
-        this.setState({[e.target.name]: e.target.value})
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.description = e.target.value
+        this.setState({cardInfos: newCardInfos})
     }
 
     handleKeyPress = (e) => {
@@ -161,12 +153,15 @@ class Popup extends React.Component{
 
     updateDescriptionInput() {
         if (this.state.showDescriptionInput){
-            axios.put(url.api + 'card/' + this.props.cardId, {
+            console.log(this.state)
+            console.log(this.state.cardInfos)
+            console.log(this.state.cardInfos._id)
+            axios.put(url.api + 'card/' + this.state.cardInfos._id, {
                 title : this.state.title,
-                description : this.state.description,
-                dueDate : this.state.dueDate,
-                doneDate : this.state.doneDate,
-                isArchived : this.state.isArchived
+                description : this.state.cardInfos.description,
+                dueDate : this.state.cardInfos.dueDate,
+                doneDate : this.state.cardInfos.doneDate,
+                isArchived : this.state.cardInfos.isArchived
             }).then((response) => {
                 this.socket.emit('updateCardServer', response.data)
                 this.updateCard(response.data)
@@ -179,14 +174,10 @@ class Popup extends React.Component{
     }
 
     updateCard(card){
-        if (card._id === this.props.cardId){
-            this.state.card.setState({
-                title: card.title,
-                description: card.description,
-                dueDate: card.dueDate,
-                doneDate: card.doneDate,
-                isArchived: card.isArchived
-            })
+        if (card._id === this.state.cardInfos._id){
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.dueDate = card.dueDate
+            this.state.card.setState({cardInfos: newCardInfos})
         }
     }
 

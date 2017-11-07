@@ -29,7 +29,7 @@ router.get('/:id/teams', function (req, res, next) {
     User.findOne(
         {_id: req.params.id},
         (err, user) => {
-            if (err || user===null) res.status(401).send("There was an error retrieving the user of id " + req.params.id)
+            if (err || user===null) res.status(401).send("There was an error retrieving the user of id " + req.params.id + " user = " + user)
             else {
                 Team.find(
                     {_id: {$in: user.teams}},

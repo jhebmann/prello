@@ -36,7 +36,7 @@ class Home extends React.Component{
       this.setState({boards:response.data})
     })
     .catch((error) => {
-      alert('An error occured when getting the teams!\nHint: check that the server is running')
+      alert('An error occured when getting the boards!\nHint: check that the server is running')
     })
   }
 
