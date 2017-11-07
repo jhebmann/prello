@@ -33,7 +33,7 @@ class Card extends React.Component{
             backgroundColor: '#EDEFF0'
         }
         
-        const dueDateDiv = <p>{(this.state.cardInfos.dueDate) ? <div><Glyphicon glyph='time'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</div> : ''}</p>
+        const dueDateDiv = <div>{(this.state.cardInfos.dueDate) ? <div><Glyphicon glyph='time'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</div> : ''}</div>
         
         return(
             <div>
@@ -41,8 +41,9 @@ class Card extends React.Component{
                 <div>
                 <Thumbnail onClick={() => this.customDialog.show()} className='card' >
                     <h4>{this.state.cardInfos.title}</h4>
-                    <p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p>
+                    <div><p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p></div>
                     {dueDateDiv}
+                    <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
                 </Thumbnail>
                 </div>
                 </Draggable>
