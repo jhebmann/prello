@@ -177,6 +177,7 @@ class Popup extends React.Component{
         if (card._id === this.state.cardInfos._id){
             let newCardInfos = this.state.cardInfos
             newCardInfos.dueDate = card.dueDate
+            newCardInfos.description = card.description
             this.state.card.setState({cardInfos: newCardInfos})
         }
     }

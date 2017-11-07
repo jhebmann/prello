@@ -1,5 +1,5 @@
 import React from 'react'
-import { Thumbnail, ProgressBar } from 'react-bootstrap'
+import { Thumbnail, ProgressBar, Glyphicon } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Popup from './Popup.js'
 import moment from 'moment'
@@ -33,21 +33,16 @@ class Card extends React.Component{
             backgroundColor: '#EDEFF0'
         }
         
-        const dueDateDiv = <p>{(this.state.cardInfos.dueDate) ? moment(this.state.cardInfos.dueDate).format('DD MMM') : ''}</p>
+        const dueDateDiv = <p>{(this.state.cardInfos.dueDate) ? <div><Glyphicon glyph='time'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</div> : ''}</p>
         
         return(
-          
-            
-       
             <div>
-                <Draggable
-                >
+                <Draggable>
                 <div>
                 <Thumbnail onClick={() => this.customDialog.show()} className='card' >
-                    <ProgressBar bsStyle="danger" now={100} />
-                    {dueDateDiv}
                     <h4>{this.state.cardInfos.title}</h4>
-                    <p> {this.state.cardInfos.description} </p>
+                    <p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p>
+                    {dueDateDiv}
                 </Thumbnail>
                 </div>
                 </Draggable>
