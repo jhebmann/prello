@@ -7,10 +7,10 @@ const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
     // Get all the cards
-    Card.find().then(function(card){
-        res.status(200).send(card)
+    Card.find().then(function(cards){
+        res.status(200).send(cards)
     }).catch(function(err) {
-        res.status(401).send(err.getMessage());
+        res.status(401).send(err);
     })
 })
 
@@ -99,12 +99,12 @@ router.put('/:id', function (req, res, next) {
     )
 })
 
-router.put('/:id/user/:idUser', function (req, res, next) {
+router.put('/:id/user/:userId', function (req, res, next) {
     // Update the card having the id given in parameter to add a user to it
     const id = req.params.id
-    const idUser = req.params.idUser
+    const userId = req.params.userId
     Card.findOneAndUpdate({_id : id},
-        {$push: {$users: idUser}},
+        {$push: {$users: userId}},
         {new: true}
     ).then(function(card) {
         res.status(200).send(card)
@@ -113,23 +113,23 @@ router.put('/:id/user/:idUser', function (req, res, next) {
     })
 })
 
-router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function (req, res, next) {
+router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function (req, res, next) {
     // move a card from one list to another
     const id = req.params.id
-    const idOldList = req.params.idOldList
-    const idNewList = req.params.idNewList
-    const idBoard = req.params.idBoard
+    const oldlistId = req.params.oldlistId
+    const newlistId = req.params.newlistId
+    const boardId = req.params.boardId
     const oldPos = req.body.oldPos
     const newPos = req.body.newPos
     Board.update(
-        {_id: idBoard, "lists._id": idOldList},
+        {_id: boardId, "lists._id": oldlistId},
         {$pull: {"lists.$.cards": {_id: id, pos: oldPos}}},
         (err, result) =>{
-            if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + idOldList)
-            else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + idOldList)
+            if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + oldlistId)
+            else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + oldlistId)
             else{
-                Board.findById(idBoard, function(err, data){
-                    data.lists.id(idOldList).cards.forEach((card) => {
+                Board.findById(boardId, function(err, data){
+                    data.lists.id(oldlistId).cards.forEach((card) => {
                         if (card.pos > oldPos){
                             card.pos--
                         }
@@ -138,7 +138,7 @@ router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function
                         //Couldn't save the new positions, so trying to revert the card deletion
                         if (err){
                             Board.update(
-                                {_id: idBoard, "lists._id": idOldList},
+                                {_id: boardId, "lists._id": oldlistId},
                                 {$push: {"lists.$.cards": {_id: id, pos: oldPos}}},
                                 (err) =>{
                                     if (err) res.status(401).send("Couldn't change the positions of the cards and couldn't revert the deletion of the card")
@@ -149,14 +149,14 @@ router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function
                         //First list saved, now is time to update the other list
                         else{
                             Board.findOneAndUpdate(
-                                {_id: idBoard, "lists._id": idNewList},
+                                {_id: boardId, "lists._id": newlistId},
                                 {$push: {"lists.$.cards": {_id: id, pos: newPos}}},
                                 {new: true},
                                 (err, result) =>{
-                                    if (err) res.status(401).send("Couldn't create the card of id " + id + " on the list of id " + idNewList)
+                                    if (err) res.status(401).send("Couldn't create the card of id " + id + " on the list of id " + newlistId)
                                     else {
-                                        Board.findById(idBoard, function(err, data){
-                                            data.lists.id(idNewList).cards.forEach((card) => {
+                                        Board.findById(boardId, function(err, data){
+                                            data.lists.id(newlistId).cards.forEach((card) => {
                                                 if (card.pos >= newPos && !card._id.equals(id)){
                                                     card.pos++
                                                 }
@@ -165,7 +165,7 @@ router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function
                                                 //Couldn't save the new positions, so trying to revert the card addition
                                                 if (err){
                                                     Board.findOneAndUpdate(
-                                                        {_id: idBoard, "lists._id": idNewList},
+                                                        {_id: boardId, "lists._id": newlistId},
                                                         {$pull: {"lists.$.cards": {_id: id, pos: newPos}}},
                                                         (err) =>{
                                                             if (err) res.status(401).send("Couldn't change the positions of the cards and couldn't revert the addition of the card")
@@ -192,10 +192,10 @@ router.put('/:id/oldList/:idOldList/newList/:idNewList/board/:idBoard', function
 /**
  * Delete the card with the specified id
  */
-router.delete('/:id/list/:idList/board/:idBoard', function (req, res, next) {
+router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
     const id = req.params.id
     Board.findOneAndUpdate(
-        {_id: req.params.idBoard, "lists._id": req.params.idList},
+        {_id: req.params.boardId, "lists._id": req.params.listId},
         {"$pull": {"lists.$.cards": id}},
         (err) => {
             if (err)
@@ -214,18 +214,18 @@ router.delete('/:id/list/:idList/board/:idBoard', function (req, res, next) {
 /**
  * Delete all cards from a list
  */
-router.delete('/list/:idList/board/:idBoard', function (req, res, next) {
-    const idList = req.params.idList
-    const idBoard = req.params.idBoard
+router.delete('/list/:listId/board/:boardId', function (req, res, next) {
+    const listId = req.params.listId
+    const boardId = req.params.boardId
     Board.findOne(
-        {_id: idBoard, "lists._id": idList},
+        {_id: boardId, "lists._id": listId},
         {"lists.$": 1, _id: 0},
         (err, board) => {
-            if (err) res.status(401).send("Couldn't find list of id " + idList)
+            if (err) res.status(401).send("Couldn't find list of id " + listId)
             else {
                 const cardsIds = board.lists[0].cards
                 Board.findOneAndUpdate(
-                    {_id: idBoard, "lists._id": idList},
+                    {_id: boardId, "lists._id": listId},
                     {$set: {"lists.$.cards": []}},
                     (err) => {
                         if (err) res.status(401).send(err)
@@ -233,7 +233,7 @@ router.delete('/list/:idList/board/:idBoard', function (req, res, next) {
                             Card.remove(
                                 {_id: {$in: cardsIds}}
                             ).then(function() {
-                                res.status(200).send("Successfully destroyed all cards from list " + idList + " in board " + idBoard)
+                                res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
                             }).catch(function(err) {
                                 res.status(401).send(err)
                             })
