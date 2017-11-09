@@ -172,7 +172,7 @@ class Popup extends React.Component{
                 dueDate : this.state.cardInfos.dueDate,
                 doneDate : this.state.cardInfos.doneDate,
                 isArchived : this.state.cardInfos.isArchived
-            }).then((response) => {
+            }, url.config).then((response) => {
                 this.socket.emit('updateCardServer', response.data)
                 this.updateCard(response.data)
             })

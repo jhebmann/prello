@@ -36,7 +36,7 @@ class List extends React.Component{
 
   componentDidMount() {
     // console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
-    axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
+    axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards', url.config)
     .then((response) => {
       this.getAllCards(response.data, this.props.id)
     })
@@ -119,7 +119,7 @@ class List extends React.Component{
       axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
         title: this.state.title,
         pos : this.state.pos
-      }).then((response) => {
+      }, url.config).then((response) => {
         this.socket.emit('updateListTitle', response.data._id, this.state.title)
         this.updateListTitle(response.data._id, this.state.title)
       })
@@ -140,7 +140,7 @@ class List extends React.Component{
     axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
       title: this.state.titleNewCard,
       pos: this.state.cards.length
-    }).then((response) => {
+    }, url.config).then((response) => {
       this.socket.emit('newCard', response.data, this.props.id)
       this.addCard(response.data, this.props.id)
       this.setState({titleNewCard : ""})
@@ -151,7 +151,7 @@ class List extends React.Component{
   }
 
   onClickDeleteList(){
-    axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard)
+    axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
     .then((response) => {
       this.deleteCards(this.props.id)
       this.socket.emit('deleteAllCards', this.props.id)

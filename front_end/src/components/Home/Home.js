@@ -30,8 +30,7 @@ class Home extends React.Component{
     let route ='team/' + this.state.teamId + '/boards'
     if(this.props.public)
       route='board/public'
-    axios.get(url.api + route,{
-    })
+    axios.get(url.api + route, url.config)
     .then((response) => {
       this.setState({boards:response.data})
     })
@@ -65,7 +64,7 @@ onClickAddBoard(){
       admins:Auth.getUserID(),
       users:Auth.getUserID(),
       isPublic:this.props.public
-    }).then((response) => {
+    }, url.config).then((response) => {
       this.socket.emit("newBoard", response.data, this.state.teamId)
       this.addBoard(response.data, this.state.teamId)
       this.setState({titleNewBoard: ""})
@@ -93,7 +92,7 @@ onClickAddBoard(){
   }
 
   onClickDeleteBoard(id){
-    axios.delete(url.api + 'board/' + id)
+    axios.delete(url.api + 'board/' + id, url.config)
     .then((response) => {
       this.socket.emit('deleteBoard', id)
       this.deleteBoard(id)

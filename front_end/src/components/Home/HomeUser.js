@@ -10,7 +10,7 @@ import './home.css'
 class HomeUser extends React.Component{
     
   constructor(props){
-    super(props);    
+    super(props);
     //Default State
     this.state={
       teams: [],
@@ -28,9 +28,7 @@ class HomeUser extends React.Component{
 
     componentWillMount() {
         if(Auth.isUserAuthenticated()){
-          console.dir(url.api + 'user/' + Auth.getUserID() + '/teams')
-            axios.get(url.api + 'user/' + Auth.getUserID() + '/teams',{
-            })
+            axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
             .then((response) => {
               this.setState({teams:response.data})
             })
@@ -45,7 +43,7 @@ class HomeUser extends React.Component{
           name: this.state.textImput,
           admins:Auth.getUserID(),
           users:Auth.getUserID()
-        }).then((response) => {
+        }, url.config).then((response) => {
           this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
           this.setState({textImput: ""})
@@ -67,7 +65,7 @@ class HomeUser extends React.Component{
           admins:Auth.getUserID(),
           users:Auth.getUserID(),
           isPublic:true
-        }).then((response) => {
+        }, url.config).then((response) => {
           this.socket.emit("newBoard", response.data)
           this.setState({textImput: ""})
         })

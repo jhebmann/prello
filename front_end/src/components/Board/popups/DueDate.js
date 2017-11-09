@@ -50,7 +50,7 @@ class DueDate extends React.Component{
         axios.put(url.api + 'card/' + this.props.card.state.cardInfos._id, {
             dueDate : this.state.dueDate,
             doneDate : null
-        }).then((response) => {
+        }, url.config).then((response) => {
             this.socket.emit('updateCardServer', response.data)
             this.updateCard(response.data)
         })

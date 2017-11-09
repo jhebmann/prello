@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../../models').users
+const config = require('../../config/database')
 
 
 /**
@@ -14,11 +15,13 @@ module.exports = (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
 
   // decode the token using a secret key-phrase
-  return jwt.verify(token, jwtSeed.jwtSecret, (err, decoded) => {
+  return jwt.verify(token, config.jwtSecret, (err, decoded) => {
     // the 401 code is for unauthorized status
-    if (err) { return res.status(401).end(); }
+    console.log(decoded)
+    if (err) { console.log(err) ; return res.status(401).end(); }
 
     const userId = decoded.sub;
+    console.log(userId)
 
     // check if a user exists
     return User.findById(userId, (userErr, user) => {
