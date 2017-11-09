@@ -1,15 +1,16 @@
 const models = require('../../models')
 const User = models.users
 const Team = models.teams
+const Comment = models.comments
+const Card = models.cards
+const Board = models.boards
 const router = require('express').Router()
 const mongoose = require('mongoose')
 
-// Done
-
 router.get('/', function (req, res, next) {
     // Return all the users
-    User.find().then(function(user){
-        res.status(200).send(user)
+    User.find().then(function(users){
+        res.status(200).send(users)
     }).catch(function(err) {
         res.status(401).send(err);
     })
@@ -26,15 +27,17 @@ router.get('/:id', function (req, res, next) {
 
 router.get('/:id/teams', function (req, res, next) {
     // Get all teams of the user having the id given in parameter
+    const id = req.params.id
     User.findOne(
-        {_id: req.params.id},
+        {_id: id},
         (err, user) => {
-            if (err || user===null) res.status(401).send("There was an error retrieving the user of id " + req.params.id + " user = " + user)
+            if (err) res.status(401).send(err)
+            else if (user === null) res.status(401).send("Couldn't find the user of id " + id)
             else {
                 Team.find(
                     {_id: {$in: user.teams}},
                     (err, teams) => {
-                        if (err) res.status(401).send("There was an error retrieving the teams of the user of id " + req.params.id)
+                        if (err) res.status(401).send(err)
                         else res.status(200).send(teams)
                     }
                 )
@@ -64,13 +67,149 @@ router.post('/', function (req, res, next) {
     })
 })
 
+/*
 router.delete('/:id', function (req, res, next) {
     // Delete the user having the id given in parameter
-    User.findByIdAndRemove(req.params.id).then(function() {
-        res.status(200).send("Successfully destroyed");
+    const id = req.params.id
+
+    //We first remove the user
+    User.findOneAndRemove(
+        {_id: id}
+    ).then(function(user) {
+        //Then we remove his reference from the comments he posted
+        Comment.update(
+            {postedBy: id},
+            {$set: {postedBy: null}},
+            {multi: true}
+        ).then(function() {
+            //Then we remove him from the cards he was working in
+            Card.update(
+                {users: id},
+                {$pull: {users: id}},
+                {multi: true}
+            ).then(function() {
+                const teamsIds = user.teams
+                if (teamsIds.length !== 0){
+                    Team.find(
+                        {_id: {$in: teamsIds}}
+                    ).then(function(teams) {
+                        //Then we remove him from the teams where he was in
+                        Team.update(
+                            {_id: {$in: teamsIds}},
+                            {$pull: {users: id, admins: id}},
+                            {multi: true}
+                        ).then(function() {
+                            //Then we remove the teams where he was the only one in
+                            Team.remove(
+                                {users: []}
+                            ).then(function() {
+                                const allBoards = teams.map((team) => team.boards).reduce((a, b) => a.concat(b), [])
+                                //Then we remove him from the boards where he was an admin
+                                Board.update(
+                                    {_id: {$in: allBoards}},
+                                    {$pull: {admins: id}},
+                                    {multi: true}
+                                ).then(function(){
+                                    res.status(200).send("Successfully deleted the user of id " + id)
+                                }).catch(function(err) {
+                                    res.status(401).send("Couldn't remove the user of id " + id + " from his boards")
+                                })
+                            }).catch(function(err) {
+                                res.status(401).send("Couldn't remove the teams where only the user of id " + id + " was present")
+                            })
+                        }).catch(function(err) {
+                            res.status(401).send("Couldn't remove the user of id " + id + " from his teams")
+                        })
+                    }).catch(function(err) {
+                        res.status(401).send("Couldn't find the teams of the user of id " + id)
+                    })
+                } else res.status(200).send("Successfully deleted the user of id " + id)
+            }).catch(function(err) {
+                res.status(401).send("Couldn't remove the user of id " + id + " from his cards")
+            })
+        }).catch(function(err) {
+            res.status(401).send("Couldn't update the comments of the user of id " + id)
+        })
     }).catch(function(err) {
-        res.status(401).send(err);
-    });
+        res.status(401).send("Couldn't find the user of id " + id)
+    })
+})
+
+router.delete('/:id', function (req, res, next) {
+    // Delete the user having the id given in parameter
+    const id = req.params.id
+
+    //We first remove the user
+    User.findOneAndRemove(
+        {_id: id},
+        (err, user) => {
+            if (err || user === null) res.status(401).send("Couldn't find the user of id " + id)
+            else{
+                //Then we remove his reference from the comments he posted
+                Comment.update(
+                    {postedBy: id},
+                    {$set: {postedBy: null}},
+                    {multi: true},
+                    (err) => {
+                        if (err) res.status(401).send("Couldn't update the comments of the user of id " + id)
+                        else{
+                            //Then we remove him from the cards he was working in
+                            Card.update(
+                                {users: id},
+                                {$pull: {users: id}},
+                                {multi: true},
+                                (err) => {
+                                    if (err) res.status(401).send("Couldn't remove the user of id " + id + " from his cards")
+                                    const teamsIds = user.teams
+                                    if (teamsIds.length !== 0){
+                                        Team.find(
+                                            {_id: {$in: teamsIds}},
+                                            (err, teams) => {
+                                                if (err) res.status(401).send("Couldn't find the teams of the user of id " + id)  
+                                                else {
+                                                    //Then we remove him from the teams where he was in
+                                                    Team.update(
+                                                        {_id: {$in: teamsIds}},
+                                                        {$pull: {users: id, admins: id}},
+                                                        {multi: true},
+                                                        (err) => {
+                                                            if (err) res.status(401).send("Couldn't remove the user of id " + id + " from his teams")
+                                                            else{
+                                                                //Then we remove the teams where he was the only one in
+                                                                Team.remove(
+                                                                    {users: []},
+                                                                    (err) => {
+                                                                        if (err) res.status(401).send("Couldn't remove the teams where only the user of id " + id + " was present")   
+                                                                        else {                                                                     
+                                                                            const allBoards = teams.map((team) => team.boards).reduce((a, b) => a.concat(b), [])
+                                                                            //Then we remove him from the boards where he was an admin
+                                                                            Board.update(
+                                                                                {_id: {$in: allBoards}},
+                                                                                {$pull: {admins: id}},
+                                                                                {multi: true},
+                                                                                (err) => {
+                                                                                    if (err) res.status(401).send("Couldn't remove the user of id " + id + " from his boards")
+                                                                                    else res.status(200).send("Successfully deleted the user of id " + id)                                                            
+                                                                                }
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                )
+                                                            }
+                                                        }
+                                                    )
+                                                }                                          
+                                            }                                        
+                                        )
+                                    } else res.status(200).send("Successfully deleted the user of id " + id)
+                                }
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    )
 })
 
 router.delete('/', function (req, res, next) {
@@ -81,7 +220,7 @@ router.delete('/', function (req, res, next) {
         res.status(401).send(err);
     });
 })
-
+*/
 
 router.put('/:id', function (req, res, next) {
     // Update the user having the id given in parameter
@@ -92,6 +231,7 @@ router.put('/:id', function (req, res, next) {
         },
         (err, user) => {
             if (err) res.status(401).send(err)
+            else if (user === null) res.status(401).send("Couldn't find the user of id " + id)
             else{
                 if ('undefined' !== typeof req.body.local.password) user.local.password = req.body.local.password
                 user.save((err, user) => {

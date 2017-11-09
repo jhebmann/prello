@@ -1,41 +1,58 @@
-const Card = require('../../models').cards
-const Comment = require('../../models').comments
-const User = require('../../models').users
+const models = require('../../models')
+const Card = models.cards
+const Comment = models.comments
+const User = models.users
 const router = require('express').Router()
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id/card/:cardId', function (req, res, next) {
     // Get the comment having the id given in parameter
-    Card.findOne({'comments._id': req.params.id}, '-_id').select({ comments: {$elemMatch: {_id: req.params.id}}})
-    .then(function(cardsMatching){
-        res.status(200).send(cardsMatching.comments[0])
+    const id = req.params.id
+    const cardId = req.params.cardId
+
+    Card.findOne(
+        {_id: cardId, "comments._id": req.params.id},
+        {"comments.$": 1, _id: 0}
+    ).then(function(card){
+        res.status(200).send(card.comments[0])
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
-router.get('/:commentId/card/:cardId/users', function (req, res, next) {
+router.get('/:id/card/:cardId/user', function (req, res, next) {
     // Get user that posted the comment
-    Card.findOne({_id: req.params.cardId, "comments._id": req.params.commentId}, 'comment',
+    const id = req.params.id
+    const cardId = req.params.cardId
+
+    Card.findOne(
+        {_id: cardId, "comments._id": id},
+        {"comments.$": 1},
         (err, card) => {
-            if (card === null)
-                res.status(401).send(err)
+            if (err) res.status(401).send(err)
+            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + " or the comment of id " + id)            
             else {
-            User.find(
-                {_id: {$in: card.comments[0].postedBy}},
-                (err, user) => {
-                    res.status(200).send(user)
-                }
-            )}
+                User.findOne(
+                    {_id: card.comments[0].postedBy},
+                    (err, user) => {
+                        if (err) res.status(401).send(err)
+                        else if (user === null) res.status(401).send("Couldn't find the user of id " + card.comments[0].postedBy)            
+                        else res.status(200).send(user)
+                    }
+                )
+            }
         }
     )
 })
 
-router.post('/card/idCard', function (req, res, next) {
+router.post('/card/:cardId', function (req, res, next) {
     // Post a new comment into a card
-    Card.findById(req.params.idCard, function(err, card){
+    const cardId = req.params.cardId
+
+    Card.findById(cardId, function(err, card){
         let newcomment = new Comment()
-        newcomment.content = req.body.content,
-        newcomment.createdAt = req.body.createdAt,
+        newcomment.content = ('undefined' !== typeof req.body.content) ? req.body.content : "",
+        newcomment.createdAt = Date.now(),
+        newcomment.lastModifiedAt = Date.now(),
         newcomment.postedBy = req.body.postedBy
         card.comments.push(newcomment)
         card.save()
@@ -47,23 +64,25 @@ router.post('/card/idCard', function (req, res, next) {
     })
 })
 
-router.put('/:id/card/:idCard', function (req, res, next) {
-    // Update the label having the id given in parameter and that is contained in the card having the id given in parameter
+router.put('/:id/card/:cardId', function (req, res, next) {
+    // Update the comment having the id given in parameter and that is contained in the card having the id given in parameter
     const id = req.params.id
-    const idCard = req.params.idCard
+    const cardId = req.params.cardId
+
     Card.findOne(
         {
-            _id : idCard,
+            _id : cardId,
             comments: {$elemMatch: {_id: id}}
         },
         (err, card) => {
             if (err) res.status(401).send(err)
+            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + " or the comment of id " + id)   
             else{
                 if ('undefined' !== typeof req.body.content){
                     card.comments.id(id).content = req.body.content
                     card.comments.id(id).lastModifiedAt = Date.now()
                 }
-                card.save((err, card) => {
+                card.save((err) => {
                     if (err) res.status(401).send(err)
                     else {
                         console.log("The comment of id " + id + " has been successfully updated")
@@ -75,24 +94,24 @@ router.put('/:id/card/:idCard', function (req, res, next) {
     )
 })
 
-router.delete('/:id/card/:idCard', function (req, res, next) {
+router.delete('/:id/card/:cardId', function (req, res, next) {
     // Delete the comment having the id given in parameter
+    const id = req.params.id
+    const cardId = req.params.cardId
+
     Card.findOne(
-        {_id: req.params.idCard, "comments._id": req.params.id},
-        {"comments.$": 1, _id: 0},
+        {_id: cardId, "comments._id": id},
         (err, card) => {
-            if (err) res.status(401).send("There was an error retrieving the card of id " + req.params.idCard + " or comment of id " + req.params.id)
-            else if (card === undefined || card === null) res.status(401).send("There is no card of id " + req.params.idCard + " or comment of id " + req.params.id)
+            if (err) res.status(401).send(err)
+            else if (card === undefined || card === null) res.status(401).send("There is no card of id " + cardId + " or comment of id " + id)
             else {
-                const comment = card.comments[0]
-                Card.findOneAndUpdate(
-                    {_id: req.params.idCard},
-                    {$pull: {comments: comment}},
-                    (err, card) => {
-                        if (err) res.status(401).send("Couldn't delete the comment of id " + comment._id)
-                        else res.status(200).send("Successfully destroyed")
-                    }
-                )
+                card.comments.pull(card.comments.id(id))
+                card.save()
+                .then(function(card){
+                    res.status(200).send("Successfully destroyed")
+                }).catch(function(err){
+                    res.status(401).send("Couldn't delete the comment of id " + id)
+                })
             }
         }
     )

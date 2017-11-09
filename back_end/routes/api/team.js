@@ -8,8 +8,8 @@ const router = require('express').Router()
 
 router.get('/', function (req, res, next) {
     // Get all the teams
-    Team.find().then(function(team){
-        res.status(200).send(team)
+    Team.find().then(function(teams){
+        res.status(200).send(teams)
     }).catch(function(err) {
         res.status(401).send(err);
     })
@@ -29,12 +29,13 @@ router.get('/:id/boards', function (req, res, next) {
     Team.findOne(
         {_id: req.params.id},
         (err, team) => {
-            if (err) res.status(401).send("There was an error retrieving the team of id " + req.params.id)
+            if (err) res.status(401).send(err)
+            else if (team === null) res.status(401).send("Couldn't find the team of id " + id)
             else {
                 Board.find(
                     {_id: {$in: team.boards}},
                     (err, boards) => {
-                        if (err) res.status(401).send("There was an error retrieving the boards of the team of id " + req.params.id)
+                        if (err) res.status(401).send(err)
                         else res.status(200).send(boards)
                     }
                 )
@@ -49,6 +50,7 @@ router.get('/:id/users', function (req, res, next) {
         {_id: req.params.id},
         (err, team) => {
             if (err) res.status(401).send(err)
+            else if (team === null) res.status(401).send("Couldn't find the team of id " + id)
             else res.status(200).send(team.users)
         }
     )
@@ -60,6 +62,7 @@ router.get('/:id/admins', function (req, res, next) {
         {_id: req.params.id},
         (err, team) => {
             if (err) res.status(401).send(err)
+            else if (team === null) res.status(401).send("Couldn't find the team of id " + id)
             else res.status(200).send(team.admins)
         }
     )
@@ -105,7 +108,15 @@ router.delete('/:id', function (req, res, next) {
                     (err) => {
                         if (err) res.status(401).send(err)
                         else{
-                            res.status(200).send("Successfully destroyed the team of id " + id)
+                            Board.update(
+                                {"teams._id": id},
+                                {$pull: {teams: id}},
+                                {multi: true},
+                                (err) => {
+                                    if (err) res.status(401).send(err)
+                                    else res.status(200).send("Successfully destroyed the team of id " + id)
+                                }
+                            )
                         }
                     }
                 )
@@ -128,7 +139,15 @@ router.delete('/', function (req, res, next) {
                     (err) => {
                         if (err) res.status(401).send(err)
                         else{
-                            res.status(200).send("Successfully destroyed all the teams")
+                            Board.update(
+                                {},
+                                {teams: []},
+                                {multi: true},
+                                (err) => {
+                                    if (err) res.status(401).send(err)
+                                    else res.status(200).send("Successfully destroyed all the teams")
+                                }
+                            )
                         }
                     }
                 )
@@ -142,11 +161,10 @@ router.put('/:id', function (req, res, next) {
     // Update the team with the id given in parameter
     const id = req.params.id
     Team.findOne(
-        {
-            _id : id,
-        },
+        {_id : id,},
         (err, team) => {
             if (err) res.status(401).send(err)
+            else if (team === null) res.status(401).send("Couldn't find the team of id " + id)
             else {
                 if ('undefined' !== typeof req.body.name) team.name = req.body.name
                 if ('undefined' !== typeof req.body.description) team.description = req.body.description
