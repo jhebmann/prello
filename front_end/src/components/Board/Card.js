@@ -13,7 +13,6 @@ class Card extends React.Component{
             listTitle: this.props.listTitle
         }
 
-
         this.socket = this.props.io
         this.updateCard = this.updateCard.bind(this)
 

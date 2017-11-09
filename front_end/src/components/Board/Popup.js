@@ -26,27 +26,29 @@ class Popup extends React.Component{
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
         this.updateCard = this.updateCard.bind(this)
+        this.updateChecklists =this.updateChecklists.bind(this)
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
+        this.socket.on('newChecklistClient', this.updateChecklists)
     }
 
     render(){
 
         const memberPopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         const labelPopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         const checklistPopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         const attachmentPopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         const dueDatePopup = {
@@ -54,7 +56,7 @@ class Popup extends React.Component{
         }
 
         const movePopup = {
-            overflow: 'hidden'
+            overflow: 'auto'
         }
 
         let descriptionInput  = null
@@ -62,9 +64,14 @@ class Popup extends React.Component{
             descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.cardInfos.description || 'Edit the description'}</p>
         } else{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
-                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description}></FormControl>
+                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description} className="inputPopup"></FormControl>
         }
         
+        const checklists = this.state.cardInfos.checklists
+        const checklistsLi = checklists.map((x, i) => 
+            <li key={i}>{x.title}</li>
+        )
+
         return(
             <div className="popup">
                 <div className="popupLeft">
@@ -80,20 +87,26 @@ class Popup extends React.Component{
                         </div>
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
-                            {(this.state.cardInfos.dueDate) ? moment(this.state.cardInfos.dueDate).format('DD MMM') : '+'}
+                            {(this.state.cardInfos.dueDate) ? moment(this.state.cardInfos.dueDate).format('DD MMM') : <Button className='circularButton' onClick={() => this.addDueDate.show()}><Glyphicon glyph="plus"/></Button>}
                         </div>
                     </div>
                     <div className="description space"> <span className="spanTitle">description </span>
-                        {descriptionInput}
+                        <div className="inputPopup">
+                            {descriptionInput}
+                        </div>
                     </div>
                     <div className="checklists space"> <span className="spanTitle">checklists </span> 
-                        
+                        <ul>
+                            {checklistsLi}
+                        </ul>
                     </div>
                     <div className="comments space">
                         <span className="spanTitle">comments </span>
-                        <FormControl componentClass="textarea">
+                        <div className="inputPopup">
+                            <FormControl componentClass="textarea">
 
-                        </FormControl>    
+                            </FormControl>
+                        </div>    
                     </div>
                     <div className="activities space"> <span className="spanTitle">activities </span> 
                     
@@ -117,22 +130,22 @@ class Popup extends React.Component{
                 </div>
 
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
-                    <Member state={this.state}/>
+                    <Member/>
                 </SkyLight>
                 <SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
-                    <Label state={this.state}/>
+                    <Label/>
                 </SkyLight>
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
-                    <Checklist checklists={this.state.cardInfos.checklists}/>
+                    <Checklist checklists={this.state.cardInfos.checklists} popup={this} card={this.state.card} io={this.socket}/>
                 </SkyLight>
                 <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Change Due Date'>
                     <DueDate dueDate={this.state.cardInfos.dueDate} popup={this} card={this.state.card} io={this.socket}/>
                 </SkyLight>
                 <SkyLight dialogStyles={attachmentPopup} hideOnOverlayClicked ref={ref => this.addAttachment = ref} title='Add Attachment'>
-                    <Attachment state={this.state}/>
+                    <Attachment attachments={this.state.cardInfos.attachments} popup={this} card={this.state.card} io={this.socket}/>
                 </SkyLight>
                 <SkyLight dialogStyles={movePopup} hideOnOverlayClicked ref={ref => this.moveCard = ref} title='Move Card'>
-                    <MoveCard state={this.state}/>
+                    <MoveCard/>
                 </SkyLight>
 
             </div>
@@ -153,9 +166,6 @@ class Popup extends React.Component{
 
     updateDescriptionInput() {
         if (this.state.showDescriptionInput){
-            console.log(this.state)
-            console.log(this.state.cardInfos)
-            console.log(this.state.cardInfos._id)
             axios.put(url.api + 'card/' + this.state.cardInfos._id, {
                 title : this.state.title,
                 description : this.state.cardInfos.description,
@@ -184,6 +194,14 @@ class Popup extends React.Component{
 
     deleteCard(e){
 
+    }
+
+    updateChecklists(checklist){
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.checklists.push(checklist)
+        this.setState({
+            cardInfos: newCardInfos
+        })
     }
 }
 
