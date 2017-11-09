@@ -1,6 +1,6 @@
 import React from 'react';
 import List from './List.js';
-import {Button} from 'react-bootstrap';
+import {Button, FormControl} from 'react-bootstrap';
 import './board.css'
 import axios from 'axios'
 import url from '../../config'
@@ -11,7 +11,9 @@ class Board extends React.Component{
         super(props)
         
         this.state={
-            lists: []
+            lists: [],
+            titleNewList: "",
+            showSaveButton: false
         }
 
         this.socket = this.props.io;
@@ -37,12 +39,38 @@ class Board extends React.Component{
 
 
     render(){
+        let buttonSave  = null
+        if(this.state.showSaveButton) {
+            buttonSave = <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList < 1}>
+                Add List
+            </Button>
+        }
+        else{
+            buttonSave = <div/>
+        }
         return(
             <div className='board'>
                 {this.cardList(this.state.lists)}
-                <Button bsStyle="success" className='addListButton' onClick={this.onClickAddList}>Add List</Button>
+                <div id="addListDiv">
+                    <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
+                        onChange = {this.handleInputChange} id="addListInput" 
+                        onFocus = {()=>this.setState({showSaveButton: !this.state.showSaveButton})} 
+                        onKeyPress={this.handleKeyPress}
+                    />
+                    {buttonSave}
+                </div>
             </div>
         )
+    }
+
+    handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            if (this.state.titleNewList) this.onClickAddList()
+        }
+    }
+
+    handleInputChange = (e) => {
+        this.setState({[e.target.name]: e.target.value})
     }
 
     getAllLists(data){
@@ -52,7 +80,7 @@ class Board extends React.Component{
 
     onClickAddList(){
         axios.post(url.api + 'list/board/' + this.props.id, {
-            title: "New List",
+            title: this.state.titleNewList,
             pos: this.state.lists.length
         }).then((response) => {
             this.socket.emit('newList', response.data, this.props.id)
@@ -60,6 +88,10 @@ class Board extends React.Component{
         })
         .catch((error) => {
             alert('An error occured when adding the lists')
+        })
+        this.setState({
+            showSaveButton: !this.state.showSaveButton,
+            titleNewList: ""
         })
     }
     

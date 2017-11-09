@@ -28,7 +28,7 @@ body {
     height: 85vh;
 }
 
-.addListButton {
+#addListDiv {
     display: inline;
     text-decoration: none;
     font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
@@ -38,6 +38,13 @@ body {
     padding-right: 6px;
     padding-top: 2px;
     padding-bottom: 2px;
+}
+
+#addListInput {
+    width: 230px;
+    display: inline-block;
+    max-height: 100%;
+    background: rgba(0,0,0,.03)
 }
 
 .list {
