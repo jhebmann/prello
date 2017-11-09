@@ -118,6 +118,11 @@ io.on('connection', (client) => {
     client.on('updateCardServer', (card) => {
         client.broadcast.emit('updateCardClient', card)
     })
+
+    // ----- Handle checklist ----- //
+    client.on('newChecklistServer', (checklist) => {
+        client.broadcast.emit('newChecklistClient', checklist)
+    })
 })
 
 // Server start

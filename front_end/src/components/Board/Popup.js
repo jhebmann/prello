@@ -26,9 +26,11 @@ class Popup extends React.Component{
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
         this.updateCard = this.updateCard.bind(this)
+        this.updateChecklists =this.updateChecklists.bind(this)
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
+        this.socket.on('newChecklistClient', this.updateChecklists)
     }
 
     render(){
@@ -65,6 +67,11 @@ class Popup extends React.Component{
                             type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description} className="inputPopup"></FormControl>
         }
         
+        const checklists = this.state.cardInfos.checklists
+        const checklistsLi = checklists.map((x, i) => 
+            <li key={i}>{x.title}</li>
+        )
+
         return(
             <div className="popup">
                 <div className="popupLeft">
@@ -89,7 +96,9 @@ class Popup extends React.Component{
                         </div>
                     </div>
                     <div className="checklists space"> <span className="spanTitle">checklists </span> 
-                        
+                        <ul>
+                            {checklistsLi}
+                        </ul>
                     </div>
                     <div className="comments space">
                         <span className="spanTitle">comments </span>
@@ -157,9 +166,6 @@ class Popup extends React.Component{
 
     updateDescriptionInput() {
         if (this.state.showDescriptionInput){
-            console.log(this.state)
-            console.log(this.state.cardInfos)
-            console.log(this.state.cardInfos._id)
             axios.put(url.api + 'card/' + this.state.cardInfos._id, {
                 title : this.state.title,
                 description : this.state.cardInfos.description,
@@ -188,6 +194,14 @@ class Popup extends React.Component{
 
     deleteCard(e){
 
+    }
+
+    updateChecklists(checklist){
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.checklists.push(checklist)
+        this.setState({
+            cardInfos: newCardInfos
+        })
     }
 }
 

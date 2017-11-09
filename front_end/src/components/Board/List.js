@@ -63,7 +63,7 @@ class List extends React.Component{
             <p>
               <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
                             value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
-              <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard}>Add Card</Button>
+              <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.length < 1}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
             </p>
           </div>
@@ -94,7 +94,10 @@ class List extends React.Component{
           _id: card._id,
           title: card.title,
           description: card.description,
-          date: card.date
+          date: card.date,
+          checklists: [],
+          labels: [],
+          comments: []
         })
       }))
     }
