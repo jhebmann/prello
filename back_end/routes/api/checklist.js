@@ -1,7 +1,6 @@
 const models = require('../../models')
 const Checklist = models.checklists
 const Card = models.cards
-const Label = models.labels
 const router = require('express').Router()
 
 router.get('/:id/card/:idCard', function (req, res, next) {
@@ -19,7 +18,7 @@ router.get('/:id/card/:idCard', function (req, res, next) {
 router.post('/card/:idCard', function (req, res, next) {
     // Post a new checklist
     Card.findById(req.params.idCard, function(err, card){
-        let newChecklist = new Label()
+        let newChecklist = new Checklist()
         newChecklist.title = req.body.title
         card.checklists.push(newChecklist)
         card.save()
