@@ -26,7 +26,7 @@ class Board extends React.Component{
     }
 
     componentDidMount() {
-        axios.get(url.api + 'board/' + this.props.id + '/lists')
+        axios.get(url.api + 'board/' + this.props.id + '/lists', url.config)
         .then((response) => {
             this.getAllLists(response.data)
         })
@@ -54,7 +54,7 @@ class Board extends React.Component{
         axios.post(url.api + 'list/board/' + this.props.id, {
             title: "New List",
             pos: this.state.lists.length
-        }).then((response) => {
+        }, url.config).then((response) => {
             this.socket.emit('newList', response.data, this.props.id)
             this.createList(response.data, this.props.id)
         })

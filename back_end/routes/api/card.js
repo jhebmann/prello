@@ -25,16 +25,28 @@ router.get('/:id', function (req, res, next) {
 
 router.get('/:id/labels', function (req, res, next) {
     // Get all labels of the card having the id given in parameter
+    const id = req.params.id
+
     Card.findOne(
         {_id: req.params.id},
         (err, card) => {
-            if (err) res.status(401).send("There was an error retrieving the card of id " + req.params.id)
+            if (err) res.status(401).send(err)
+            else if (card === null) res.status(401).send("Couldn't find the card of id " + req.params.id)
             else {
-                Label.find(
-                    {_id: {$in: card.labels}},
-                    (err, labels) => {
-                        if (err) res.status(401).send("There was an error retrieving the labels of the card of id " + req.params.id)
-                        else res.status(200).send(labels)
+                Board.findOne(
+                    {"lists.cards._id": id},
+                    (err, board) => {
+                        if (err) res.status(401).send(err)
+                        else if (board === null) res.status(401).send("Couldn't find the board containing the card of id " + req.params.id)
+                        else {
+                            let allLabels = []
+                            board.labels.forEach(function(label){
+                                if (card.labels.indexOf(label._id) !== -1){
+                                    allLabels.push(label)
+                                }
+                            })
+                            res.status(200).send(allLabels)
+                        }
                     }
                 )
             }
@@ -44,30 +56,41 @@ router.get('/:id/labels', function (req, res, next) {
 
 router.post('/board/:boardId/list/:listId', function (req, res, next) {
     // Post a new card
-    const newCard = new Card({
-        title: req.body.title
-    })
-    newCard.save(
-      {},
-      (err, res) => {
-        if(err)
-          console.log("Error adding card")
-        Board.findOneAndUpdate(
-          {_id : req.params.boardId, "lists._id" : req.params.listId},
-          { "$push": { "lists.$.cards": {_id: res._id, pos: req.body.pos}}},
-          (err, res) => {
-            if (err){
-                console.log("Error when adding the card in board")
-            }              
-            else {
-              console.log("Card : " + newCard._id + " added to List : " + req.params.listId)
+    const boardId = req.params.boardId
+    const listId = req.params.listId
+    let maxPos = -1
+
+    Board.findOne(
+        {_id: boardId, "lists._id": listId},
+        (err, board) => {
+            if (err) res.status(401).send(err)
+            else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId + " or the list of id " + listId)
+            else{
+                board.lists.id(listId).cards.forEach((card) => {
+                    if (card.pos > maxPos)
+                        maxPos = card.pos
+                })
             }
-          }
-        )
-      }
-    ).then(function(newCard) {
-        res.status(200).send(newCard)
-    }).catch(function(err) {
+        }
+    ).then(function(board){
+        const newCard = new Card()
+        newCard.title = ('undefined' !== typeof req.body.title) ? req.body.title : ""
+
+        newCard.save().then(function(){
+            const newCardRef = {
+                _id: newCard._id,
+                pos: maxPos + 1
+            }
+            board.lists.id(listId).cards.push(newCardRef)
+            board.save().then(function(board){
+                res.status(200).send(newCard)
+            }).catch(function(err) {
+                res.status(401).send(err)
+            })
+        }).catch(function(err) {
+            res.status(401).send(err)
+        })
+    }).catch(function(err){
         res.status(401).send(err)
     })
 })
@@ -75,12 +98,14 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
 router.put('/:id', function (req, res, next) {
     // Update the card having the id given in parameter
     const id = req.params.id
+
     Card.findOne(
         {
             _id : id,
         },
         (err, card) => {
             if (err) res.status(401).send(err)
+            else if (card === null) res.status(401).send("Couldn't find the card of id " + id)
             else{
                 if ('undefined' !== typeof req.body.title) card.title = req.body.title
                 if ('undefined' !== typeof req.body.description) card.description = req.body.description
@@ -99,12 +124,58 @@ router.put('/:id', function (req, res, next) {
     )
 })
 
-router.put('/:id/user/:userId', function (req, res, next) {
+router.put('/:id/label/add/:labelId', function (req, res, next) {
+    // Update the card having the id given in parameter to add a label
+    const id = req.params.id
+    const labelId = req.params.labelId
+    
+    Card.findOneAndUpdate(
+        {_id: id},
+        {$addToSet: {labels: labelId}},
+        {new: true}
+    ).then(function(card) {
+        res.status(200).send(card)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.put('/:id/label/remove/:labelId', function (req, res, next) {
+    // Update the card having the id given in parameter to remove a label
+    const id = req.params.id
+    const labelId = req.params.labelId
+    
+    Card.findOneAndUpdate(
+        {_id: id},
+        {$pull: {labels: labelId}},
+        {new: true}
+    ).then(function(card) {
+        res.status(200).send(card)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.put('/:id/user/add/:userId', function (req, res, next) {
     // Update the card having the id given in parameter to add a user to it
     const id = req.params.id
     const userId = req.params.userId
     Card.findOneAndUpdate({_id : id},
-        {$push: {$users: userId}},
+        {$addToSet: {$users: userId}},
+        {new: true}
+    ).then(function(card) {
+        res.status(200).send(card)
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.put('/:id/user/remove/:userId', function (req, res, next) {
+    // Update the card having the id given in parameter to remove a user from it
+    const id = req.params.id
+    const userId = req.params.userId
+    Card.findOneAndUpdate({_id : id},
+        {$pull: {$users: userId}},
         {new: true}
     ).then(function(card) {
         res.status(200).send(card)
@@ -194,19 +265,21 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
  */
 router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
     const id = req.params.id
+
     Board.findOneAndUpdate(
         {_id: req.params.boardId, "lists._id": req.params.listId},
         {"$pull": {"lists.$.cards": id}},
-        (err) => {
-            if (err)
-                throw err
-            Card.findOneAndRemove(
-                {_id: id}
-            ).then(function() {
-                res.status(200).send("The card of id " + id + " was successfully destroyed")
-            }).catch(function(err) {
-                res.status(401).send(err)
-            })
+        (err, board) => {
+            if (err) res.status(401).send(err)
+            else {
+                Card.findOneAndRemove(
+                    {_id: id}
+                ).then(function() {
+                    res.status(200).send("The card of id " + id + " was successfully destroyed")
+                }).catch(function(err) {
+                    res.status(401).send(err)
+                })
+            }
         }
     )
 })
@@ -217,55 +290,31 @@ router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
 router.delete('/list/:listId/board/:boardId', function (req, res, next) {
     const listId = req.params.listId
     const boardId = req.params.boardId
+
     Board.findOne(
         {_id: boardId, "lists._id": listId},
-        {"lists.$": 1, _id: 0},
         (err, board) => {
-            if (err) res.status(401).send("Couldn't find list of id " + listId)
+            if (err) res.status(401).send(err)
+            else if (board === null) res.status(401).send("Couldn't find list of id " + listId + " or the board of id " + boardId)
             else {
-                const cardsIds = board.lists[0].cards
-                Board.findOneAndUpdate(
-                    {_id: boardId, "lists._id": listId},
-                    {$set: {"lists.$.cards": []}},
-                    (err) => {
-                        if (err) res.status(401).send(err)
-                        else {
-                            Card.remove(
-                                {_id: {$in: cardsIds}}
-                            ).then(function() {
-                                res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
-                            }).catch(function(err) {
-                                res.status(401).send(err)
-                            })
-                        }
-                    }
-                )
+                const cardsIds = board.lists.id(listId).cards
+                board.lists.id(listId).cards = []
+
+                board.save()
+                .then(function() {
+                    Card.remove(
+                        {_id: {$in: cardsIds}}
+                    ).then(function() {
+                        res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
+                    }).catch(function(err) {
+                        res.status(401).send(err)
+                    })
+                }).catch(function(err) {
+                    res.status(401).send(err)
+                })
             }
         }
     )
-})
-
-/**
- * Delete all the cards
- */
-router.delete('/', function (req, res, next) {
-    Board.find({}).cursor()
-        .on("data", function(board){
-            board.lists.forEach(function(list){
-                console.log(list)
-                list.cards = []
-            })
-            board.save()
-        })
-        .on("error", function(err){
-            res.status(401).send(err)
-        }).on('end', function(){
-            Card.remove().then(function() {
-                res.status(200).send("Successfully destroyed all the cards")
-            }).catch(function(err) {
-                res.status(401).send(err)
-            })
-        });
 })
 
 module.exports = router
