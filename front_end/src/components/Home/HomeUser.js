@@ -50,7 +50,7 @@ class HomeUser extends React.Component{
     }
 
     loadUsers(){
-     return axios.get(url.api + 'user/idnick', url.config)
+     return axios.get(url.api + 'user/', url.config)
       .catch((error) => {
         alert('An error occured when getting all the users!\nHint: check that the server is running'+error)
       })
