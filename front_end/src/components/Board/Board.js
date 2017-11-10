@@ -41,7 +41,7 @@ class Board extends React.Component{
     render(){
         let buttonSave  = null
         if(this.state.showSaveButton) {
-            buttonSave = <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList < 1}>
+            buttonSave = <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
                 Add List
             </Button>
         }
@@ -55,6 +55,7 @@ class Board extends React.Component{
                     <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
                         onChange = {this.handleInputChange} id="addListInput" 
                         onFocus = {()=>this.setState({showSaveButton: !this.state.showSaveButton})} 
+                        onBlur = {()=>this.setState({showSaveButton: !this.state.showSaveButton, titleNewList: ""})} 
                         onKeyPress={this.handleKeyPress}
                     />
                     {buttonSave}

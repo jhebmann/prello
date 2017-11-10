@@ -63,7 +63,7 @@ class List extends React.Component{
             <p>
               <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
                             value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
-              <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.length < 1}>Add Card</Button>
+              <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.trim().length < 1}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
             </p>
           </div>

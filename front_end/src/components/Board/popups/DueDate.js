@@ -12,7 +12,7 @@ class DueDate extends React.Component{
         this.state = {
             popup: this.props.popup,
             card: this.props.card,
-            dueDate: this.props.dueDate
+            dueDate: undefined
         }
 
         this.socket = this.props.io
@@ -29,19 +29,21 @@ class DueDate extends React.Component{
         return(
             <div className="dueDate">
                 <hr/>
-                <DateTime
-                    value={this.state.dueDate}
-                    className="inputDateTime"
-                    onChange={param => { this.setState({dueDate: param._d})} }
-                    viewMode= 'days'
-                    dateFormat= 'LL'
-                    timeFormat= 'HH:mm'
-                    input= {true}
-                    utc= {true}
-                    timeConstraints= {timeCons}
-                    isValidDate={valid}
-                />
-                <Button disabled={undefined === this.state.dueDate} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
+                <div id="dueDateInput">
+                    <DateTime
+                        value={this.state.dueDate}
+                        className="inputDateTime"
+                        onChange={param => { this.setState({dueDate: param._d})} }
+                        viewMode= 'days'
+                        dateFormat= 'M/D'
+                        timeFormat= 'HH:mm'
+                        input= {true}
+                        utc= {true}
+                        timeConstraints= {timeCons}
+                        isValidDate={valid}
+                    />
+                    <Button disabled={undefined === this.state.dueDate} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
+                </div>
             </div>
         )
     }
@@ -65,7 +67,8 @@ class DueDate extends React.Component{
             newCardInfos.dueDate = this.state.dueDate
             this.state.card.setState({cardInfos: newCardInfos})
             this.state.popup.setState({cardInfos: newCardInfos})
-            this.setState({dueDate: card.dueDate})
+            this.setState({dueDate: undefined})
+            this.props.parentClose("dueDate")
         }
     }
 

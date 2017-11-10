@@ -11,6 +11,8 @@ import axios from 'axios'
 import url from '../../config'
 import moment from 'moment'
 
+
+
 class Popup extends React.Component{
     constructor(props){
         super(props)
@@ -52,7 +54,8 @@ class Popup extends React.Component{
         }
 
         const dueDatePopup = {
-            overflow: 'auto'
+            overflow: 'auto',
+            height: '425px'
         }
 
         const movePopup = {
@@ -61,10 +64,12 @@ class Popup extends React.Component{
 
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
-            descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">{this.state.cardInfos.description || 'Edit the description'}</p>
+            descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">
+                {(this.state.cardInfos.description.trim().length > 0) ? this.state.cardInfos.description : <span id="editDescription">Edit the description</span>}
+            </p>
         } else{
-            descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} 
-                            type="text" name="description" onKeyPress={this.handleKeyPress} value={this.state.cardInfos.description} className="inputPopup"></FormControl>
+            descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
+            name="description" value={this.state.cardInfos.description} placeholder="Add a more detailed description..." className="inputPopup"/>                
         }
         
         const checklists = this.state.cardInfos.checklists
@@ -78,38 +83,40 @@ class Popup extends React.Component{
                     <div className="inList"> In list {this.state.listTitle} </div>
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
-                            <span className="spanTitle2"> members </span> 
+                            <span className="spanTitle2"> Members </span> 
                             {this.state.cardInfos.users} <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
                         </div>
                         <div className="labels inline"> 
-                            <span className="spanTitle2">labels </span> 
+                            <span className="spanTitle2">Labels </span> 
                             {this.state.cardInfos.labels} <Button className='circularButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="plus"/></Button>
                         </div>
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
-                            {(this.state.cardInfos.dueDate) ? moment(this.state.cardInfos.dueDate).format('DD MMM') : <Button className='circularButton' onClick={() => this.addDueDate.show()}><Glyphicon glyph="plus"/></Button>}
+                            {(this.state.cardInfos.dueDate) ? 
+                                moment(this.state.cardInfos.dueDate).format('DD MMM') : 
+                                <Button className='circularButton' onClick={() => this.addDueDate.show()
+                            }>
+                            <Glyphicon glyph="plus"/></Button>}
                         </div>
                     </div>
-                    <div className="description space"> <span className="spanTitle">description </span>
+                    <div className="description space"> <span className="spanTitle"><Glyphicon glyph="list-alt"/>Description </span>
                         <div className="inputPopup">
                             {descriptionInput}
                         </div>
                     </div>
-                    <div className="checklists space"> <span className="spanTitle">checklists </span> 
+                    <div className="checklists space"> <span className="spanTitle"><Glyphicon glyph="check"/>Checklists </span> 
                         <ul>
                             {checklistsLi}
                         </ul>
                     </div>
                     <div className="comments space">
-                        <span className="spanTitle">comments </span>
+                        <span className="spanTitle"><Glyphicon glyph="comment"/>Comments </span>
                         <div className="inputPopup">
                             <FormControl componentClass="textarea">
 
+
                             </FormControl>
                         </div>    
-                    </div>
-                    <div className="activities space"> <span className="spanTitle">activities </span> 
-                    
                     </div>
                 </div>
 
@@ -130,19 +137,19 @@ class Popup extends React.Component{
                 </div>
 
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
-                    <Member/>
+                    <Member parentClose={this.handlePopupClose.bind(this)}/>
                 </SkyLight>
                 <SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
-                    <Label/>
+                    <Label parentClose={this.handlePopupClose.bind(this)}/>
                 </SkyLight>
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
-                    <Checklist checklists={this.state.cardInfos.checklists} popup={this} card={this.state.card} io={this.socket}/>
+                    <Checklist checklists={this.state.cardInfos.checklists} popup={this} card={this.state.card} io={this.socket} />
                 </SkyLight>
                 <SkyLight dialogStyles={dueDatePopup} hideOnOverlayClicked ref={ref => this.addDueDate = ref} title='Change Due Date'>
-                    <DueDate dueDate={this.state.cardInfos.dueDate} popup={this} card={this.state.card} io={this.socket}/>
+                    <DueDate dueDate={this.state.cardInfos.dueDate} popup={this} card={this.state.card} io={this.socket} parentClose={this.handlePopupClose.bind(this)}/>
                 </SkyLight>
                 <SkyLight dialogStyles={attachmentPopup} hideOnOverlayClicked ref={ref => this.addAttachment = ref} title='Add Attachment'>
-                    <Attachment attachments={this.state.cardInfos.attachments} popup={this} card={this.state.card} io={this.socket}/>
+                    <Attachment attachments={this.state.cardInfos.attachments} popup={this} card={this.state.card} io={this.socket} parentClose={this.handlePopupClose.bind(this)}/>
                 </SkyLight>
                 <SkyLight dialogStyles={movePopup} hideOnOverlayClicked ref={ref => this.moveCard = ref} title='Move Card'>
                     <MoveCard/>
@@ -150,6 +157,13 @@ class Popup extends React.Component{
 
             </div>
         )
+    }
+
+    handlePopupClose(namePopupToHide){
+        if ("member" === namePopupToHide) this.addMember.hide()
+        else if ("label" === namePopupToHide) this.addLabel.hide()
+        else if ("dueDate" === namePopupToHide) this.addDueDate.hide()
+        else if ("attachment" === namePopupToHide) this.addAttachment.hide()
     }
 
     handleInputChange = (e) => {
@@ -168,7 +182,7 @@ class Popup extends React.Component{
         if (this.state.showDescriptionInput){
             axios.put(url.api + 'card/' + this.state.cardInfos._id, {
                 title : this.state.title,
-                description : this.state.cardInfos.description,
+                description : this.state.cardInfos.description.trim(),
                 dueDate : this.state.cardInfos.dueDate,
                 doneDate : this.state.cardInfos.doneDate,
                 isArchived : this.state.cardInfos.isArchived

@@ -130,6 +130,7 @@ body {
 .spanTitle2 {
     font-size: 150%;
     font-weight: bold;
+    padding-bottom: 10px;
 }
 
 .space {
@@ -154,11 +155,11 @@ body {
     background: rgba(0,0,0,0.1)
 }
 
+#editDescription {
+    color: rgba(0,0,0,.4)
+}
+
 .inputPopup {
     margin-top: 15px;
     margin-right: 50px;
-}
-
-.spanTitle2 {
-    padding-bottom: 10px;
 }

@@ -17,18 +17,15 @@ module.exports = (req, res, next) => {
   // decode the token using a secret key-phrase
   return jwt.verify(token, config.jwtSecret, (err, decoded) => {
     // the 401 code is for unauthorized status
-    console.log(decoded)
     if (err) { console.log(err) ; return res.status(401).end(); }
 
     const userId = decoded.sub;
-    console.log(userId)
 
     // check if a user exists
     return User.findById(userId, (userErr, user) => {
       if (userErr || !user) {
         return res.status(401).end();
       }
-
       return next();
     });
   });

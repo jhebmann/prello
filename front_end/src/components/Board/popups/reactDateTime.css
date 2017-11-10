@@ -215,3 +215,7 @@
   .inputDateTime {
     width: 60%
   }
+
+  #dueDateInput {
+    display: inline-flex
+  }

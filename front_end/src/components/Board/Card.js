@@ -24,12 +24,12 @@ class Card extends React.Component{
 
         const bigPopup = {
             width: '60%',
-            height: '100%',
-            marginTop: '-19%',
+            height: '85%',
+            marginTop: '5px',
             marginLeft: '-30%',
-            overflow: 'hidden',
-            overflowY: 'auto',
-            backgroundColor: '#EDEFF0'
+            overflow: 'auto',
+            backgroundColor: '#EDEFF0',
+            top:"70px"
         }
         
         const dueDateDiv = <div>{(this.state.cardInfos.dueDate) ? <div><Glyphicon glyph='time'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</div> : ''}</div>
@@ -38,13 +38,13 @@ class Card extends React.Component{
             <div>
                 <Draggable>
                 <div>{(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) ? <div>{this.state.cardInfos.labels.length} labels</div> : ''}
-                <Thumbnail onClick={() => this.customDialog.show()} className='card' >
-                    <div></div>
-                    <h4>{this.state.cardInfos.title}</h4>
-                    <div><p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p></div>
-                    {dueDateDiv}
-                    <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
-                </Thumbnail>
+                    <Thumbnail onClick={() => this.customDialog.show()} className='card' >
+                        <div></div>
+                        <h4>{this.state.cardInfos.title}</h4>
+                        <div><p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p></div>
+                        {dueDateDiv}
+                        <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
+                    </Thumbnail>
                 </div>
                 </Draggable>
                

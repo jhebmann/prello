@@ -23,16 +23,16 @@ class Checklist extends React.Component{
             <div className="checklistDiv">
                 <hr/>
                 <span className="titlePopups">Title</span>
-                <FormControl type="text" onChange={this.handleInputChange} name="checklist" 
+                <FormControl type="text" onChange={this.handleInputChange} name="checklist" value={this.state.checklist}
                                 onKeyPress={this.handleKeyPress} placeholder="Checklist"/>
-                <Button id='cardChecklist' bsStyle="success" onClick={this.onClickAddChecklist} disabled={this.state.checklist.length < 1}>Add</Button>
+                <Button id='cardChecklist' bsStyle="primary" onClick={this.onClickAddChecklist} disabled={this.state.checklist.trim().length < 1}>Add</Button>
             </div>
         )
     }
 
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-            if ("checklist" === e.target.name) this.onClickAddChecklist()
+            if (this.state.checklist.trim().length > 0) this.onClickAddChecklist()
         }
     }
 
@@ -42,7 +42,7 @@ class Checklist extends React.Component{
 
     onClickAddChecklist() {
         axios.post(url.api + 'checklist/card/' + this.props.card.state.cardInfos._id, {
-            title: this.state.checklist
+            title: this.state.checklist.trim()
         }).then((response) => {
             this.socket.emit('newChecklistServer', response.data)
             this.addChecklist(response.data)
@@ -56,7 +56,10 @@ class Checklist extends React.Component{
         newCardInfos.checklists.push(checklist)
         this.state.card.setState({cardInfos: newCardInfos})
         this.state.popup.setState({cardInfos: newCardInfos})
-        this.setState({checklists: newCardInfos.checklists})
+        this.setState({
+            checklists: newCardInfos.checklists,
+            checklist: ""
+        })
     }
 }
 
