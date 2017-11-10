@@ -22,10 +22,11 @@ class Checklist extends React.Component{
         return(
             <div className="checklistDiv">
                 <hr/>
-                <span className="titlePopups">Title</span>
-                <FormControl type="text" onChange={this.handleInputChange} name="checklist" value={this.state.checklist}
-                                onKeyPress={this.handleKeyPress} placeholder="Checklist"/>
-                <Button id='cardChecklist' bsStyle="primary" onClick={this.onClickAddChecklist} disabled={this.state.checklist.trim().length < 1}>Add</Button>
+                <div className="checklistForm">
+                    <FormControl type="text" onChange={this.handleInputChange} name="checklist" value={this.state.checklist}
+                                    onKeyPress={this.handleKeyPress} placeholder="Checklist"/>
+                    <Button id='cardChecklist' bsStyle="primary" onClick={this.onClickAddChecklist} disabled={this.state.checklist.trim().length < 1}>Add</Button>
+                </div>
             </div>
         )
     }

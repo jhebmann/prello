@@ -55,7 +55,8 @@ class Popup extends React.Component{
 
         const dueDatePopup = {
             overflow: 'auto',
-            height: '425px'
+            height: '440px',
+            width: '320px'
         }
 
         const movePopup = {
@@ -74,7 +75,7 @@ class Popup extends React.Component{
         
         const checklists = this.state.cardInfos.checklists
         const checklistsLi = checklists.map((x, i) => 
-            <li key={i}>{x.title}</li>
+            <li className="listChecklist" key={i}><Glyphicon glyph="check"/>{x.title}</li>
         )
 
         return(
@@ -93,18 +94,18 @@ class Popup extends React.Component{
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
                             {(this.state.cardInfos.dueDate) ? 
-                                moment(this.state.cardInfos.dueDate).format('DD MMM') : 
+                                <div id="divIsDone"><span id="checkboxNotDone"></span><span id="dateText">{moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}</span></div> : 
                                 <Button className='circularButton' onClick={() => this.addDueDate.show()
                             }>
                             <Glyphicon glyph="plus"/></Button>}
                         </div>
                     </div>
-                    <div className="description space"> <span className="spanTitle"><Glyphicon glyph="list-alt"/>Description </span>
+                    <div className="description space"> <span className="spanTitle"><Glyphicon glyph="menu-hamburger"/>Description </span>
                         <div className="inputPopup">
                             {descriptionInput}
                         </div>
                     </div>
-                    <div className="checklists space"> <span className="spanTitle"><Glyphicon glyph="check"/>Checklists </span> 
+                    <div className="checklists space"> <span className="spanTitle"><Glyphicon glyph="list-alt"/>Checklists </span> 
                         <ul>
                             {checklistsLi}
                         </ul>
