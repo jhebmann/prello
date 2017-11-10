@@ -1,7 +1,6 @@
 import React from 'react'
 import {Button} from 'react-bootstrap'
 import DateTime from 'react-datetime'
-import moment from 'moment'
 import axios from 'axios'
 import url from '../../../config'
 
@@ -13,7 +12,7 @@ class DueDate extends React.Component{
         this.state = {
             popup: this.props.popup,
             card: this.props.card,
-            dueDate: undefined
+            dueDate: this.roundMinutes(new Date())
         }
 
         this.socket = this.props.io
@@ -30,7 +29,7 @@ class DueDate extends React.Component{
     }
     
     render(){
-        const timeCons = {minutes: {step: 30}}
+        const timeCons = {minutes: {step: 1}}
         const yesterday = DateTime.moment().subtract( 1, 'day' )
         const valid = function( current ){
             return current.isAfter( yesterday )
@@ -51,7 +50,7 @@ class DueDate extends React.Component{
                         timeConstraints= {timeCons}
                         isValidDate={valid}
                     />
-                    <Button disabled={undefined === this.state.dueDate || this.state.dueDate < new Date} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
+                    <Button disabled={undefined === this.state.dueDate || this.state.dueDate < new Date()} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
                 </div>
             </div>
         )

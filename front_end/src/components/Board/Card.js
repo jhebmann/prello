@@ -48,7 +48,7 @@ class Card extends React.Component{
         }
 
         const dueDateDiv = <div>{(this.state.cardInfos.dueDate) ? 
-            <div className={dueDateClass.join("")+" "}><Glyphicon glyph='time'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</div> : ''}</div>
+            <span className={dueDateClass.join("")+" dueDateColors"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
         
         return(
             <div>

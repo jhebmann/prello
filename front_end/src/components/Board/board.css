@@ -175,7 +175,6 @@ body {
 #dateText {
     display: inline-block;
     text-decoration: underline;
-    color: #838c91;
     cursor: default;
     line-height: 1pc;
     white-space: nowrap;
@@ -261,14 +260,26 @@ ul {
     background: rgba(255, 255, 255)
 }
 
+.dueDateColors {
+    padding: 7px;
+    border-radius: 7px;
+}
+
 .dueDateTypeLate {
-    background-color: red 
+    background-color: #cf513d;
+    color: white;
 }
 
 .dueDateTypeWarning {
-    background-color: yellow 
+    background-color: #E6C60D;
+    color: white;
 }
 
 .dueDateTypeDone {
-    background-color: Green 
+    background-color: #5aac44;
+    color: white;
+}
+
+.myGlyph {
+    margin-right: 0px;
 }
