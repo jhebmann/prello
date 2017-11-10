@@ -260,3 +260,15 @@ ul {
     height: 48px;
     background: rgba(255, 255, 255)
 }
+
+.dueDateTypeLate {
+    background-color: red 
+}
+
+.dueDateTypeWarning {
+    background-color: yellow 
+}
+
+.dueDateTypeDone {
+    background-color: Green 
+}

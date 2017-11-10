@@ -1,6 +1,7 @@
 import React from 'react'
 import {Button} from 'react-bootstrap'
 import DateTime from 'react-datetime'
+import moment from 'moment'
 import axios from 'axios'
 import url from '../../../config'
 
@@ -18,6 +19,14 @@ class DueDate extends React.Component{
         this.socket = this.props.io
         this.onClickUpdateDueDate = this.onClickUpdateDueDate.bind(this)
         this.updateCard = this.updateCard.bind(this)
+    }
+
+    roundMinutes(date) {
+        
+        date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
+        date.setMinutes(0);
+    
+        return date;
     }
     
     render(){
@@ -38,11 +47,11 @@ class DueDate extends React.Component{
                         dateFormat= 'M/D'
                         timeFormat= 'HH:mm'
                         input= {true}
-                        utc= {true}
+                        utc= {false}
                         timeConstraints= {timeCons}
                         isValidDate={valid}
                     />
-                    <Button disabled={undefined === this.state.dueDate} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
+                    <Button disabled={undefined === this.state.dueDate || this.state.dueDate < new Date} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
                 </div>
             </div>
         )
@@ -67,7 +76,7 @@ class DueDate extends React.Component{
             newCardInfos.dueDate = this.state.dueDate
             this.state.card.setState({cardInfos: newCardInfos})
             this.state.popup.setState({cardInfos: newCardInfos})
-            this.setState({dueDate: undefined})
+            this.setState({dueDate: this.roundMinutes(new Date())})
             this.props.parentClose("dueDate")
         }
     }
