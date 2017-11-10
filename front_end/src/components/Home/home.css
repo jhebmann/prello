@@ -14,3 +14,22 @@
     display: flow-root;
   }
 
+.card{
+    width: 24%;
+}
+
+.teamContainer{
+    display: flex;
+    flex-direction: column;
+    margin-top: 2%;
+    margin-bottom: 2%;  
+}
+.textFormContainer{
+    padding: 0.5%;
+}
+
+.teamsContainer{
+    margin-left: 7%;
+    margin-right: 7%;
+}
+
