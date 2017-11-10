@@ -1,12 +1,13 @@
 import React from 'react'
 import Board from './Board'
 import SocketIOClient from 'socket.io-client'
+import url from '../../config'
 
 class HomeBoard extends React.Component{
     
     constructor(props){
       super(props)
-      this.socket = SocketIOClient('http://localhost:8000');
+      this.socket = SocketIOClient(url.socket);
     }
 
     render(){
