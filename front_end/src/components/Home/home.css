@@ -8,3 +8,9 @@
 .addTeamButton, .addBoardButton {
     margin-left: 10px;
 }
+
+.spinn {
+    text-align: center;
+    display: flow-root;
+  }
+

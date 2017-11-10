@@ -4,8 +4,10 @@ import React from 'react'
 import {Button,FormControl,Grid,Row} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
-import Auth from '../Auth/Auth.js';
+import Auth from '../Auth/Auth.js'
 import './home.css'
+import Cascade from '../Board/Cascade.js'
+import { Spin } from 'antd';
 
 class HomeUser extends React.Component{
     
@@ -15,9 +17,11 @@ class HomeUser extends React.Component{
     this.state={
       teams: [],
       textImput: null,
-      publicBoards:null
+      publicBoards:null,
+      users:null,
+      pageLoaded:false
     }
-    this.socket = SocketIOClient('http://localhost:8000')
+    this.socket = SocketIOClient(url.socket)
     this.addTeam = this.addTeam.bind(this);   
     this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)    
     this.onClickAddTeam = this.onClickAddTeam.bind(this)
@@ -28,14 +32,28 @@ class HomeUser extends React.Component{
 
     componentWillMount() {
         if(Auth.isUserAuthenticated()){
-            axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
-            .then((response) => {
-              this.setState({teams:response.data})
-            })
-            .catch((error) => {
-              alert('An error occured when getting the teams!\nHint: check that the server is running')
-            })
+          const instance= this
+          axios.all([this.loadTeams(), this.loadUsers()])
+          .then(axios.spread(function (res1, res2) {
+            instance.setState({pageLoaded:true,teams:res1.data,users:res2.data})
+          }))
         }
+        else
+          this.setState({pageLoaded:true})
+    }
+
+    loadTeams(){
+      return axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
+      .catch((error) => {
+        alert('An error occured when getting the teams!\nHint: check that the server is running')
+      })
+    }
+
+    loadUsers(){
+     return axios.get(url.api + 'user/idnick', url.config)
+      .catch((error) => {
+        alert('An error occured when getting all the users!\nHint: check that the server is running'+error)
+      })
     }
 
     onClickAddTeam(){
@@ -81,7 +99,7 @@ class HomeUser extends React.Component{
     render(){
         return(
           <div id="mainPage">
-            {Auth.isUserAuthenticated() ? (<div id="teamForm" style={{display: "inline-flex"}}>
+            {this.state.pageLoaded ? (<div>{Auth.isUserAuthenticated() ? (<div id="teamForm" style={{display: "inline-flex"}}>
             <FormControl name="team" type="text" onChange={this.handleTeamInputChange} placeholder="Title" 
                 value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
                 <Button bsStyle="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
@@ -90,7 +108,8 @@ class HomeUser extends React.Component{
                 {this.renderTeams(this.state.teams)}
                 {this.renderPublicBoards(this.state.publicBoards)}
               </Row>
-            </Grid>
+            </Grid></div>):(<div className="spinn"><Spin size='large' /></div>) }
+            
           </div> 
         )
     }
@@ -99,7 +118,8 @@ class HomeUser extends React.Component{
         const teamItems = teams.map((team, index)=>
           <div key = {index}>
             <hr />
-            <h3> TEAM {team.name}</h3>
+            <h3> TEAM  {team.name}</h3>
+            <Cascade users={this.state.users} teamId={team._id} />
             <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
           </div>
         )
@@ -121,4 +141,7 @@ class HomeUser extends React.Component{
     }
 }
 
+
 export default HomeUser
+
+

@@ -16,6 +16,15 @@ router.get('/', function (req, res, next) {
     })
 })
 
+router.get('/idnick', function (req, res, next) {
+    // Return all the users, CHECK LDAP nickname
+    User.find({},{ local:1 , _id: 1 ,'local.nickname': 1,'ldap.nickname':1 }).then(function(users){
+        res.status(200).send(users)
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
+})
+
 router.get('/:id', function (req, res, next) {
     // Return the user having the id given in parameter
     User.findById(req.params.id).then(function(user){
@@ -233,7 +242,8 @@ router.put('/:id', function (req, res, next) {
             if (err) res.status(401).send(err)
             else if (user === null) res.status(401).send("Couldn't find the user of id " + id)
             else{
-                if ('undefined' !== typeof req.body.local.password) user.local.password = req.body.local.password
+                if ('undefined' !== typeof req.body.local && 'undefined' !== typeof req.body.local.password) user.local.password = req.body.local.password
+                if ('undefined' !== typeof req.body.team ) {if(!user.teams.includes(req.body.team)) user.teams.push(req.body.team)}
                 user.save((err, user) => {
                     if (err) res.status(401).send(err)
                     else {
