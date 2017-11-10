@@ -17,9 +17,6 @@ app.use(helmet())
 const models = require('./models/index')
 const listModel = models.lists
 
-// Getting controllers
-const controller = require('./controllers/index.js')
-
 // API routes
 //To prevent errors from Cross Origin Resource Sharing, we will set 
 //our headers to allow CORS with middleware like so:
@@ -103,10 +100,6 @@ io.on('connection', (client) => {
     
     client.on('updateListTitle', (idList, newTitle) => {  
         client.broadcast.emit('updateListTitle', idList, newTitle)
-    })
-
-    client.on('deleteLists', (idBoard) => {
-        controller.boards.deleteAllLists(client, idBoard)
     })
 
     // ----- Handle cards ----- //

@@ -45,9 +45,8 @@ class Cascade extends React.Component{
     this.setState({selected:key})
   }
   onClickAdd(){
-    axios.put(url.api + 'user/'+this.state.selected, {
-        team: this.state.teamId
-    }, url.config).then(()=>alert('Team member added!'))
+    axios.put(url.api + 'user/'+this.state.selected + '/team/add/' + this.state.teamId, {}, url.config)
+    .then(()=>alert('Team member added!'))
     .catch((error) => {
         alert('An error occured when adding the user to the team')
     })
