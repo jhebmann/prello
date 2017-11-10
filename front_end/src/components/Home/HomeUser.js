@@ -6,7 +6,7 @@ import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
 import Cascade from '../Board/Cascade.js'
-import {Spin, Button,Input, Icon,Grid,Row} from 'antd';
+import {Spin, Button, Input, Icon, Row} from 'antd';
 
 class HomeUser extends React.Component{
     

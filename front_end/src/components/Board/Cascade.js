@@ -1,9 +1,9 @@
 import React from 'react'
 import {Select, Avatar,Button} from 'antd'
-import 'antd/dist/antd.css'
 import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
+import 'antd/dist/antd.css'
 
 const Option = Select.Option;
 

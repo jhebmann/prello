@@ -1,5 +1,4 @@
 import React from 'react'
-import {FormControl} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';

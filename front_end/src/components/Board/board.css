@@ -30,7 +30,7 @@ body {
 }
 
 #addListDiv {
-    display: inline;
+    display: inline-block;
     text-decoration: none;
     font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
 	line-height: 30px;
@@ -41,11 +41,20 @@ body {
     padding-bottom: 2px;
 }
 
+#addListButton {
+    display: block;
+    margin-top: 8px;
+}
+
 #addListInput {
     width: 230px;
     display: inline-block;
     max-height: 100%;
-    background: rgba(0,0,0,.03)
+    background: rgba(0,0,0,.025);
+}
+
+#addListInput:focus {
+    background: rgba(255,255,255,.6);
 }
 
 .list {
