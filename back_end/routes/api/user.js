@@ -9,16 +9,7 @@ const mongoose = require('mongoose')
 
 router.get('/', function (req, res, next) {
     // Return all the users
-    User.find().then(function(users){
-        res.status(200).send(users)
-    }).catch(function(err) {
-        res.status(401).send(err);
-    })
-})
-
-router.get('/idnick', function (req, res, next) {
-    // Return all the users, CHECK LDAP nickname
-    User.find({},{ local:1 , _id: 1 ,'local.nickname': 1,'ldap.nickname':1 }).then(function(users){
+    User.find({}, {"local.password": 0, "ldap.password": 0}).then(function(users){
         res.status(200).send(users)
     }).catch(function(err) {
         res.status(401).send(err);
@@ -243,7 +234,6 @@ router.put('/:id', function (req, res, next) {
             else if (user === null) res.status(401).send("Couldn't find the user of id " + id)
             else{
                 if ('undefined' !== typeof req.body.local && 'undefined' !== typeof req.body.local.password) user.local.password = req.body.local.password
-                if ('undefined' !== typeof req.body.team ) {if(!user.teams.includes(req.body.team)) user.teams.push(req.body.team)}
                 user.save((err, user) => {
                     if (err) res.status(401).send(err)
                     else {
@@ -254,6 +244,67 @@ router.put('/:id', function (req, res, next) {
             }
         }
     )
+})
+
+router.put('/:id/team/add/:teamId', function(req, res, next){
+    // Add the user having the id given in parameter to a team
+    const id = req.params.id
+    const teamId = req.params.teamId
+    
+    User.findById(id)
+    .then(function(user) {
+        Team.findById(teamId)
+        .then(function(team) {
+            user.teams.addToSet(team._id)
+            user.save()
+            .then(function(user) {
+                team.users.addToSet(user._id)
+                team.save()
+                .then(function() {
+                    res.status(200).send(user)
+                }).catch(function(err) {
+                    res.status(401).send(err);
+                })
+            }).catch(function(err) {
+                res.status(401).send(err);
+            })
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
+})
+
+router.put('/:id/team/remove/:teamId', function(req, res, next){
+    // Remove the user having the id given in parameter from a team
+    const id = req.params.id
+    const teamId = req.params.teamId
+    
+    User.findById(id)
+    .then(function(user) {
+        Team.findById(teamId)
+        .then(function(team) {
+            user.teams.pull(team._id)
+            user.save()
+            .then(function(user) {
+                team.users.pull(user._id)
+                team.admins.pull(user._id)
+                team.save()
+                .then(function() {
+                    res.status(200).send(user)
+                }).catch(function(err) {
+                    res.status(401).send(err);
+                })
+            }).catch(function(err) {
+                res.status(401).send(err);
+            })
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
 })
 
 
