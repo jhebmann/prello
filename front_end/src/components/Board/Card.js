@@ -47,8 +47,8 @@ class Card extends React.Component{
             dueDateClass.push("Warning")
         }
 
-        const dueDateDiv = <div>{(this.state.cardInfos.dueDate) ? 
-            <span className={dueDateClass.join("")+" dueDateColors"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
+        const dueDateDiv = <div className="alignElements">{(this.state.cardInfos.dueDate) ? 
+            <span className={dueDateClass.join("")+" dueDateColors inlineElements"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
         
         return(
             <div>
@@ -57,9 +57,12 @@ class Card extends React.Component{
                     <Thumbnail onClick={() => this.customDialog.show()} className='card' >
                         <div></div>
                         <h4>{this.state.cardInfos.title}</h4>
-                        <div><p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p></div>
-                        {dueDateDiv}
-                        <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
+                        {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) ?
+                        <div>
+                            {dueDateDiv}
+                            <div className="alignElements"><p> {(this.state.cardInfos.description) ? <Glyphicon glyph='align-left'/> : ''} </p></div>
+                            <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
+                        </div> :""}
                     </Thumbnail>
                 </div>
                 </Draggable>

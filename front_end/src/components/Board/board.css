@@ -139,6 +139,8 @@ body {
 
 #textDescription {
     cursor: pointer;
+    line-height: 1.4em;
+    word-wrap: break-word;
 }
 
 .circularButton {
@@ -152,7 +154,7 @@ body {
 }
 
 #textDescription:hover {
-    background: rgba(0,0,0,0.1)
+    background: rgba(0,0,0,0.07)
 }
 
 #editDescription {
@@ -162,6 +164,7 @@ body {
 .inputPopup {
     margin-top: 15px;
     margin-right: 50px;
+    white-space: pre-wrap;
 }
 
 .comments {
@@ -261,7 +264,7 @@ ul {
 }
 
 .dueDateColors {
-    padding: 7px;
+    padding: 7px 5px;
     border-radius: 7px;
 }
 
@@ -282,4 +285,18 @@ ul {
 
 .myGlyph {
     margin-right: 0px;
+}
+
+#dueDateCentered {
+    display: inline-flex;
+    align-items: center;
+}
+
+.inlineElements {
+    margin-right: 5px;
+}
+
+.alignElements {
+    font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    display: inline-flex;
 }

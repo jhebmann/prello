@@ -107,7 +107,7 @@ class Popup extends React.Component{
             dueDateClass.push("Warning")
         }
 
-        const dueDateRender = <span className={dueDateClass.join("")+" dueDateColors"}><span id="checkboxNotDone"></span><span id="dateText">{moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}</span></span>
+        const dueDateRender = <div> <span className={dueDateClass.join("")+" dueDateColors"} id="dueDateCentered"><span id="checkboxNotDone"></span><span id="dateText">{moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}</span></span></div>
 
         return(
             <div className="popup">

@@ -29,7 +29,7 @@ class DueDate extends React.Component{
     }
     
     render(){
-        const timeCons = {minutes: {step: 1}}
+        const timeCons = {minutes: {step: 30}}
         const yesterday = DateTime.moment().subtract( 1, 'day' )
         const valid = function( current ){
             return current.isAfter( yesterday )
