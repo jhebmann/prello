@@ -12,16 +12,24 @@ class DueDate extends React.Component{
         this.state = {
             popup: this.props.popup,
             card: this.props.card,
-            dueDate: undefined
+            dueDate: this.roundMinutes(new Date())
         }
 
         this.socket = this.props.io
         this.onClickUpdateDueDate = this.onClickUpdateDueDate.bind(this)
         this.updateCard = this.updateCard.bind(this)
     }
+
+    roundMinutes(date) {
+        
+        date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
+        date.setMinutes(0);
+    
+        return date;
+    }
     
     render(){
-        const timeCons = {minutes: {step: 30}}
+        const timeCons = {minutes: {step: 1}}
         const yesterday = DateTime.moment().subtract( 1, 'day' )
         const valid = function( current ){
             return current.isAfter( yesterday )
@@ -38,11 +46,11 @@ class DueDate extends React.Component{
                         dateFormat= 'M/D'
                         timeFormat= 'HH:mm'
                         input= {true}
-                        utc= {true}
+                        utc= {false}
                         timeConstraints= {timeCons}
                         isValidDate={valid}
                     />
-                    <Button disabled={undefined === this.state.dueDate} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
+                    <Button disabled={undefined === this.state.dueDate || this.state.dueDate < new Date()} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
                 </div>
             </div>
         )
@@ -67,7 +75,7 @@ class DueDate extends React.Component{
             newCardInfos.dueDate = this.state.dueDate
             this.state.card.setState({cardInfos: newCardInfos})
             this.state.popup.setState({cardInfos: newCardInfos})
-            this.setState({dueDate: undefined})
+            this.setState({dueDate: this.roundMinutes(new Date())})
             this.props.parentClose("dueDate")
         }
     }

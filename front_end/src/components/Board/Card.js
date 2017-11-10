@@ -32,7 +32,23 @@ class Card extends React.Component{
             top:"70px"
         }
         
-        const dueDateDiv = <div>{(this.state.cardInfos.dueDate) ? <div><Glyphicon glyph='time'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</div> : ''}</div>
+        let dueDateClass = ["dueDateType"]
+        const now = moment()
+        const dueDate = new Date(this.state.cardInfos.dueDate)
+        const today = new Date()
+        
+        if (this.state.cardInfos.doneDate) {
+            dueDateClass.push("Done")
+        }
+        else if ( dueDate < today){
+            dueDateClass.push("Late")
+        }
+        else if ((Math.abs(dueDate - now) / 36e5) < 72) {
+            dueDateClass.push("Warning")
+        }
+
+        const dueDateDiv = <div>{(this.state.cardInfos.dueDate) ? 
+            <span className={dueDateClass.join("")+" dueDateColors"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
         
         return(
             <div>

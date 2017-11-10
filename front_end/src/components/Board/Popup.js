@@ -92,6 +92,23 @@ class Popup extends React.Component{
             </li>
         )
 
+        let dueDateClass = ["dueDateType"]
+        const now = moment()
+        const dueDate = new Date(this.state.cardInfos.dueDate)
+        const today = new Date()
+        
+        if (this.state.cardInfos.doneDate) {
+            dueDateClass.push("Done")
+        }
+        else if ( dueDate < today){
+            dueDateClass.push("Late")
+        }
+        else if ((Math.abs(dueDate - now) / 36e5) < 72) {
+            dueDateClass.push("Warning")
+        }
+
+        const dueDateRender = <span className={dueDateClass.join("")+" dueDateColors"}><span id="checkboxNotDone"></span><span id="dateText">{moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}</span></span>
+
         return(
             <div className="popup">
                 <div className="popupLeft">
@@ -108,7 +125,7 @@ class Popup extends React.Component{
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
                             {(this.state.cardInfos.dueDate) ? 
-                                <div id="divIsDone"><span id="checkboxNotDone"></span><span id="dateText">{moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}</span></div> : 
+                                dueDateRender : 
                                 <Button className='circularButton' onClick={() => this.addDueDate.show()
                             }>
                             <Glyphicon glyph="plus"/></Button>}
