@@ -118,12 +118,6 @@ body {
     margin-right: 10px;
 }
 
-.spanTitle2 {
-    display: block;
-    color: #838c91;
-    padding-right: 50px;
-}
-
 .spanTitle {
     display: block;
     font-size: 150%;
@@ -131,6 +125,9 @@ body {
 }
 
 .spanTitle2 {
+    display: block;
+    color: #838c91;
+    padding-right: 50px;
     font-size: 150%;
     font-weight: bold;
     padding-bottom: 10px;
@@ -216,4 +213,50 @@ ul {
 
 #cardChecklist {
     margin-left: 8px;
+}
+
+.checklistProgressDiv {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    margin-right: 50px;
+}
+
+.percentageLabel {
+    color: #838c91;
+    font-size: 11px;
+    line-height: 10px;
+    left: 0;
+    top: -1px;
+    text-align: center;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.checklistProgressBar {
+    margin-left: 10px;
+}
+
+.checkListNewItemText {
+    background: 0 0;
+    border-color: transparent;
+    box-shadow: none;
+    color: #838c91;
+    cursor: pointer;
+    margin-bottom: 4px;
+    max-height: 2pc;
+    overflow: hidden;
+    resize: none;
+    text-decoration: none;
+}
+
+.checkListNewItemText:hover {
+    background: rgba(0, 0, 0, 0.1)
+}
+
+.checkListNewItemText:focus {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    overflow-wrap: break-word;
+    height: 48px;
+    background: rgba(255, 255, 255)
 }

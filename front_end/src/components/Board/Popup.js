@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Glyphicon, FormControl } from 'react-bootstrap'
+import { Button, FormControl, Glyphicon, ProgressBar } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Attachment from './popups/Attachment'
 import Checklist from './popups/Checklist'
@@ -72,10 +72,24 @@ class Popup extends React.Component{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
             name="description" value={this.state.cardInfos.description} placeholder="Add a more detailed description..." className="inputPopup"/>                
         }
-        
+
         const checklists = this.state.cardInfos.checklists
-        const checklistsLi = checklists.map((x, i) => 
-            <li className="listChecklist" key={i}><Glyphicon glyph="check"/>{x.title}</li>
+        const checklistsLi = checklists.map((x, i) =>
+            <li className="listChecklist" key={i}>
+                <Glyphicon glyph="check"/>{x.title}
+                <div className="checklistProgressDiv">
+                    <span className="percentageLabel">0%</span>
+                    <ProgressBar className="checklistProgressBar" striped now={100*0.0/x.items.length} bsStyle="info"/>
+                </div>
+                <div className="inputPopup">
+                    <FormControl type = "text" name = "newItem" placeholder = "Add an item..." className="checkListNewItemText"
+                        /*onChange = {this.handleInputChange} id="addListInput" 
+                        onFocus = {()=>this.setState({showSaveButton: !this.state.showSaveButton})} 
+                        onBlur = {()=>this.setState({showSaveButton: !this.state.showSaveButton, titleNewList: ""})}*/ 
+                        onKeyPress={this.handleKeyPress}
+                    />
+                </div>
+            </li>
         )
 
         return(
@@ -114,8 +128,6 @@ class Popup extends React.Component{
                         <span className="spanTitle"><Glyphicon glyph="comment"/>Comments </span>
                         <div className="inputPopup">
                             <FormControl componentClass="textarea">
-
-
                             </FormControl>
                         </div>    
                     </div>
@@ -176,6 +188,7 @@ class Popup extends React.Component{
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             if ("description" === e.target.name) this.updateDescriptionInput()
+            else if ("newItem" === e.target.name) console.log(e)
         }
     }
 
