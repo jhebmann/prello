@@ -1,13 +1,12 @@
 import Home from "./Home.js"
 import SocketIOClient from 'socket.io-client'
 import React from 'react'
-import {Button,FormControl,Grid,Row} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
 import Cascade from '../Board/Cascade.js'
-import { Spin } from 'antd';
+import {Spin, Button,Input, Icon,Grid,Row} from 'antd';
 
 class HomeUser extends React.Component{
     
@@ -99,16 +98,20 @@ class HomeUser extends React.Component{
     render(){
         return(
           <div id="mainPage">
-            {this.state.pageLoaded ? (<div>{Auth.isUserAuthenticated() ? (<div id="teamForm" style={{display: "inline-flex"}}>
-            <FormControl name="team" type="text" onChange={this.handleTeamInputChange} placeholder="Title" 
-                value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
-                <Button bsStyle="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
-            <Grid>
-              <Row>
+            {this.state.pageLoaded ? (
+              <div >
+                {Auth.isUserAuthenticated() ? 
+                  (<div id="teamsForm" className="teamsContainer" style={{display: "inline-flex"}}>
+                <Input type="text" onChange={this.handleTeamInputChange} placeholder="Title" 
+                    value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
+                    <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
+              <div  className="teamsContainer">
+              <Row >
                 {this.renderTeams(this.state.teams)}
                 {this.renderPublicBoards(this.state.publicBoards)}
               </Row>
-            </Grid></div>):(<div className="spinn"><Spin size='large' /></div>) }
+              </div>
+            </div>):(<div className="spinn"><Spin size='large' /></div>) }
             
           </div> 
         )
@@ -116,9 +119,8 @@ class HomeUser extends React.Component{
 
     renderTeams(teams){
         const teamItems = teams.map((team, index)=>
-          <div key = {index}>
-            <hr />
-            <h3> TEAM  {team.name}</h3>
+          <div key = {index} className='teamContainer'>
+            <h3><Icon type="team" />{team.name}</h3>
             <Cascade users={this.state.users} teamId={team._id} />
             <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
           </div>
@@ -127,11 +129,13 @@ class HomeUser extends React.Component{
     }
 
     renderPublicBoards(publicBoards){
-        return <div>
-        <hr />
-        <h3> Public Boards</h3>
-        <Home public={true} socket={this.socket}/>
-        </div>
+        return (
+          <div >
+            <hr />
+            <h3> Public Boards</h3>
+            <Home public={true} socket={this.socket}/>
+          </div> 
+        )
     }
 
     handleKeyPress = (e) => {
@@ -144,4 +148,12 @@ class HomeUser extends React.Component{
 
 export default HomeUser
 
-
+/*
+<Card title={board.title || 'Undefined'} className='card'>
+<p>Description</p>
+{(board.isPublic) ?(
+  <p>Public Board</p>):(
+  <p>Private Board</p>)
+}
+</Card>
+*/
