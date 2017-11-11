@@ -28,10 +28,10 @@ router.get('/user', function (req, res, next) {
     })
 })
 
-router.get('/team/:idTeam', function (req, res, next) {
+router.get('/team/:teamId', function (req, res, next) {
     // Get all boards of a team
     Team.findOne(
-        {_id: req.params.idTeam},
+        {_id: req.params.teamId},
         (err, team) => {
             if (err) res.status(401).send(err)
             else{
@@ -142,13 +142,13 @@ router.post('/', function (req, res, next) {
     )
 })
 
-router.post('/team/:idTeam', function (req, res, next) {
+router.post('/team/:teamId', function (req, res, next) {
     // Post a new board
     const newBoard = new Board({
         title: req.body.title,
         admins: req.body.admins,
         isPublic: req.body.isPublic,
-        teams: [req.params.idTeam]
+        teams: [req.params.teamId]
     })
     newBoard.save(
         {},
@@ -156,7 +156,7 @@ router.post('/team/:idTeam', function (req, res, next) {
             if (err) res.status(401).send(err)
             else {
                 Team.findOneAndUpdate(
-                    {_id: req.params.idTeam},
+                    {_id: req.params.teamId},
                     {$push: {boards: insertedBoard._id}},
                     (err) => {
                         if (err) res.status(401).send(err)

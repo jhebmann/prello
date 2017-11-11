@@ -7,16 +7,16 @@ const router = require('express').Router()
 router.get('/:id', function (req, res, next) {
     // Return the attachment having the id given in parameter
     Card.findOne({'attachments._id': req.params.id}, '-_id').select({ attachments: {$elemMatch: {_id: req.params.id}}})
-    .then(function(cards){
-        res.status(200).send(cards.attachments[0])
+    .then(function(card){
+        res.status(200).send(card.attachments[0])
     }).catch(function(err) {
         res.status(401).send(err);
     })
 })
 
-router.get('/:attachmentId/card/:cardId/users', function (req, res, next) {
+router.get('/:id/card/:cardId/users', function (req, res, next) {
     // Get user that posted the attachment
-    Card.findOne({_id: req.params.cardId, "attachments._id": req.params.attachmentId}, 'attachment',
+    Card.findOne({_id: req.params.cardId, "attachments._id": req.params.id}, 'attachment',
         (err, card) => {
             if (card === null)
                 res.status(401).send(err)
@@ -31,9 +31,9 @@ router.get('/:attachmentId/card/:cardId/users', function (req, res, next) {
     )
 })
 
-router.get('/:attachmentId/card/:cardId/comments', function (req, res, next) {
+router.get('/:id/card/:cardId/comment', function (req, res, next) {
     // Get comment linked to the attachment
-    Card.findOne({_id: req.params.cardId, "attachments._id": req.params.attachmentId}, 'attachment',
+    Card.findOne({_id: req.params.cardId, "attachments._id": req.params.id}, 'attachment',
         (err, card) => {
             if (card === null)
                 res.status(401).send(err)
@@ -48,9 +48,9 @@ router.get('/:attachmentId/card/:cardId/comments', function (req, res, next) {
     )
 })
 
-router.post('/card/:idCard', function (req, res, next) {
+router.post('/card/:cardId', function (req, res, next) {
     // Post a new attachment into a card
-    Card.findById(req.params.idCard, function(err, card){
+    Card.findById(req.params.cardId, function(err, card){
         let newattachment = new Attachment()
         newattachment.title = req.body.title,
         newattachment.file = req.body.file,
@@ -66,13 +66,13 @@ router.post('/card/:idCard', function (req, res, next) {
     })
 })
 
-router.put('/:id/card/:idCard', function (req, res, next) {
+router.put('/:id/card/:cardId', function (req, res, next) {
     // Update the attachment having the id given in parameter
     const id = req.params.id
-    const idCard = req.params.idCard
+    const cardId = req.params.cardId
     Card.findOne(
         {
-            _id : idCard,
+            _id : cardId,
             attachments: {$elemMatch: {_id: id}}
         },
         (err, card) => {
