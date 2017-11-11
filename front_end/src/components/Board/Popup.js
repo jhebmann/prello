@@ -10,6 +10,7 @@ import MoveCard from './popups/MoveCard'
 import axios from 'axios'
 import url from '../../config'
 import moment from 'moment'
+import Markdown from 'react-remarkable'
 
 
 
@@ -67,7 +68,7 @@ class Popup extends React.Component{
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
             descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">
-                {(this.state.cardInfos.description.trim().length > 0) ? this.state.cardInfos.description : <span id="editDescription">Edit the description</span>}
+                {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span id="editDescription">Edit the description</span>}
             </p>
         } else{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
