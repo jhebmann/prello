@@ -6,7 +6,7 @@ import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
 import Cascade from '../Board/Cascade.js'
-import {Spin, Button, Input, Icon, Row,Collapse,Tabs} from 'antd';
+import {Spin, Button, Input, Icon, Row,Collapse,Tabs,Avatar,Tooltip} from 'antd';
 const Panel = Collapse.Panel;
 const TabPane = Tabs.TabPane;
 
@@ -20,7 +20,8 @@ class HomeUser extends React.Component{
       textImput: null,
       publicBoards:null,
       users:null,
-      pageLoaded:false
+      pageLoaded:false,
+      key:null
     }
     this.socket = SocketIOClient(url.socket)
     this.addTeam = this.addTeam.bind(this);   
@@ -28,6 +29,7 @@ class HomeUser extends React.Component{
     this.onClickAddTeam = this.onClickAddTeam.bind(this)
     this.renderPublicBoards = this.renderPublicBoards.bind(this) 
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
+    this.updateTeams = this.updateTeams.bind(this) 
     this.socket.on("addTeam", this.addTeam)
 
     }
@@ -129,6 +131,7 @@ class HomeUser extends React.Component{
                 <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">
                   <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
                 </TabPane>
+                  {this.renderTeamMembersTab(team)}
                   {this.renderAdminTab(team)}
               </Tabs>
             </Panel>
@@ -142,7 +145,7 @@ class HomeUser extends React.Component{
         return (
           <div className='teamContainer' >
             <Collapse bordered={false} defaultActiveKey={['1']}>
-            <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1">    
+            <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1"> 
             <Home public={true} socket={this.socket}/>
             </Panel>
             </Collapse>
@@ -151,14 +154,49 @@ class HomeUser extends React.Component{
     }
 
     renderAdminTab(team){
-      if(team.admins.includes(Auth.getUserID()))
+      if(team.admins.includes(Auth.getUserID())){
+        const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id));
+        const notTeamMembers=this.state.users.filter(usr => !team.users.includes(usr._id))
+        const membersNotAdmin=teamMembers.filter(usr => team.users.filter(usr=>!team.admins.includes(usr)).includes(usr._id))
+        const membersAdmin=teamMembers.filter(usr=>team.admins.includes(usr._id))
         return (
-          <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="2">
-            <Cascade users={this.state.users} teamId={team._id} task="Add Member"/>
-            <Cascade users={this.state.users} teamId={team._id} task="Remove Member" />
-            <Cascade users={this.state.users} teamId={team._id} task="Add Admin" />
-          </TabPane>
+            <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="3">
+              <Cascade users={notTeamMembers} teamId={team._id} task="Add Member" onChange={this.updateTeams}/>
+              <Cascade users={teamMembers} teamId={team._id} task="Remove Member" onChange={this.updateTeams}/>
+              <Cascade users={membersNotAdmin} teamId={team._id} task="Add Admin" onChange={this.updateTeams}/>
+              <Cascade users={membersAdmin} teamId={team._id} task="Revoke Admin" onChange={this.updateTeams}/>
+            </TabPane>
+          )
+        }
+    }
+
+    renderTeamMembersTab(team){
+      const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id))
+      const teamMemberItems = teamMembers.map((member, index)=>
+        <div className="teamMember">
+           <Tooltip title={member.local.mail} >
+              <Avatar size="medium" >{member.local.nickname[0]}</Avatar>
+           </Tooltip>
+           {member.local.nickname} 
+        </div>
         )
+      return(
+        <TabPane tab={<span><Icon type="contacts" />Team Members</span>} key="2">
+          <div className="teamMembers">
+            {teamMemberItems}
+          </div>
+        </TabPane>
+      )
+    }
+
+    updateTeams(){
+      axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
+      .then((response) => {
+        this.setState({teams:response.data})
+      })
+      .catch((error) => {
+          alert('An error occured when getting the teams!'+error)
+      })
     }
 
     handleKeyPress = (e) => {

@@ -1,6 +1,7 @@
 import React from 'react'
 import { FormErrors } from './FormErrors'
 import './Form.css'
+import Auth from '../Auth.js';
 import { Redirect } from 'react-router-dom'
 import {ListGroupItem} from 'react-bootstrap'
 import axios from 'axios'
@@ -39,9 +40,14 @@ class Register extends React.Component{
           message: message,
           level: type,
           position: 'tc',
-          autoDismiss: 3,
+          autoDismiss: 4,
           onRemove: onRemove
         });
+    }
+
+    componentWillMount = () => {
+        if (Auth.getUserID())
+            this.redirect()
     }
 
     componentDidMount = () => {
@@ -148,6 +154,7 @@ class Register extends React.Component{
           </form>
         )
     }
+
     processForm(event) {
         // prevent default action. in this case, action is the form submission event
         event.preventDefault();
@@ -164,7 +171,7 @@ class Register extends React.Component{
               error: false,
               errorMssge: null
             })
-            this.addNotification('success', 'You successfully registered with the nickname ' + this.state.nickname)
+            this.addNotification('success', 'You successfully registered with the nickname ' + this.state.nickname + ". You will be redirected to the login page soon")
         })
         .catch((error) => {
             let errorType = null

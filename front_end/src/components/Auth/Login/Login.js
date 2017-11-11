@@ -4,8 +4,10 @@ import './Form.css';
 import Auth from '../Auth.js';
 import { Redirect } from 'react-router-dom'
 import {ListGroupItem} from 'react-bootstrap'
+import axios from 'axios'
+import url from '../../../config'
+const NotificationSystem = require('react-notification-system');
 
-// Not done yet
 class Register extends React.Component{
 
     constructor(props) {
@@ -17,13 +19,38 @@ class Register extends React.Component{
             passwordValid: false,
             nicknameValid: false,
             formValid: false,
-            redirect: false,
             errorMssge:null,
-            error:false
+            error:false,
+            redirect: null
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.processForm = this.processForm.bind(this)
+        this.addNotification = this.addNotification.bind(this)
+        this.redirect = this.redirect.bind(this)
         
+    }
+    
+    notifications = null
+
+    addNotification = (type, message) => {
+        const onRemove = (type === 'success') ? this.redirect : null
+
+        this.notifications.addNotification({
+            message: message,
+            level: type,
+            position: 'tc',
+            autoDismiss: 3,
+            onRemove: onRemove
+        });
+    }
+    
+    componentWillMount = () => {
+        if (Auth.getUserID())
+            this.redirect()
+    }
+    
+    componentDidMount = () => {
+        this.notifications = this.refs.notificationSystem
     }
 
     handleSubmit(event) {
@@ -69,15 +96,18 @@ class Register extends React.Component{
             return(error.length === 0 ? '' : 'has-error');
     }
     
+    redirect(){
+        this.setState({
+            redirect: <Redirect to='/'/>
+        })
+    }
+    
     render () {
-        if (this.state.redirect) 
-            return <Redirect to='/'/>
         return (
           <form className="demoForm" onSubmit={this.processForm}>
+            {this.state.redirect}
+            <NotificationSystem ref="notificationSystem" />
             <h2>Login</h2>
-            <div className="panel panel-default">
-              <FormErrors formErrors={this.state.formErrors} />
-            </div>
             <div className={`form-group ${this.errorClass(this.state.formErrors.nickname)}`}>
               <label htmlFor="nickname">Nickname</label>
               <input type="text" required className="form-control" name="nickname"
@@ -103,47 +133,48 @@ class Register extends React.Component{
     processForm(event) {
         // prevent default action. in this case, action is the form submission event
         event.preventDefault();
-    
-        // create a string for an HTTP body message
-        const nickname = encodeURIComponent(this.state.nickname);
-        const password = encodeURIComponent(this.state.password);
-        const formData = `nickname=${nickname}&password=${password}`;
-    
-        // create an AJAX request
-        const xhr = new XMLHttpRequest();
-        xhr.open('post', 'http://localhost:8000/auth/login');
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.responseType = 'json';
-        xhr.addEventListener('load', () => {
-          if (xhr.status === 200) {
-            // success
-    
-            // change the component-container state
+        
+        const userData = {
+            nickname: this.state.nickname,
+            password: this.state.password
+        }
+
+        axios.post(url.socket + 'auth/login/', userData, url.config)
+        .then((response) => {
             this.setState({
-              errors: {}
-            });
-    
-            // save the token
-            
-            Auth.authenticateUser(xhr.response.token);
-            Auth.setUserId(xhr.response.user.id)
-            // change the current URL to /
-            this.setState({ redirect: true })
-          } else {
-            // failure
-            // console.log(xhr.status)
-            // change the component state
-            const errors = xhr.response.errors ? xhr.response.errors : {};
-            errors.summary = xhr.response.message;
-            
+                error: false,
+                errorMssge: null
+            })
+            Auth.authenticateUser(response.data.token);
+            Auth.setUserId(response.data.user.id)
+            this.addNotification('success', 'You successfully logged in. You will be redirected to the front page soon')
+        })
+        .catch((error) => {
+            let errorType = null
+            let fieldValidationErrors = this.state.formErrors
+            const message = error.response.data.message
+
+            if (message.includes("password")){
+                fieldValidationErrors.password = message
+                this.setState({
+                    formErrors: fieldValidationErrors,
+                    passwordValid: false
+                })
+            } else {
+                fieldValidationErrors.nickname = message
+                this.setState({
+                    formErrors: fieldValidationErrors,
+                    nicknameValid: false
+                })
+            }
+            this.addNotification('error', message)
+
             this.setState({
-              error:true,
-              errorMssge:errors.summary
-            });
-          }
-        });
-        xhr.send(formData);
-      }
+                error: true,
+                errorMssge: message
+            })
+        })
+        }
 }
 
 export default Register;
