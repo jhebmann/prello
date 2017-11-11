@@ -46,26 +46,38 @@ router.get('/:id/boards', function (req, res, next) {
 
 router.get('/:id/users', function (req, res, next) {
     // Get all members of the team having the id given in parameter
-    Team.findOne(
-        {_id: req.params.id},
-        (err, team) => {
-            if (err) res.status(401).send(err)
-            else if (team === null) res.status(401).send("Couldn't find the team of id " + id)
-            else res.status(200).send(team.users)
-        }
-    )
+    Team.findById(req.params.id)
+    .then(function(team) {
+        User.find(
+            {_id: {$in: team.users}},
+            {"local.password": 0, "ldap.password": 0}
+        )
+        .then(function(users) {
+            res.status(200).send(users)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
 })
 
 router.get('/:id/admins', function (req, res, next) {
     // Get all admins of the team having the id given in parameter
-    Team.findOne(
-        {_id: req.params.id},
-        (err, team) => {
-            if (err) res.status(401).send(err)
-            else if (team === null) res.status(401).send("Couldn't find the team of id " + id)
-            else res.status(200).send(team.admins)
-        }
-    )
+    Team.findById(req.params.id)
+    .then(function(team) {
+        User.find(
+            {_id: {$in: team.admins}},
+            {"local.password": 0, "ldap.password": 0}
+        )
+        .then(function(users) {
+            res.status(200).send(users)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
 })
 
 router.post('/', function (req, res, next) {
@@ -160,6 +172,7 @@ router.delete('/', function (req, res, next) {
 router.put('/:id', function (req, res, next) {
     // Update the team with the id given in parameter
     const id = req.params.id
+
     Team.findOne(
         {_id : id,},
         (err, team) => {
@@ -179,6 +192,48 @@ router.put('/:id', function (req, res, next) {
             }
         }
     )
+})
+
+router.put('/:id/toAdmin/:userId', function (req, res, next) {
+    // Update the team with the id given in parameter to set the specified user as admin
+    const id = req.params.id
+    const userId = req.params.userId
+
+    Team.findOne(
+        {_id: id, users: userId}
+    )
+    .then(function(team) {
+        team.users.addToSet(userId)
+        team.save()
+        .then(function(team) {
+            res.status(200).send(team)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
+router.put('/:id/fromAdmin/:userId', function (req, res, next) {
+    // Update the team with the id given in parameter to remove the specified user from the admins
+    const id = req.params.id
+    const userId = req.params.userId
+
+    Team.findOne(
+        {_id: id, admins: userId}
+    )
+    .then(function(team) {
+        team.users.pull(userId)
+        team.save()
+        .then(function(team) {
+            res.status(200).send(team)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
 })
 
 

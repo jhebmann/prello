@@ -77,8 +77,8 @@ class Cascade extends React.Component{
   }
 
   addAdmin(){
-    const addr=url.api+'team/'+this.state.teamId
-    axios.put(addr, {admins:this.state.selected}, url.config)
+    const addr=url.api+'team/'+this.state.teamId + '/toAdmin/' + this.state.selected
+    axios.put(addr, {}, url.config)
     .then(()=>alert('Admin added to the team!'))
     .catch((error) => {
         alert('An error occured when adding admin to the team')
