@@ -6,8 +6,9 @@ import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
 import Cascade from '../Board/Cascade.js'
-import {Spin, Button, Input, Icon, Row,Collapse} from 'antd';
+import {Spin, Button, Input, Icon, Row,Collapse,Tabs} from 'antd';
 const Panel = Collapse.Panel;
+const TabPane = Tabs.TabPane;
 
 class HomeUser extends React.Component{
     
@@ -113,8 +114,8 @@ class HomeUser extends React.Component{
                   {this.renderPublicBoards(this.state.publicBoards)}
                 </Row>
               </div>
-            </div>):(<div className="spinn"><Spin size='large' /></div>) }
-            
+            </div>):
+            (<div className="spinn"><Spin size='large' /></div>) }
           </div> 
         )
     }
@@ -122,10 +123,14 @@ class HomeUser extends React.Component{
     renderTeams(teams){
         const teamItems = teams.map((team, index)=>
           <div key = {index} className='teamContainer'>
-           <Collapse bordered={false} defaultActiveKey={['1']}>
-            <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>     
-              <Cascade users={this.state.users} teamId={team._id} />
-              <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+           <Collapse bordered={true} >
+            <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>
+              <Tabs defaultActiveKey="1">
+                <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">
+                  <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+                </TabPane>
+                  {this.renderAdminTab(team)}
+              </Tabs>
             </Panel>
             </Collapse>
           </div>
@@ -135,13 +140,24 @@ class HomeUser extends React.Component{
 
     renderPublicBoards(publicBoards){
         return (
-          <div >
+          <div className='teamContainer' >
             <Collapse bordered={false} defaultActiveKey={['1']}>
             <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1">    
             <Home public={true} socket={this.socket}/>
             </Panel>
             </Collapse>
           </div> 
+        )
+    }
+
+    renderAdminTab(team){
+      if(team.admins.includes(Auth.getUserID()))
+        return (
+          <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="2">
+            <Cascade users={this.state.users} teamId={team._id} task="Add Member"/>
+            <Cascade users={this.state.users} teamId={team._id} task="Remove Member" />
+            <Cascade users={this.state.users} teamId={team._id} task="Add Admin" />
+          </TabPane>
         )
     }
 
@@ -154,13 +170,3 @@ class HomeUser extends React.Component{
 
 
 export default HomeUser
-
-/*
-<Card title={board.title || 'Undefined'} className='card'>
-<p>Description</p>
-{(board.isPublic) ?(
-  <p>Public Board</p>):(
-  <p>Private Board</p>)
-}
-</Card>
-*/
