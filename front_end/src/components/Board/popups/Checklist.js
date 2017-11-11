@@ -21,7 +21,7 @@ class Checklist extends React.Component{
         
         return(
             <div className="checklistDiv">
-                <hr/>
+                <hr className="skylightHr"/>
                 <div className="checklistForm">
                     <FormControl type="text" onChange={this.handleInputChange} name="checklist" value={this.state.checklist}
                                     onKeyPress={this.handleKeyPress} placeholder="Checklist"/>
