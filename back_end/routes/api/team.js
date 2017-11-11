@@ -199,7 +199,6 @@ router.put('/:id', function (req, res, next) {
             else {
                 if ('undefined' !== typeof req.body.name) team.name = req.body.name
                 if ('undefined' !== typeof req.body.description) team.description = req.body.description
-                if ('undefined' !== typeof req.body.admins) team.admins.push(req.body.admins)
                 team.save((err, team) => {
                     if (err) res.status(401).send(err)
                     else {
@@ -221,7 +220,7 @@ router.put('/:id/toAdmin/:userId', function (req, res, next) {
         {_id: id, users: userId}
     )
     .then(function(team) {
-        team.users.addToSet(userId)
+        team.admins.addToSet(userId)
         team.save()
         .then(function(team) {
             res.status(200).send(team)
@@ -242,7 +241,7 @@ router.put('/:id/fromAdmin/:userId', function (req, res, next) {
         {_id: id, admins: userId}
     )
     .then(function(team) {
-        team.users.pull(userId)
+        team.admins.pull(userId)
         team.save()
         .then(function(team) {
             res.status(200).send(team)
