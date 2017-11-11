@@ -6,7 +6,8 @@ import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
 import Cascade from '../Board/Cascade.js'
-import {Spin, Button, Input, Icon, Row} from 'antd';
+import {Spin, Button, Input, Icon, Row,Collapse} from 'antd';
+const Panel = Collapse.Panel;
 
 class HomeUser extends React.Component{
     
@@ -27,6 +28,7 @@ class HomeUser extends React.Component{
     this.renderPublicBoards = this.renderPublicBoards.bind(this) 
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
     this.socket.on("addTeam", this.addTeam)
+
     }
 
     componentWillMount() {
@@ -101,7 +103,7 @@ class HomeUser extends React.Component{
             {this.state.pageLoaded ? (
               <div >
                 {Auth.isUserAuthenticated() ? 
-                  (<div id="teamsForm" className="teamsContainer">
+                  (<div id="teamsForm" className="teamInput">
                 <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." 
                     value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
                 <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
@@ -120,9 +122,12 @@ class HomeUser extends React.Component{
     renderTeams(teams){
         const teamItems = teams.map((team, index)=>
           <div key = {index} className='teamContainer'>
-            <h3><Icon type="team" />{team.name}</h3>
-            <Cascade users={this.state.users} teamId={team._id} />
-            <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+           <Collapse bordered={false} defaultActiveKey={['1']}>
+            <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>     
+              <Cascade users={this.state.users} teamId={team._id} />
+              <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+            </Panel>
+            </Collapse>
           </div>
         )
         return teamItems
@@ -131,9 +136,11 @@ class HomeUser extends React.Component{
     renderPublicBoards(publicBoards){
         return (
           <div >
-            <hr />
-            <h3> Public Boards</h3>
+            <Collapse bordered={false} defaultActiveKey={['1']}>
+            <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1">    
             <Home public={true} socket={this.socket}/>
+            </Panel>
+            </Collapse>
           </div> 
         )
     }

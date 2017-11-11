@@ -47,7 +47,7 @@ class Home extends React.Component{
               <div className='textFormContainer'>
               <Input onChange={this.handleBoardTitleInputChange}  style={{ width: 200 }}
               value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress} />
-              <Button bsStyle="success" className='addBoardButton' onClick={this.onClickAddBoard}>Add Board</Button>
+              <Button type="success" className='addTeamButton' onClick={this.onClickAddBoard}>Add Board</Button>
               </div>
             ):(<div></div>)}
             <div id="homeDiv">
