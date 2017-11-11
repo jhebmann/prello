@@ -147,6 +147,7 @@ class Register extends React.Component{
             })
             Auth.authenticateUser(response.data.token);
             Auth.setUserId(response.data.user.id)
+            Auth.setNickname(response.data.user.nickname)
             this.addNotification('success', 'You successfully logged in. You will be redirected to the front page soon')
         })
         .catch((error) => {
