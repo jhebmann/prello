@@ -30,7 +30,7 @@ router.get('/:id/card/:cardId/user', function (req, res, next) {
         {_id: cardId, "attachments._id": id}
     )
     .then(function(card){
-        User.findById(card.attachments.id(id).postedBy)
+        User.findById(card.attachments.id(id).postedBy, {"local.password": 0, "ldap.password": 0})
         .then(function(user){
             res.status(200).send(user)
         }).catch(function(err) {
@@ -56,7 +56,19 @@ router.get('/:id/card/:cardId/comment', function (req, res, next) {
     })
 })
 
-router.post('/card/:cardId', multer({ dest: '/upload' }).single('attachment'), async (req, res, next) => {
+const fileParams = multer(
+    {
+        dest: '/upload',
+        fileFilter: function (req, file, cb) {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+                return cb(new Error('Only image files are allowed!'))
+            }
+            cb(null, true)
+        }
+    }
+)
+
+router.post('/card/:cardId', fileParams.single('attachment'), async (req, res, next) => {
     // Post a new attachment into a card
     Card.findById(req.params.cardId, function(err, card){
         let newAttachment = new Attachment()
