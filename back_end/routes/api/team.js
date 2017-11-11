@@ -80,6 +80,24 @@ router.get('/:id/admins', function (req, res, next) {
     })
 })
 
+router.get('/:id/simpleUsers', function (req, res, next) {
+    // Get all members of the team having the id given in parameter
+    Team.findById(req.params.id)
+    .then(function(team) {
+        User.find(
+            {_id: {$in: team.users, $nin: team.admins}},
+            {"local.password": 0, "ldap.password": 0}
+        )
+        .then(function(users) {
+            res.status(200).send(users)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
+})
+
 router.post('/', function (req, res, next) {
     // Post a new team
     Team.create(
