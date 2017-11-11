@@ -14,3 +14,7 @@ html{
 .numberUser {
     margin-left: 20px;
 }
+
+.clickable {
+    cursor: pointer;
+}
