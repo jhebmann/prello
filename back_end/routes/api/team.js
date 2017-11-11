@@ -168,6 +168,7 @@ router.put('/:id', function (req, res, next) {
             else {
                 if ('undefined' !== typeof req.body.name) team.name = req.body.name
                 if ('undefined' !== typeof req.body.description) team.description = req.body.description
+                if ('undefined' !== typeof req.body.admins) team.admins.push(req.body.admins)
                 team.save((err, team) => {
                     if (err) res.status(401).send(err)
                     else {
