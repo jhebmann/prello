@@ -36,7 +36,20 @@ const CardSchema = new Schema({
       default: []
     },
     attachments : {
-      type: [AttachmentSchema],
+      type: [
+        {title: String,
+          datePost: Date,
+          postedBy: {type : Schema.ObjectId,
+            required : true,
+            ref: 'User'},
+          linkedComment: {
+            type : Schema.ObjectId,
+            ref: 'Comment'},
+          _id: {type : Schema.ObjectId,
+            required : true,
+            ref: 'Attachment'}
+        }
+      ],
       default: []
     },
     comments : {

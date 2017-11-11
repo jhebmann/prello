@@ -1,65 +1,84 @@
-const Attachment = require('../../models').attachments
-const Card = require('../../models').cards
-const Comment = require('../../models').comments
-const User = require('../../models').users
+const models = require('../../models')
+const Attachment = models.attachments
+const Card = models.cards
+const Comment = models.comments
+const User = models.users
 const router = require('express').Router()
+const multer = require('multer')
+const fs = require('fs')
 
 router.get('/:id', function (req, res, next) {
     // Return the attachment having the id given in parameter
-    Card.findOne({'attachments._id': req.params.id}, '-_id').select({ attachments: {$elemMatch: {_id: req.params.id}}})
+    const id = req.params.id
+
+    Attachment.findById(id)
+    .then(function(attachment){
+        res.contentType(attachment.contentType)
+        res.status(200).send(attachment.data)
+    }).catch(function(err) {
+        console.log(err)
+        res.status(401).send(err);
+    })
+})
+
+router.get('/:id/card/:cardId/user', function (req, res, next) {
+    // Get user that posted the attachment
+    const id = req.params.id
+    const cardId = req.params.cardId
+
+    Card.findOne(
+        {_id: cardId, "attachments._id": id}
+    )
     .then(function(card){
-        res.status(200).send(card.attachments[0])
+        User.findById(card.attachments.id(id).postedBy)
+        .then(function(user){
+            res.status(200).send(user)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
     }).catch(function(err) {
         res.status(401).send(err);
     })
 })
 
-router.get('/:id/card/:cardId/users', function (req, res, next) {
-    // Get user that posted the attachment
-    Card.findOne({_id: req.params.cardId, "attachments._id": req.params.id}, 'attachment',
-        (err, card) => {
-            if (card === null)
-                res.status(401).send(err)
-            else {
-            User.find(
-                {_id: {$in: card.attachments[0].postedBy}},
-                (err, user) => {
-                    res.status(200).send(user)
-                }
-            )}
-        }
-    )
-})
-
 router.get('/:id/card/:cardId/comment', function (req, res, next) {
     // Get comment linked to the attachment
-    Card.findOne({_id: req.params.cardId, "attachments._id": req.params.id}, 'attachment',
-        (err, card) => {
-            if (card === null)
-                res.status(401).send(err)
-            else {
-            Comment.find(
-                {_id: {$in: card.attachments[0].linkedComment}},
-                (err, comment) => {
-                    res.status(200).send(comment)
-                }
-            )}
-        }
+    const id = req.params.id
+    const cardId = req.params.cardId
+
+    Card.findOne(
+        {_id: cardId, "attachments._id": id}
     )
+    .then(function(card){
+        res.status(200).send(card.comments.id(card.attachments.id(id).linkedComment))
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
 })
 
-router.post('/card/:cardId', function (req, res, next) {
+router.post('/card/:cardId', multer({ dest: '/upload' }).single('attachment'), async (req, res, next) => {
     // Post a new attachment into a card
     Card.findById(req.params.cardId, function(err, card){
-        let newattachment = new Attachment()
-        newattachment.title = req.body.title,
-        newattachment.file = req.body.file,
-        newattachment.postedBy = req.body.postedBy,
-        newattachment.linkedComment = req.body.linkedComment
-        card.attachments.push(newattachment)
-        card.save()
-        .then(function(card){
-            res.status(200).send(card.attachments[card.attachments.length - 1])
+        let newAttachment = new Attachment()
+        newAttachment.data = fs.readFileSync(req.file.path)
+        newAttachment.contentType = req.file.mimetype
+        newAttachment.save()
+        .then(function(attachment){
+            let newAttachmentInfos = {}
+            newAttachmentInfos._id = attachment._id
+            newAttachmentInfos.datePost = Date.now()
+            newAttachmentInfos.title = req.body.title
+            newAttachmentInfos.postedBy = req.body.postedBy
+            newAttachmentInfos.linkedComment = ('undefined' === typeof req.body.linkedComment) ? req.body.linkedComment : null
+            
+            card.attachments.push(newAttachmentInfos)
+            card.save()
+            .then(function(){
+                res.contentType(newAttachment.contentType)
+                res.status(200).send(newAttachment.data)
+            }).catch(function(err) {
+                res.status(401).send(err);
+            })
         }).catch(function(err) {
             res.status(401).send(err);
         })
@@ -70,29 +89,55 @@ router.put('/:id/card/:cardId', function (req, res, next) {
     // Update the attachment having the id given in parameter
     const id = req.params.id
     const cardId = req.params.cardId
+
     Card.findOne(
         {
             _id : cardId,
             attachments: {$elemMatch: {_id: id}}
-        },
-        (err, card) => {
-            if (err) res.status(401).send(err)
-            else{
-                if ('undefined' !== typeof req.body.title) card.attachments.id(id).title = req.body.title
-                card.save((err, card) => {
-                    if (err) res.status(401).send(err)
-                    else {
-                        console.log("The attachment of id " + id + " has been successfully updated")
-                        res.status(200).send(card.attachments.id(id))
-                    }                
-                })
-            }
         }
     )
+    .then(function(card){
+        if ('undefined' !== typeof req.body.title) card.attachments.id(id).title = req.body.title
+        card.save()
+        .then(function(card){
+            console.log("The attachment of id " + id + " has been successfully updated")
+            res.status(200).send(card.attachments[card.attachments.length - 1])
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
 })
 
-router.delete('/:id', function (req, res, next) {
+router.delete('/:id/card/:cardId', function (req, res, next) {
     // Delete the attachment having the id given in parameter
+    const id = req.params.id
+    const cardId = req.params.cardId
+
+    Card.findOne(
+        {
+            _id : cardId,
+            attachments: {$elemMatch: {_id: id}}
+        }
+    )
+    .then(function(card){
+        card.attachments.pull(id)
+        card.save()
+        .then(function(card){
+            Attachment.findOneAndRemove({_id: id})
+            .then(function(){
+                console.log("The attachment of id " + id + " has been successfully deleted")
+                res.status(200).send("The attachment of id " + id + " has been successfully deleted")
+            }).catch(function(err) {
+                res.status(401).send(err);
+            })
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err);
+    })
 })
 
 
