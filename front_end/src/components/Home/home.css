@@ -39,3 +39,13 @@
     width: 20%;
 }
 
+.teamMember{
+    display: flex;
+    padding: 1%;
+    flex-direction: column;
+    align-items: center;
+}
+.teamMembers{
+    display: flex;
+    flex-direction: row;
+}
