@@ -111,6 +111,7 @@ body {
     margin-top: 5px;
     width: 90%;
     text-align: left;
+    margin-bottom: 9px;
 }
 
 .glyphicon {
@@ -152,6 +153,10 @@ body {
     word-wrap: break-word;
 }
 
+#textDescription:hover {
+    background: rgba(0,0,0,0.07)
+}
+
 .circularButton {
     width: 30px;
     height: 30px;
@@ -160,10 +165,6 @@ body {
     text-align: right;
     font-size: 12px;
     line-height: 1.42857;
-}
-
-#textDescription:hover {
-    background: rgba(0,0,0,0.07)
 }
 
 #editDescription {
@@ -264,6 +265,10 @@ ul {
 }
 
 .checkListNewItemText:focus {
+    cursor: auto;
+}
+
+.checkListNewItemText:focus {
     overflow-x: hidden;
     overflow-y: scroll;
     overflow-wrap: break-word;
@@ -330,4 +335,20 @@ ul {
 .skylightHr {
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+#spanTitlePopup {
+    text-decoration: underline;
+}
+
+#divTitlePopup {
+    margin-bottom: 12px;
+}
+
+.popupAdd {
+    margin-bottom: 25px
+}
+
+#titleCardPopup {
+    width: 70%
 }

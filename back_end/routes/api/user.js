@@ -108,7 +108,7 @@ router.put('/:id/team/add/:teamId', function(req, res, next){
                 team.users.addToSet(user._id)
                 team.save()
                 .then(function() {
-                    res.status(200).send(user)
+                    res.status(200).send(team)
                 }).catch(function(err) {
                     res.status(401).send(err);
                 })

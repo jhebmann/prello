@@ -33,7 +33,6 @@ class Card extends React.Component{
         }
         
         let dueDateClass = ["dueDateType"]
-        const now = moment()
         const dueDate = new Date(this.state.cardInfos.dueDate)
         const today = new Date()
         
@@ -43,7 +42,7 @@ class Card extends React.Component{
         else if ( dueDate < today){
             dueDateClass.push("Late")
         }
-        else if ((Math.abs(dueDate - now) / 36e5) < 72) {
+        else if ((Math.abs(dueDate - today) / 36e5) < 72) {
             dueDateClass.push("Warning")
         }
 
@@ -67,7 +66,7 @@ class Card extends React.Component{
                 </div>
                 </Draggable>
                
-                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} title={this.state.cardInfos.title}>
+                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} io={this.socket}/>
                 </SkyLight>
             </div>
