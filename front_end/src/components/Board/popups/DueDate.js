@@ -44,7 +44,6 @@ class DueDate extends React.Component{
                         timeConstraints= {timeCons}
                         isValidDate={valid}
                     />
-                    {console.log(this.state.dueDate)}
                     <Button disabled={null === this.state.dueDate || undefined === this.state.dueDate || this.state.dueDate < new Date()} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Save</Button>
                     <Button disabled={undefined === this.state.popup.state.cardInfos.dueDate || null === this.state.popup.state.cardInfos.dueDate} className='removeDueDateButton' bsStyle="danger" onClick={this.onClickDeleteDueDate}>Remove</Button>
                 </div>

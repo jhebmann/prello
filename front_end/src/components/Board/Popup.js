@@ -21,11 +21,13 @@ class Popup extends React.Component{
             listTitle: this.props.listTitle,
             card: this.props.card,
             cardInfos: this.props.cardInfos,
-            showDescriptionInput: false
+            showDescriptionInput: false,
+            showCardTitle: false
         }
 
         this.socket = this.props.io
         this.deleteCard = this.deleteCard.bind(this)
+        this.updateTitleInput = this.updateTitleInput.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
         this.updateCard = this.updateCard.bind(this)
@@ -67,9 +69,9 @@ class Popup extends React.Component{
 
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
-            descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">
+            descriptionInput = <div onClick={this.updateDescriptionInput} id="textDescription">
                 {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span id="editDescription">Edit the description</span>}
-            </p>
+            </div>
         } else{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
             name="description" value={this.state.cardInfos.description} placeholder="Add a more detailed description..." className="inputPopup"/>                
@@ -84,7 +86,7 @@ class Popup extends React.Component{
                     <ProgressBar className="checklistProgressBar" striped now={100*0.0/x.items.length} bsStyle="info"/>
                 </div>
                 <div className="inputPopup">
-                    <FormControl type = "text" name = "newItem" placeholder = "Add an item..." className="checkListNewItemText"
+                    <FormControl type = "textarea" name = "newItem" placeholder = "Add an item..." className="checkListNewItemText"
                         /*onChange = {this.handleInputChange} id="addListInput" 
                         onFocus = {()=>this.setState({showSaveButton: !this.state.showSaveButton})} 
                         onBlur = {()=>this.setState({showSaveButton: !this.state.showSaveButton, titleNewList: ""})}*/ 
@@ -124,10 +126,21 @@ class Popup extends React.Component{
                 </span>
             </div>
 
+        let cardInputTitle  = null
+        if(!this.state.showCardTitle) {
+            cardInputTitle = <h2 onClick={this.updateTitleInput}>{this.state.cardInfos.title}</h2>
+        } else{
+            cardInputTitle = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
+            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup"/>                
+        }
+
         return(
             <div className="popup">
+                <div id="divTitlePopup">
+                    {cardInputTitle}
+                </div>
                 <div className="popupLeft">
-                    <div className="inList"> In list {this.state.listTitle} </div>
+                    <div className="inList"> In list <span id="spanTitlePopup">{this.state.listTitle}</span> </div>
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
                             <span className="spanTitle2"> Members </span> 
@@ -167,7 +180,7 @@ class Popup extends React.Component{
                 </div>
 
                 <div className="popupRight">
-                    <div className="popupAdd"> 
+                    <div className="popupAdd">
                         <h3> Add </h3>
                         <Button className='popupButton' onClick={() => this.addMember.show()}><Glyphicon glyph="user"/> Members</Button>
                         <Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tags"/> Labels</Button>
@@ -213,9 +226,16 @@ class Popup extends React.Component{
     }
 
     handleInputChange = (e) => {
-        let newCardInfos = this.state.cardInfos
-        newCardInfos.description = e.target.value
-        this.setState({cardInfos: newCardInfos})
+        if (e.target.name === "description") {
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.description = e.target.value
+            this.setState({cardInfos: newCardInfos})
+        }
+        else if (e.target.name === "cardTitle") {
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.title = e.target.value
+            this.setState({cardInfos: newCardInfos})
+        }
     }
 
     handleKeyPress = (e) => {
@@ -256,9 +276,25 @@ class Popup extends React.Component{
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
     }
 
+    updateTitleInput() {
+        if (this.state.showCardTitle){
+            axios.put(url.api + 'card/' + this.state.cardInfos._id, {
+                title : this.state.cardInfos.title.trim(),
+            }, url.config).then((response) => {
+                this.socket.emit('updateCardServer', response.data)
+                this.updateCard(response.data)
+            })
+            .catch((error) => {
+                alert('An error occured when updating the list')
+            })
+        }
+        this.setState({showCardTitle: !this.state.showCardTitle})
+    }
+
     updateCard(card){
         if (card._id === this.state.cardInfos._id){
             let newCardInfos = this.state.cardInfos
+            newCardInfos.title = card.title
             newCardInfos.dueDate = card.dueDate
             newCardInfos.description = card.description
             newCardInfos.doneDate = card.doneDate
