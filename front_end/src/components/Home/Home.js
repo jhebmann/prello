@@ -50,7 +50,7 @@ class Home extends React.Component{
               <Button bsStyle="success" className='addBoardButton' onClick={this.onClickAddBoard}>Add Board</Button>
               </div>
             ):(<div></div>)}
-            <div style={{padding: "0.5%" }}>
+            <div id="homeDiv">
               <Row gutter={16}>
               {this.renderBoards(this.state.boards)}
             </Row>

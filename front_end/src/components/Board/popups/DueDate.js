@@ -3,6 +3,7 @@ import {Button} from 'react-bootstrap'
 import DateTime from 'react-datetime'
 import axios from 'axios'
 import url from '../../../config'
+import moment from 'moment'
 
 import './reactDateTime.css'
 
@@ -12,20 +13,13 @@ class DueDate extends React.Component{
         this.state = {
             popup: this.props.popup,
             card: this.props.card,
-            dueDate: this.roundMinutes(new Date())
+            dueDate: (this.props.dueDate) ? moment(this.props.dueDate).format("M/D HH:mm") : undefined
         }
 
         this.socket = this.props.io
         this.onClickUpdateDueDate = this.onClickUpdateDueDate.bind(this)
+        this.onClickDeleteDueDate = this.onClickDeleteDueDate.bind(this)
         this.updateCard = this.updateCard.bind(this)
-    }
-
-    roundMinutes(date) {
-        
-        date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
-        date.setMinutes(0);
-    
-        return date;
     }
     
     render(){
@@ -36,11 +30,11 @@ class DueDate extends React.Component{
         };
         return(
             <div className="dueDate">
-                <hr/>
+                <hr className="skylightHr"/>
                 <div id="dueDateInput">
                     <DateTime
                         value={this.state.dueDate}
-                        className="inputDateTime"
+                        id="inputDateTime"
                         onChange={param => { this.setState({dueDate: param._d})} }
                         viewMode= 'days'
                         dateFormat= 'M/D'
@@ -50,15 +44,17 @@ class DueDate extends React.Component{
                         timeConstraints= {timeCons}
                         isValidDate={valid}
                     />
-                    <Button disabled={undefined === this.state.dueDate || this.state.dueDate < new Date()} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Add</Button>
+                    {console.log(this.state.dueDate)}
+                    <Button disabled={null === this.state.dueDate || undefined === this.state.dueDate || this.state.dueDate < new Date()} className='dueDateButton' bsStyle="primary" onClick={this.onClickUpdateDueDate}>Save</Button>
+                    <Button disabled={undefined === this.state.popup.state.cardInfos.dueDate || null === this.state.popup.state.cardInfos.dueDate} className='removeDueDateButton' bsStyle="danger" onClick={this.onClickDeleteDueDate}>Remove</Button>
                 </div>
             </div>
         )
     }
 
-    onClickUpdateDueDate = (e) => {
+    onClickUpdateDueDate(e) {
         axios.put(url.api + 'card/' + this.props.card.state.cardInfos._id, {
-            dueDate : this.state.dueDate,
+            dueDate : ('boolean' === typeof e) ? null : this.state.dueDate,
             doneDate : null
         }, url.config).then((response) => {
             this.socket.emit('updateCardServer', response.data)
@@ -69,17 +65,21 @@ class DueDate extends React.Component{
         })
     }
 
-    updateCard(card){
+    onClickDeleteDueDate() {
+        this.setState({dueDate: null})
+        this.onClickUpdateDueDate(true)
+    }
+
+    updateCard(card) {
         if (card._id === this.props.card.state.cardInfos._id){
             let newCardInfos = this.state.card.state.cardInfos
             newCardInfos.dueDate = this.state.dueDate
+            newCardInfos.doneDate = this.state.doneDate
             this.state.card.setState({cardInfos: newCardInfos})
             this.state.popup.setState({cardInfos: newCardInfos})
-            this.setState({dueDate: this.roundMinutes(new Date())})
             this.props.parentClose("dueDate")
         }
     }
-
 }
 
 export default DueDate

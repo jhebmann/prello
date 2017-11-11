@@ -187,7 +187,6 @@ body {
 #dateText {
     display: inline-block;
     text-decoration: underline;
-    cursor: default;
     line-height: 1pc;
     white-space: nowrap;
 }
@@ -274,7 +273,7 @@ ul {
 
 .dueDateColors {
     padding: 7px 5px;
-    border-radius: 7px;
+    border-radius: 6px;
 }
 
 .dueDateTypeLate {
@@ -292,6 +291,10 @@ ul {
     color: white;
 }
 
+.dueDateTypeStandard {
+    background-color: rgba(0,0,0,0.08);
+}
+
 .myGlyph {
     margin-right: 0px;
 }
@@ -301,11 +304,30 @@ ul {
     align-items: center;
 }
 
+#dueDatePopupDiv{
+    cursor: pointer;
+}
+
 .inlineElements {
     margin-right: 5px;
 }
 
 .alignElements {
+    margin-top: 5px;
     font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
     display: inline-flex;
+}
+
+#homeDiv {
+    padding: 0.5%;
+}
+
+#teamsForm {
+    display: "inline-flex"
+}
+
+
+.skylightHr {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }

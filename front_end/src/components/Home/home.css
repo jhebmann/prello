@@ -14,10 +14,6 @@
     display: flow-root;
   }
 
-.card{
-    width: 24%;
-}
-
 .teamContainer{
     display: flex;
     flex-direction: column;

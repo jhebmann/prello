@@ -212,10 +212,11 @@
     margin-top: 37px;
   }
 
-  .inputDateTime {
-    width: 70%
+  #dueDateInput {
+    display: inline-flex;
+    width: 95%;
   }
 
-  #dueDateInput {
-    display: inline-flex
+  .removeDueDateButton {
+    margin-left: 7px;
   }
