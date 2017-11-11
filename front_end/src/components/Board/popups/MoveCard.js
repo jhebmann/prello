@@ -11,7 +11,7 @@ class MoveCard extends React.Component{
         
         return(
             <div className="moveCard">
-                <hr/>
+                <hr className="skylightHr"/>
                 
             </div>
         )

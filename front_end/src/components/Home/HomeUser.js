@@ -101,15 +101,15 @@ class HomeUser extends React.Component{
             {this.state.pageLoaded ? (
               <div >
                 {Auth.isUserAuthenticated() ? 
-                  (<div id="teamsForm" className="teamsContainer" style={{display: "inline-flex"}}>
-                <Input type="text" onChange={this.handleTeamInputChange} placeholder="Title" 
+                  (<div id="teamsForm" className="teamsContainer">
+                <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." 
                     value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
-                    <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
+                <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
               <div  className="teamsContainer">
-              <Row >
-                {this.renderTeams(this.state.teams)}
-                {this.renderPublicBoards(this.state.publicBoards)}
-              </Row>
+                <Row >
+                  {this.renderTeams(this.state.teams)}
+                  {this.renderPublicBoards(this.state.publicBoards)}
+                </Row>
               </div>
             </div>):(<div className="spinn"><Spin size='large' /></div>) }
             
