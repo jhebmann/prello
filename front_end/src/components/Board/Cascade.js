@@ -1,10 +1,9 @@
 import React from 'react'
-import {Select} from 'antd'
-import {Button} from 'react-bootstrap'
-import 'antd/dist/antd.css'
+import {Select, Avatar,Button} from 'antd'
 import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
+import 'antd/dist/antd.css'
 
 const Option = Select.Option;
 
@@ -23,9 +22,9 @@ class Cascade extends React.Component{
     }
 
     render(){
-        let memberOptions = this.state.members.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id}>{member.local.nickname}</Option>);
+        let memberOptions = this.state.members.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
         return (
-            <div>
+            <div className="textFormContainer">
               <Select
                 showSearch
                 style={{ width: 200 }}
@@ -38,7 +37,7 @@ class Cascade extends React.Component{
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {memberOptions} 
             </Select>
-            <Button bsStyle="success" className='addTeamButton' onClick={this.onClickAdd}>Add Member</Button>
+            <Button type="success" className='addTeamButton' onClick={this.onClickAdd}>Add Member</Button>
             </div>
         );
     }

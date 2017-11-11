@@ -1,8 +1,9 @@
 import React from 'react'
-import {Button,FormControl,Grid,Row,Col,Thumbnail} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';
+import {Card,Tag,Button,Row,Col,Input} from 'antd'
+import './home.css' 
 
 class Home extends React.Component{
     
@@ -42,16 +43,19 @@ class Home extends React.Component{
   render(){
     return(
         <div>
-          {Auth.isUserAuthenticated() ? (<p style={{display: "inline-flex"}}>
-            <FormControl name="board" type="text" onChange={this.handleBoardTitleInputChange} 
-                value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress}/>
-            <Button bsStyle="success" className='addBoardButton' onClick={this.onClickAddBoard}>Add Board</Button></p>):(<div></div>)}
-          <Grid>
-            <Row>
+            {Auth.isUserAuthenticated() ? (
+              <div className='textFormContainer'>
+              <Input onChange={this.handleBoardTitleInputChange}  style={{ width: 200 }}
+              value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress} />
+              <Button type="success" className='addTeamButton' onClick={this.onClickAddBoard}>Add Board</Button>
+              </div>
+            ):(<div></div>)}
+            <div id="homeDiv">
+              <Row gutter={16}>
               {this.renderBoards(this.state.boards)}
             </Row>
-          </Grid>
-        </div>
+          </div>
+       </div>
     )
 }
   
@@ -111,15 +115,17 @@ onClickAddBoard(){
   renderBoards(list){
     const boards = this.state.boards
     const boardItems = boards.map((board, index)=>
-      <Col key = {index} xs = {6} md = {4}>
-        <Button bsStyle="danger" onClick={() => this.onClickDeleteBoard(board._id)}>Delete Board</Button>
-        <Thumbnail style={{background:"aliceblue"}} href={"/board/" + board._id}>
-          <h3>{board.title || 'Undefined'}</h3>
+    <Col span={5}>
+        <a href={"/board/"+board._id}>
+        <Card title={board.title || 'Undefined'} extra={<Button type="danger"  icon="delete" size="small" onClick={() => this.onClickDeleteBoard(board._id)}>Delete</Button>} >
+          <Tag color="red">Tag</Tag>
           <p>Description</p>
           {(board.isPublic) ?(
             <p>Public Board</p>):(
             <p>Private Board</p>)
-          }</Thumbnail>
+          }
+        </Card>
+        </a>
     </Col>
     );
     return boardItems
@@ -127,3 +133,13 @@ onClickAddBoard(){
 }
 
 export default Home
+
+/*
+<Card title={board.title || 'Undefined'} className='card'>
+<p>Description</p>
+{(board.isPublic) ?(
+  <p>Public Board</p>):(
+  <p>Private Board</p>)
+}
+</Card>
+*/

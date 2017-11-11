@@ -1,13 +1,13 @@
 import Home from "./Home.js"
 import SocketIOClient from 'socket.io-client'
 import React from 'react'
-import {Button,FormControl,Grid,Row} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
 import Cascade from '../Board/Cascade.js'
-import { Spin } from 'antd';
+import {Spin, Button, Input, Icon, Row,Collapse} from 'antd';
+const Panel = Collapse.Panel;
 
 class HomeUser extends React.Component{
     
@@ -28,6 +28,7 @@ class HomeUser extends React.Component{
     this.renderPublicBoards = this.renderPublicBoards.bind(this) 
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
     this.socket.on("addTeam", this.addTeam)
+
     }
 
     componentWillMount() {
@@ -99,16 +100,20 @@ class HomeUser extends React.Component{
     render(){
         return(
           <div id="mainPage">
-            {this.state.pageLoaded ? (<div>{Auth.isUserAuthenticated() ? (<div id="teamForm" style={{display: "inline-flex"}}>
-            <FormControl name="team" type="text" onChange={this.handleTeamInputChange} placeholder="Title" 
-                value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
-                <Button bsStyle="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
-            <Grid>
-              <Row>
-                {this.renderTeams(this.state.teams)}
-                {this.renderPublicBoards(this.state.publicBoards)}
-              </Row>
-            </Grid></div>):(<div className="spinn"><Spin size='large' /></div>) }
+            {this.state.pageLoaded ? (
+              <div >
+                {Auth.isUserAuthenticated() ? 
+                  (<div id="teamsForm" className="teamInput">
+                <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." 
+                    value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
+                <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
+              <div  className="teamsContainer">
+                <Row >
+                  {this.renderTeams(this.state.teams)}
+                  {this.renderPublicBoards(this.state.publicBoards)}
+                </Row>
+              </div>
+            </div>):(<div className="spinn"><Spin size='large' /></div>) }
             
           </div> 
         )
@@ -116,22 +121,28 @@ class HomeUser extends React.Component{
 
     renderTeams(teams){
         const teamItems = teams.map((team, index)=>
-          <div key = {index}>
-            <hr />
-            <h3> TEAM  {team.name}</h3>
-            <Cascade users={this.state.users} teamId={team._id} />
-            <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+          <div key = {index} className='teamContainer'>
+           <Collapse bordered={false} defaultActiveKey={['1']}>
+            <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>     
+              <Cascade users={this.state.users} teamId={team._id} />
+              <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+            </Panel>
+            </Collapse>
           </div>
         )
         return teamItems
     }
 
     renderPublicBoards(publicBoards){
-        return <div>
-        <hr />
-        <h3> Public Boards</h3>
-        <Home public={true} socket={this.socket}/>
-        </div>
+        return (
+          <div >
+            <Collapse bordered={false} defaultActiveKey={['1']}>
+            <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1">    
+            <Home public={true} socket={this.socket}/>
+            </Panel>
+            </Collapse>
+          </div> 
+        )
     }
 
     handleKeyPress = (e) => {
@@ -144,4 +155,12 @@ class HomeUser extends React.Component{
 
 export default HomeUser
 
-
+/*
+<Card title={board.title || 'Undefined'} className='card'>
+<p>Description</p>
+{(board.isPublic) ?(
+  <p>Public Board</p>):(
+  <p>Private Board</p>)
+}
+</Card>
+*/

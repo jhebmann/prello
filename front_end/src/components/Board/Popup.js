@@ -10,6 +10,7 @@ import MoveCard from './popups/MoveCard'
 import axios from 'axios'
 import url from '../../config'
 import moment from 'moment'
+import Markdown from 'react-remarkable'
 
 
 
@@ -29,6 +30,7 @@ class Popup extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this)
         this.updateCard = this.updateCard.bind(this)
         this.updateChecklists =this.updateChecklists.bind(this)
+        this.updateDoneDate = this.updateDoneDate.bind(this)
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
@@ -66,7 +68,7 @@ class Popup extends React.Component{
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
             descriptionInput = <p onClick={this.updateDescriptionInput} id="textDescription">
-                {(this.state.cardInfos.description.trim().length > 0) ? this.state.cardInfos.description : <span id="editDescription">Edit the description</span>}
+                {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span id="editDescription">Edit the description</span>}
             </p>
         } else{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
@@ -106,8 +108,21 @@ class Popup extends React.Component{
         else if ((Math.abs(dueDate - now) / 36e5) < 72) {
             dueDateClass.push("Warning")
         }
+        else {
+            dueDateClass.push("Standard")
+        }
 
-        const dueDateRender = <div> <span className={dueDateClass.join("")+" dueDateColors"} id="dueDateCentered"><span id="checkboxNotDone"></span><span id="dateText">{moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}</span></span></div>
+        const dueDateRender = 
+            <div id="dueDatePopupDiv"> 
+                <span className={dueDateClass.join("")+" dueDateColors"} id="dueDateCentered">
+                    <span id="checkboxNotDone" onClick={this.updateDoneDate}>
+                        {(this.state.cardInfos.doneDate) ? <Glyphicon glyph='ok'/> : ""}
+                    </span>
+                    <span id="dateText" onClick={() => this.addDueDate.show()}>
+                        {moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}
+                    </span>
+                </span>
+            </div>
 
         return(
             <div className="popup">
@@ -124,11 +139,12 @@ class Popup extends React.Component{
                         </div>
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
-                            {(this.state.cardInfos.dueDate) ? 
+                            {
+                                (this.state.cardInfos.dueDate) ? 
                                 dueDateRender : 
-                                <Button className='circularButton' onClick={() => this.addDueDate.show()
-                            }>
-                            <Glyphicon glyph="plus"/></Button>}
+                                <Button className='circularButton' onClick={() => this.addDueDate.show()}>
+                                <Glyphicon glyph="plus"/></Button>
+                            }
                         </div>
                     </div>
                     <div className="description space"> <span className="spanTitle"><Glyphicon glyph="menu-hamburger"/>Description </span>
@@ -209,14 +225,26 @@ class Popup extends React.Component{
         }
     }
 
+    updateDoneDate() {
+        let newDoneDate = null
+        if (!this.state.cardInfos.doneDate) {
+            newDoneDate = new Date()
+        }
+        axios.put(url.api + 'card/' + this.state.cardInfos._id, {
+            doneDate : newDoneDate,
+        }, url.config).then((response) => {
+            this.socket.emit('updateCardServer', response.data)
+            this.updateCard(response.data)
+        })
+        .catch((error) => {
+            alert('An error occured when updating the list')
+        })
+    }
+
     updateDescriptionInput() {
         if (this.state.showDescriptionInput){
             axios.put(url.api + 'card/' + this.state.cardInfos._id, {
-                title : this.state.title,
                 description : this.state.cardInfos.description.trim(),
-                dueDate : this.state.cardInfos.dueDate,
-                doneDate : this.state.cardInfos.doneDate,
-                isArchived : this.state.cardInfos.isArchived
             }, url.config).then((response) => {
                 this.socket.emit('updateCardServer', response.data)
                 this.updateCard(response.data)
@@ -233,6 +261,7 @@ class Popup extends React.Component{
             let newCardInfos = this.state.cardInfos
             newCardInfos.dueDate = card.dueDate
             newCardInfos.description = card.description
+            newCardInfos.doneDate = card.doneDate
             this.state.card.setState({cardInfos: newCardInfos})
         }
     }

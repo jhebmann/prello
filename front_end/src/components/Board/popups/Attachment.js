@@ -16,7 +16,7 @@ class Attachment extends React.Component{
         
         return(
             <div className="attachment">
-                <hr/>
+                <hr className="skylightHr"/>
                 
             </div>
         )
