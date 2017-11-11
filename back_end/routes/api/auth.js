@@ -91,13 +91,21 @@ router.post('/signup', (req, res, next) => {
       if (err.name === 'MongoError' && err.code === 11000) {
         // the 11000 Mongo code is for a duplication email error
         // the 409 HTTP status code is for conflict error
+        if (err.message.includes("mail"))
+          return res.status(409).json({
+            success: false,
+            message: 'Check the form for errors.',
+            errors: {
+              email: 'This email is already taken.'
+            }
+          })
         return res.status(409).json({
           success: false,
           message: 'Check the form for errors.',
           errors: {
-            email: 'This email or nickname is already taken.'
+            email: 'This nickname is already taken.'
           }
-        });
+        })
       }
 
       return res.status(400).json({

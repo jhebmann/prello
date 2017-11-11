@@ -3,6 +3,9 @@ import { FormErrors } from './FormErrors'
 import './Form.css'
 import { Redirect } from 'react-router-dom'
 import {ListGroupItem} from 'react-bootstrap'
+import axios from 'axios'
+import url from '../../../config'
+const NotificationSystem = require('react-notification-system');
 
 class Register extends React.Component{
 
@@ -17,13 +20,34 @@ class Register extends React.Component{
             passwordValid: false,
             nicknameValid: false,
             formValid: false,
-            redirect: false,
             error:false,
-            errorMssge:null
+            errorMssge:null,
+            redirect: null
         }
         this.handleSubmit = this.handleSubmit.bind(this)
-        this.processForm = this.processForm.bind(this);
+        this.processForm = this.processForm.bind(this)
+        this.addNotification = this.addNotification.bind(this)
+        this.redirect = this.redirect.bind(this)
     }
+
+    notifications = null
+
+    addNotification = (type, message) => {
+        const onRemove = (type === 'success') ? this.redirect : null
+
+        this.notifications.addNotification({
+          message: message,
+          level: type,
+          position: 'tc',
+          autoDismiss: 3,
+          onRemove: onRemove
+        });
+    }
+
+    componentDidMount = () => {
+        this.notifications = this.refs.notificationSystem
+    }
+    
 
     handleSubmit(event) {
         /*console.log(this.props)
@@ -73,18 +97,24 @@ class Register extends React.Component{
     }
     
     validateForm() {
-            this.setState({formValid: this.state.emailValid && this.state.passwordValid && this.state.nicknameValid});
+        this.setState({formValid: this.state.emailValid && this.state.passwordValid && this.state.nicknameValid});
     }
     
     errorClass(error) {
-            return(error.length === 0 ? '' : 'has-error');
+        return(error.length === 0 ? '' : 'has-error');
+    }
+
+    redirect(){
+        this.setState({
+            redirect: <Redirect to='/login'/>
+        })
     }
     
     render () {
-        if (this.state.redirect) 
-            return <Redirect to='/login'/>
         return (
           <form className="demoForm" onSubmit={this.handleSubmit}>
+            {this.state.redirect}
+            <NotificationSystem ref="notificationSystem" />
             <h2>Sign up</h2>
             <div className="panel panel-default">
               <FormErrors formErrors={this.state.formErrors} />
@@ -121,45 +151,58 @@ class Register extends React.Component{
     processForm(event) {
         // prevent default action. in this case, action is the form submission event
         event.preventDefault();
-    
-        // create a string for an HTTP body message
-        const nickname = encodeURIComponent(this.state.nickname);
-        const email = encodeURIComponent(this.state.email);
-        const password = encodeURIComponent(this.state.password);
-        const formData = `name=${nickname}&email=${email}&password=${password}`;
-    
-        // create an AJAX request
-        const xhr = new XMLHttpRequest();
-        xhr.open('post', 'http://localhost:8000/auth/signup');
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.responseType = 'json';
-        xhr.addEventListener('load', () => {
-          if (xhr.status === 200) {
-            // success
-    
-            // change the component-container state
+
+        const userData = {
+            name: this.state.nickname,
+            email: this.state.email,
+            password: this.state.password
+        }
+
+        axios.post(url.socket + 'auth/signup/', userData, url.config)
+        .then((response) => {
             this.setState({
-              error: {}
-            });
-    
-            // set a message
-            localStorage.setItem('successMessage', xhr.response.message);
-    
-            // make a redirect
-            this.setState({ redirect: true })
-          } else {
-            // failure
-            
-            const errors = xhr.response.errors ? xhr.response.errors : {};
-            errors.summary = xhr.response.errors.password||xhr.response.errors.email
-            //console.log('Failed ', errors.summary)
+              error: false,
+              errorMssge: null
+            })
+            this.addNotification('success', 'You successfully registered with the nickname ' + this.state.nickname)
+        })
+        .catch((error) => {
+            let errorType = null
+            let fieldValidationErrors = this.state.formErrors
+
+            if (error.response.data.errors.password){
+                errorType = error.response.data.errors.password
+                fieldValidationErrors.password = ' is too short'
+                this.setState({
+                    formErrors: fieldValidationErrors,
+                    passwordValid: false
+                })
+                this.addNotification('error', 'Your password is too short')
+            } else {
+                errorType = error.response.data.errors.email
+                if (error.response.data.errors.email.includes("mail")){
+                    fieldValidationErrors.email = ' is already taken'
+                    this.setState({
+                        formErrors: fieldValidationErrors,
+                        emailValid: false
+                    })
+                    this.addNotification('error', 'This mail is already taken : ' + this.state.email)
+                }
+                else{
+                    fieldValidationErrors.nickname = ' is already taken'
+                    this.setState({
+                        formErrors: fieldValidationErrors,
+                        nicknameValid: false
+                    })
+                    this.addNotification('error', 'This nickname is already taken : ' + this.state.nickname)
+                }
+            }
+
             this.setState({
-                error:true,
-                errorMssge:errors.summary
-            });
-          }
-        });
-        xhr.send(formData);
+                error: true,
+                errorMssge: errorType
+            })
+        })
       }
 }
 
