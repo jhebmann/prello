@@ -69,13 +69,16 @@ class Popup extends React.Component{
         }
 
         const attachmentPopup = {
-            overflow: 'auto'
+            overflow: 'auto',
+            height: '90%',
+            width: '60%',
+            top: '210px'
         }
 
         const dueDatePopup = {
             overflow: 'auto',
             height: '440px',
-            width: '320px'
+            width: '320px',
         }
 
         const movePopup = {

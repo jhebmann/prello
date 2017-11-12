@@ -395,3 +395,19 @@ ul {
 .checklistTitleSpan:hover {
     cursor: pointer;
 }
+
+.attachmentFormSpace {
+    margin-bottom: 10px;
+}
+
+.attachmentFormMedium {
+    width: 65%;
+}
+
+#cardAttachment {
+    display: block;
+}
+
+#attachmentImgPreview {
+    max-width: 95%;
+}
