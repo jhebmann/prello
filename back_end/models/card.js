@@ -37,7 +37,8 @@ const CardSchema = new Schema({
     },
     attachments : {
       type: [
-        {title: String,
+        {
+          title: String,
           datePost: Date,
           postedBy: {type : Schema.ObjectId,
             required : true,

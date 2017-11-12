@@ -4,20 +4,26 @@ import SkyLight from 'react-skylight'
 import Popup from './Popup.js'
 import moment from 'moment'
 import Draggable from 'react-draggable';
+import axios from 'axios'
+import url from '../../config'
 
 class Card extends React.Component{
     constructor(props){
         super(props)
         this.state = {
             cardInfos: this.props.cardInfos,
-            listTitle: this.props.listTitle
+            listTitle: this.props.listTitle,
+            attachments: []
         }
 
         this.socket = this.props.io
         this.updateCard = this.updateCard.bind(this)
+        this.loadAttachments = this.loadAttachments.bind(this)
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
+
+        this.loadAttachments()
     }
 
     render(){
@@ -67,7 +73,7 @@ class Card extends React.Component{
                 </Draggable>
                
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
-                    <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} io={this.socket}/>
+                    <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}/>
                 </SkyLight>
             </div>
            
@@ -85,6 +91,23 @@ class Card extends React.Component{
                 "cardInfos.isArchived": card.isArchived
             })
         }
+    }
+
+    loadAttachments(){
+        this.state.cardInfos.attachments.forEach((attachment) => {
+            axios.get(url.api + 'attachment/' + attachment._id)
+            .then((response) => {
+                this.setState(prevState=>({
+                    attachments: prevState.attachments.concat({
+                        image: response.data,
+                        title: attachment.title,
+                        postedBy: attachment.postedBy
+                    })
+                  }))
+            }).catch((error) => {
+                alert('An error occured when adding the attachment')
+            })
+        })
     }
 }
 

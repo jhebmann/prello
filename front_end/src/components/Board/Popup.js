@@ -21,6 +21,7 @@ class Popup extends React.Component{
             listTitle: this.props.listTitle,
             card: this.props.card,
             cardInfos: this.props.cardInfos,
+            attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
             showChecklists: []
@@ -42,6 +43,11 @@ class Popup extends React.Component{
         this.socket.on('updateCardClient', this.updateCard)
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
+        console.log(this.state.attachments)
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({attachments: newProps.attachments});
     }
 
     componenWillMount() {
@@ -186,6 +192,11 @@ class Popup extends React.Component{
                     <div className="checklists space"> <span className="spanTitle checklistsSpan"><Glyphicon glyph="list-alt"/>Checklists </span> 
                         <ul>
                             {checklistsLi}
+                        </ul>
+                    </div>
+                    <div className="attachments space"> <span className="spanTitle attachmentsSpan"><Glyphicon glyph="list-alt"/>Attachments</span> 
+                        <ul>
+                            {/* put image here */}
                         </ul>
                     </div>
                 </div>
