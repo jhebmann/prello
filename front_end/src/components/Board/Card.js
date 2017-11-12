@@ -13,7 +13,8 @@ class Card extends React.Component{
         this.state = {
             cardInfos: this.props.cardInfos,
             listTitle: this.props.listTitle,
-            attachments: []
+            attachments: [],
+            parameters: this.props.parameters
         }
 
         this.socket = this.props.io
@@ -59,8 +60,7 @@ class Card extends React.Component{
             <div>
                 <Draggable>
                 <div>{(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) ? <div>{this.state.cardInfos.labels.length} labels</div> : ''}
-                    <Thumbnail onClick={() => this.customDialog.show()} className='card' >
-                        <div></div>
+                    <Thumbnail onClick={() => this.customDialog.show()}  className={('undefined' !== typeof this.state.parameters && this.state.cardInfos._id === this.state.parameters.cardId) ? "selected card" : "card"}>
                         <h4>{this.state.cardInfos.title}</h4>
                         {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) ?
                         <div>

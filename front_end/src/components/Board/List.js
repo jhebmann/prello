@@ -51,7 +51,7 @@ class List extends React.Component{
   render(){
       let headList  = null
       if(!this.state.showInput) {
-        headList = <h4 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'Undefined'}</h4>
+        headList = <h4 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'No title'}</h4>
       } else{
         headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} 
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
@@ -78,7 +78,7 @@ class List extends React.Component{
   cardList(list){
     const cards=this.state.cards
     const cardItems= cards.map((card, index)=>
-      <Card boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={index} cardInfos={card} io={this.socket}/>
+      <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={index} cardInfos={card} io={this.socket}/>
     )
     return cardItems
   }

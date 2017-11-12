@@ -68,16 +68,22 @@ router.get('/search/:text/user/:userId', function(req, res) {
           idsAndTitles = []
 
           cards.forEach((card) => {
-            if (card.title.includes(text) && card.description.includes(text)){
-              idsAndTitles.push({_id: card._id, title: card.title, description: card.description})
-            } else if (card.title.includes(text)){
-              idsAndTitles.push({_id: card._id, title: card.title})
-            } else if (card.description.includes(text)){
-              idsAndTitles.push({_id: card._id, description: card.description})
-            }
+            boards.forEach((board) => {
+              board.lists.forEach((list) => {
+                list.cards.forEach((cardIdAndPos) => {
+                  if (card._id.equals(cardIdAndPos._id)){
+                    if (card.title.includes(text) || card.description.includes(text)){
+                      idsAndTitles.push({boardId: board._id, _id: card._id, title: card.title, description: card.description})
+                    }
+                  }
+                })
+              })
+            })
           })
 
           finalResult.cards = idsAndTitles
+
+          console.log(idsAndTitles)
 
           if (cards.length !== 0) {
             const allComments = cards.map((card) => card.comments).reduce((a, b) => a.concat(b), [])

@@ -64,6 +64,7 @@ class Search extends React.Component{
                 {this.renderTeams()}
                 {this.renderAllBoards()}
                 {this.renderAllLists()}
+                {this.renderAllCards()}
             </div>
         )
     }
@@ -157,7 +158,40 @@ class Search extends React.Component{
             </Col>
         );
         return listItems
-
+        //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
+    }
+    
+    renderAllCards(){
+        if (this.state.cards.length === 0) return ;
+        return (
+            <div className='teamContainer' >
+                <Collapse bordered={false} defaultActiveKey={['1']}>
+                    <Panel header={<h3><Icon type="team" />Cards</h3>} key="1"> 
+                        <div>
+                            <div id="homeDiv">
+                                <Row gutter={16}>
+                                    {this.renderCards()}
+                                </Row>
+                            </div>
+                        </div>
+                    </Panel>
+                </Collapse>
+            </div> 
+        )
+    }
+    
+    renderCards(){
+        const cards = this.state.cards
+        const listItems = cards.map((card, index)=>
+            <Col span={5}>
+                <div className="clickable" onClick={() => this.setState({redirect: <Redirect to = {{pathname: '/board/' + card.boardId, state: {cardId: card._id}}} />})}>
+                    <Card title={card.title || "No title"}>
+                        <p>{card.description}</p>
+                    </Card>
+                </div>
+            </Col>
+        );
+        return listItems
         //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }
 }
