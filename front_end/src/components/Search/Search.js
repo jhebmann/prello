@@ -5,6 +5,7 @@ import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import {Spin, Button, Input, Icon, Row, Collapse, Tabs, Avatar, Tooltip, Card, Tag, Col} from 'antd'
+import { Redirect } from 'react-router-dom'
 import Cascade from '../Board/Cascade.js'
 const Panel = Collapse.Panel
 const TabPane = Tabs.TabPane
@@ -23,7 +24,8 @@ class Search extends React.Component{
             checklists: [],
             items: [],
             text: this.props.match.params.text,
-            pageLoaded: false
+            pageLoaded: false,
+            redirect: null
         }
         
         this.getResults = this.getResults.bind(this)
@@ -58,6 +60,7 @@ class Search extends React.Component{
     render () {
         return (
             <div className="container">
+                {this.state.redirect}
                 {this.renderTeams()}
                 {this.renderAllBoards()}
                 {this.renderAllLists()}
@@ -78,7 +81,7 @@ class Search extends React.Component{
     renderTeams(){
         const teams = this.state.teams
         const teamItems = teams.map((team, index)=>
-            <div key = {index} className='teamContainer' onClick = {() => this.props.history.push({pathname: '/', parameters: team._id})} >
+            <div key = {index} className='teamContainer' onClick = {() => this.setState({redirect: <Redirect to = {{pathname: '/', state: team._id}} />})}>
                 <Collapse bordered={true}>
                     <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}></Panel>
                 </Collapse>
@@ -108,7 +111,7 @@ class Search extends React.Component{
         const boards = this.state.boards
         const boardItems = boards.map((board, index)=>
         <Col span={5}>
-            <div class="clickable" onClick={() => window.location = "/board/"+board._id}>
+            <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
               <Card title={board.title || 'No title'} extra={<Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation()
                                                                                                                                 this.onClickDeleteBoard(board._id)}}>Delete</Button>} >
                 <Tag color="red">Tag</Tag>
@@ -146,14 +149,16 @@ class Search extends React.Component{
     renderLists(){
         const lists = this.state.lists
         const listItems = lists.map((list, index)=>
-        <Col span={5}>
-            <div class="clickable" onClick={() => window.location = "/board/"}>
-                <Card title={list.title || "No title"}>
-                </Card>
-            </div>
-        </Col>
+            <Col span={5}>
+                <div className="clickable" onClick={() => this.setState({redirect: <Redirect to = {{pathname: '/board/' + list.boardId, state: {listId: list._id}}} />})}>
+                    <Card title={list.title || "No title"}>
+                    </Card>
+                </div>
+            </Col>
         );
         return listItems
+
+        //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }
 }
 

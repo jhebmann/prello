@@ -13,10 +13,10 @@ class HomeBoard extends React.Component{
     render(){
       const address = JSON.stringify(this.props.location.pathname)
       const id = address.substring(address.lastIndexOf("/") + 1, address.length-1)
-
+      console.log(this.props)
       return(
         <div>
-          <Board io={this.socket} id={id}/>
+          <Board parentProps={this.props} io={this.socket} id={id}/>
         </div>
       ) 
     }

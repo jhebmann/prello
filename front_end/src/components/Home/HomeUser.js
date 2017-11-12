@@ -21,9 +21,9 @@ class HomeUser extends React.Component{
       publicBoards:null,
       users:null,
       pageLoaded:false,
-      key:null
+      key:null,
+      parameters: this.props.location.state
     }
-    console.log(this.props.history.location.parameters)
 
     this.socket = SocketIOClient(url.socket)
     this.addTeam = this.addTeam.bind(this);
@@ -126,23 +126,23 @@ class HomeUser extends React.Component{
     }
 
     renderTeams(teams){
-        const teamItems = teams.map((team, index)=>
-          <div key = {index} className='teamContainer'>
-           <Collapse defaultActiveKey={('undefined' !== typeof this.props.history.location.parameters && team._id === this.props.history.location.parameters) ? [''+index] : []}
-           className={('undefined' !== typeof this.props.history.location.parameters && team._id === this.props.history.location.parameters) ? "selected" : ""}>
-            <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>
-              <Tabs defaultActiveKey="1">
-                <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">
-                  <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
-                </TabPane>
-                  {this.renderTeamMembersTab(team)}
-                  {this.renderAdminTab(team)}
-              </Tabs>
-            </Panel>
-            </Collapse>
-          </div>
-        )
-        return teamItems
+      const teamItems = teams.map((team, index)=>
+        <div key = {index} className='teamContainer'>
+          <Collapse defaultActiveKey={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? [''+index] : []}
+          className={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? "selected" : ""}>
+          <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>
+            <Tabs defaultActiveKey="1">
+              <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">
+                <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+              </TabPane>
+                {this.renderTeamMembersTab(team)}
+                {this.renderAdminTab(team)}
+            </Tabs>
+          </Panel>
+          </Collapse>
+        </div>
+      )
+      return teamItems
     }
 
     renderPublicBoards(publicBoards){

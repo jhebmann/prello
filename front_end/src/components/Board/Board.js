@@ -12,7 +12,8 @@ class Board extends React.Component{
         
         this.state={
             lists: [],
-            titleNewList: ""
+            titleNewList: "",
+            parameters: this.props.parentProps.location.state
         }
 
         this.socket = this.props.io;
@@ -99,7 +100,7 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-        <List key={index} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.props.id}/>
+            <List key={index} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.props.id}/>
         )
         return listItems
     }

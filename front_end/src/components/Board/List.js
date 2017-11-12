@@ -14,7 +14,8 @@ class List extends React.Component{
       titleNewCard: "",
       showInput: false,
       title: this.props.title,
-      pos: this.props.pos // always undefined for now
+      pos: this.props.pos, // always undefined for now
+      parameters: this.props.parameters
     }
     
     this.socket = this.props.io
@@ -56,7 +57,7 @@ class List extends React.Component{
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
-        <Panel bsSize="small" className='list'>
+        <Panel bsSize="small" className={('undefined' !== typeof this.state.parameters && this.props.id === this.state.parameters.listId) ? "selected list" : "list"}>
           <div className='listHead'>
             {headList}
           </div>

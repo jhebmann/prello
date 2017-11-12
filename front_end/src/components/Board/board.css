@@ -411,3 +411,7 @@ ul {
 #attachmentImgPreview {
     max-width: 95%;
 }
+
+.selected{
+    border: 3px solid #5cb85c;
+}

@@ -45,24 +45,19 @@ router.get('/search/:text/user/:userId', function(req, res) {
       )
       .then(function(boards){
         let idsAndTitles = []
+        let listIdsAndTitles = []
         boards.forEach((board) => {
           if (board.title.includes(text))
             idsAndTitles.push({_id: board._id, title: board.title, isPublic: board.isPublic})
+          board.lists.forEach((list) => {
+            if (list.title.includes(text))
+              listIdsAndTitles.push({boardId: board._id, title: list.title, _id: list._id})
+          })
         })
         finalResult.boards = idsAndTitles
+        finalResult.lists = listIdsAndTitles
 
-        //Then we search in the lists title
         const allLists = boards.map((board) => board.lists).reduce((a, b) => a.concat(b), [])
-
-        idsAndTitles = []
-
-        allLists.forEach((list) => {
-          if (list.title.includes(text))
-            idsAndTitles.push({_id: list._id, title: list.title})
-        })
-
-        finalResult.lists = idsAndTitles
-
         const allCardsIds = allLists.map((list) => list.cards).reduce((a, b) => a.concat(b), [])
 
         models.cards.find(
