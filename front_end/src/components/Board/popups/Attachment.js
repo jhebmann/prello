@@ -70,7 +70,7 @@ class Attachment extends React.Component{
         let formData = new FormData()
         formData.append("attachment", this.state.file)
         formData.append("postedBy", Auth.getUserID())
-        formData.append("title", this.state.title)
+        formData.append("title", this.state.title.trim())
         axios.post(url.api + 'attachment/card/' + this.props.card.state.cardInfos._id, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'

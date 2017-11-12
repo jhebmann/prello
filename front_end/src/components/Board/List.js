@@ -113,14 +113,18 @@ class List extends React.Component{
   handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       if ("title" === e.target.name) this.onClickUpdateList()
-      else if ("titleNewCard" === e.target.name) this.onClickAddCard()
+      else if ("titleNewCard" === e.target.name) {
+        if (this.state.titleNewCard.trim().length > 0) {
+          this.onClickAddCard()
+        }
+      }
     }
   }
 
   onClickUpdateList() {
     if (this.state.showInput){
       axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
-        title: this.state.title,
+        title: this.state.title.trim(),
         pos : this.state.pos
       }, url.config).then((response) => {
         this.socket.emit('updateListTitle', response.data._id, this.state.title)
@@ -141,7 +145,7 @@ class List extends React.Component{
 
   onClickAddCard(){
     axios.post(url.api + 'card/board/' + this.props.idBoard + '/list/' + this.props.id, {
-      title: this.state.titleNewCard,
+      title: this.state.titleNewCard.trim(),
       pos: this.state.cards.length
     }, url.config).then((response) => {
       this.socket.emit('newCard', response.data, this.props.id)
@@ -170,9 +174,11 @@ class List extends React.Component{
   }
 
   deleteCard(cardId) {
+    const newCards = this.state.cards.filter(x => x._id !== cardId)
     this.setState({
-        cards: this.state.cards.filter(x => x._id !== cardId)
+        cards: newCards
     })
+    console.log(this.state.cards)
   }
 
 }

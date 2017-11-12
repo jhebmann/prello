@@ -81,12 +81,6 @@ body {
     cursor: pointer;
 }
 
-.card {
-    overflow-y: auto;
-    height: 100%;
-    cursor: pointer;
-}
-
 .cardButton {
     margin-top: 10px;
     margin-left: 4px;
@@ -414,4 +408,34 @@ ul {
 
 .selected{
     border: 3px solid #5cb85c;
+}
+
+.card {
+    overflow-y: auto;
+    height: 100%;
+    cursor: pointer;
+}
+
+.card:hover #glyphRemoveCard{
+    visibility: visible;
+}
+
+#glyphRemoveCard {
+    visibility: hidden;
+}
+
+#glyphRemoveCardChild {
+    background-clip: padding-box;
+    background-origin: padding-box;
+    border-radius: 3px;
+    padding: 5px;
+    position: absolute;
+    right: 2px;
+    top: 7px;
+    z-index: 50;
+}
+
+#glyphRemoveCardChild:hover {
+    background: rgba(0,0,0,.1);
+    padding: 5px;
 }

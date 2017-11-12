@@ -1,14 +1,11 @@
 import React from 'react'
 import SocketIOClient from 'socket.io-client'
-import Home from "../Home/Home.js"
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
-import {Spin, Button, Input, Icon, Row, Collapse, Tabs, Avatar, Tooltip, Card, Tag, Col} from 'antd'
+import {Button, Card, Col, Collapse, Icon, Row, Tag} from 'antd'
 import { Redirect } from 'react-router-dom'
-import Cascade from '../Board/Cascade.js'
 const Panel = Collapse.Panel
-const TabPane = Tabs.TabPane
 
 class Search extends React.Component{
     constructor(props){

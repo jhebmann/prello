@@ -64,7 +64,7 @@ onClickAddBoard(){
     if(!this.props.public)
       route='board/team/' + this.state.teamId
     axios.post(url.api + route , {
-      title: this.state.titleNewBoard,
+      title: this.state.titleNewBoard.trim(),
       admins:Auth.getUserID(),
       users:Auth.getUserID(),
       isPublic:this.props.public
@@ -115,8 +115,8 @@ onClickAddBoard(){
   renderBoards(list){
     const boards = this.state.boards
     const boardItems = boards.map((board, index)=>
-    <Col span={5}>
-        <div class="clickable" onClick={() => window.location = "/board/"+board._id}>
+    <Col span={5} key={index}>
+        <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
           <Card title={board.title || 'Undefined'} extra={<Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation()
                                                                                                                             this.onClickDeleteBoard(board._id)}}>Delete</Button>} >
             <Tag color="red">Tag</Tag>

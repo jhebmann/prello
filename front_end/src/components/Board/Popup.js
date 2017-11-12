@@ -208,16 +208,20 @@ class Popup extends React.Component{
                             {descriptionInput}
                         </div>
                     </div>
-                    <div className="checklists space"> <span className="spanTitle checklistsSpan"><Glyphicon glyph="list-alt"/>Checklists </span> 
-                        <ul>
-                            {checklistsLi}
-                        </ul>
-                    </div>
-                    <div className="attachments space"> <span className="spanTitle attachmentsSpan"><Glyphicon glyph="list-alt"/>Attachments</span> 
-                        <ul>
-                            {/* put image here */}
-                        </ul>
-                    </div>
+                    { (this.state.cardInfos.checklists && this.state.cardInfos.checklists.length > 0) &&
+                        <div className="checklists space"> <span className="spanTitle checklistsSpan"><Glyphicon glyph="list-alt"/>Checklists </span> 
+                            <ul>
+                                {checklistsLi}
+                            </ul>
+                        </div>
+                    }
+                    { (this.state.cardInfos.attachments && this.state.cardInfos.attachments.length > 0) &&
+                        <div className="attachments space"> <span className="spanTitle attachmentsSpan"><Glyphicon glyph="paperclip"/>Attachments</span> 
+                            <ul>
+                                {/* put image here */}
+                            </ul>
+                        </div>
+                    }
                 </div>
 
                 {/*//////////////// Right Menu /////////////////*/}

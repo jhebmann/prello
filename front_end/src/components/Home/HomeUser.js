@@ -17,7 +17,7 @@ class HomeUser extends React.Component{
     //Default State
     this.state={
       teams: [],
-      textImput: null,
+      textInput: null,
       publicBoards:null,
       users:null,
       pageLoaded:false,
@@ -65,13 +65,13 @@ class HomeUser extends React.Component{
 
     onClickAddTeam(){
         axios.post(url.api + 'team', {
-          name: this.state.textImput,
+          name: this.state.textInput.trim(),
           admins:Auth.getUserID(),
           users:Auth.getUserID()
         }, url.config).then((response) => {
           this.socket.emit("newTeam", response.data)
           this.addTeam(response.data)
-          this.setState({textImput: ""})
+          this.setState({textInput: ""})
         })
         .catch((error) => {
           alert('An error occured when adding the board')
@@ -86,13 +86,13 @@ class HomeUser extends React.Component{
 
     onClickAddPublicBoard(){
         axios.post(url.api + 'board', {
-          title: this.state.textImput,
+          title: this.state.textInput.trim(),
           admins:Auth.getUserID(),
           users:Auth.getUserID(),
           isPublic:true
         }, url.config).then((response) => {
           this.socket.emit("newBoard", response.data)
-          this.setState({textImput: ""})
+          this.setState({textInput: ""})
         })
         .catch((error) => {
           alert('An error occured when adding the board')
@@ -100,7 +100,7 @@ class HomeUser extends React.Component{
       }
 
     handleTeamInputChange(e) {  
-      this.setState({textImput: e.target.value});
+      this.setState({textInput: e.target.value});
     }
 
     render(){
@@ -111,7 +111,7 @@ class HomeUser extends React.Component{
                 {Auth.isUserAuthenticated() ? 
                   (<div id="teamsForm" className="teamInput">
                 <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." 
-                    value={this.state.textImput} onKeyPress={this.handleKeyPress}/>
+                    value={this.state.textInput} onKeyPress={this.handleKeyPress}/>
                 <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
               <div  className="teamsContainer">
                 <Row >
@@ -177,8 +177,8 @@ class HomeUser extends React.Component{
     renderTeamMembersTab(team){
       const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id))
       const teamMemberItems = teamMembers.map((member, index)=>
-        <div className="teamMember">
-           <Tooltip title={member.local.mail} >
+        <div className="teamMember" key={index}>
+           <Tooltip title={member.local.mail}>
               <Avatar size="medium" >{member.local.nickname[0]}</Avatar>
            </Tooltip>
            {member.local.nickname} 
