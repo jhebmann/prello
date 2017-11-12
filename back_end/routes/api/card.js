@@ -267,34 +267,43 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
 router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
     const id = req.params.id
 
-    Board.findOneAndUpdate(
-        {_id: req.params.boardId, "lists._id": req.params.listId},
-        {"$pull": {"lists.$.cards": id}},
-        (err, board) => {
-            if (err) res.status(401).send(err)
-            else {
-                Card.findById(id)
-                .then(function(card) {
-                    const allAttachments = card.attachments.map((attachment) => attachment.imgId)
-                    Attachment.remove(
-                        {_id: {$in: allAttachments}}
-                    )
+    Board.findOne(
+        {_id: req.params.boardId}
+    )
+    .then(function(board) {
+        board.lists.id(req.params.listId).cards.pull(board.lists.id(req.params.listId).cards.id(id))
+        board.save()
+        .then(function() {
+            Card.findById(id)
+            .then(function(card) {
+                const allAttachments = card.attachments.map((attachment) => attachment._id)
+                Attachment.remove(
+                    {_id: {$in: allAttachments}}
+                )
+                .then(function() {
+                    card.remove()
                     .then(function() {
-                        card.remove()
-                        .then(function() {
-                            res.status(200).send("The card of id " + id + " was successfully destroyed")
-                        }).catch(function(err) {
-                            res.status(401).send(err)
-                        })
+                        res.status(200).send("The card of id " + id + " was successfully destroyed")
                     }).catch(function(err) {
+                        console.log(err)
                         res.status(401).send(err)
                     })
                 }).catch(function(err) {
+                    console.log(err)
                     res.status(401).send(err)
                 })
-            }
-        }
-    )
+            }).catch(function(err) {
+                console.log(err)
+                res.status(401).send(err)
+            })
+        }).catch(function(err) {
+            console.log(err)
+            res.status(401).send(err)
+        })
+    }).catch(function(err) {
+        console.log(err)
+        res.status(401).send(err)
+    })
 })
 
 /**
@@ -320,7 +329,7 @@ router.delete('/list/:listId/board/:boardId', function (req, res, next) {
                     ).then(function(cards) {
                         if (cards === null) res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
                         else {
-                            const allAttachments = cards.map((card) => card.attachments.imgId).reduce((a, b) => a.concat(b), [])
+                            const allAttachments = cards.map((card) => card.attachments._id).reduce((a, b) => a.concat(b), [])
                             Attachment.remove({_id: {$in: allAttachments}})
                             .then(function() {
                                 Card.remove(
