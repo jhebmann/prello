@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import HomeUser from './components/Home/HomeUser'
 import Board from './components/Board/HomeBoard'
 import Login from './components/Auth/Login/Login'
+import Search from './components/Search/Search'
 import Register from './components/Auth/Register/Register'
 import NotFound from './components/NotFound/NotFound'
 import UnAuthorized from './components/Unauthorized/UnAuthorized'
@@ -22,6 +23,7 @@ render((
         <Route path='/board/:id' component={Board}/>
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>
+        <Route path='/search/:text' component={Search}/>
         <Route component={NotFound}/>
       </Switch>
     </div>

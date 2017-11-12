@@ -23,13 +23,16 @@ class HomeUser extends React.Component{
       pageLoaded:false,
       key:null
     }
+    console.log(this.props.history.location.parameters)
+
     this.socket = SocketIOClient(url.socket)
-    this.addTeam = this.addTeam.bind(this);   
-    this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)    
+    this.addTeam = this.addTeam.bind(this);
+    this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)
     this.onClickAddTeam = this.onClickAddTeam.bind(this)
-    this.renderPublicBoards = this.renderPublicBoards.bind(this) 
+    this.renderPublicBoards = this.renderPublicBoards.bind(this)
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
-    this.updateTeams = this.updateTeams.bind(this) 
+    this.updateTeams = this.updateTeams.bind(this)
+    
     this.socket.on("addTeam", this.addTeam)
 
     }
@@ -125,7 +128,8 @@ class HomeUser extends React.Component{
     renderTeams(teams){
         const teamItems = teams.map((team, index)=>
           <div key = {index} className='teamContainer'>
-           <Collapse bordered={true} >
+           <Collapse defaultActiveKey={('undefined' !== typeof this.props.history.location.parameters && team._id === this.props.history.location.parameters) ? [''+index] : []}
+           className={('undefined' !== typeof this.props.history.location.parameters && team._id === this.props.history.location.parameters) ? "selected" : ""}>
             <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>
               <Tabs defaultActiveKey="1">
                 <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">

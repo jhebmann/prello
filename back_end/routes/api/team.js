@@ -102,7 +102,7 @@ router.post('/', function (req, res, next) {
     // Post a new team
     Team.create(
         { 
-            name: req.body.name,
+            name: ('undefined' !== typeof req.body.name && req.body.name !== null) ? req.body.name : '',
             description: req.body.description,
             users: ('undefined' !== typeof req.body.users) ? req.body.users : [],
             admins: req.body.admins

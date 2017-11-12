@@ -79,7 +79,7 @@ router.post('/card/:cardId', fileParams.single('attachment'), async (req, res, n
             let newAttachmentInfos = {}
             newAttachmentInfos._id = attachment._id
             newAttachmentInfos.datePost = Date.now()
-            newAttachmentInfos.title = req.body.title
+            newAttachmentInfos.title = ('undefined' !== typeof req.body.title) ? req.body.title : ''
             newAttachmentInfos.postedBy = req.body.postedBy
             newAttachmentInfos.linkedComment = ('undefined' === typeof req.body.linkedComment) ? req.body.linkedComment : null
             

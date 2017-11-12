@@ -126,7 +126,7 @@ router.get('/:id/users', function (req, res, next) {
 router.post('/', function (req, res, next) {
     // Post a new board
     const newBoard = new Board({
-        title: req.body.title,
+        title: ('undefined' !== typeof req.body.title && req.body.title !== null) ? req.body.title : '',
         admins: req.body.admins,
         isPublic: req.body.isPublic
     })

@@ -4,6 +4,19 @@ import { LinkContainer } from 'react-router-bootstrap'
 import Auth from '../Auth/Auth.js'
 
 class Header extends React.Component{
+  constructor(props){
+    super(props)
+    this.state = {
+        search: ''
+    }
+
+    this.handleInputChange = this.handleInputChange.bind(this)
+  }
+  
+  handleInputChange = (e) => {
+      this.setState({[e.target.name]: e.target.value})
+  }
+
   render(){
     const guestNavbar = (
       <Navbar className="navbar-fixed-top" responsive='true' collapseable='true'>
@@ -16,10 +29,10 @@ class Header extends React.Component{
         <Navbar.Collapse>
           <Navbar.Form pullLeft>
             <FormGroup>
-              <FormControl type="text" placeholder="Search" />
+              <FormControl type="text" placeholder="Search" name="search" onChange={this.handleInputChange}/>
             </FormGroup>
             {' '}
-            <Button type="submit">Submit</Button>
+            <Button type="submit" onClick={() => window.location = "/search/"+this.state.search}>Search</Button>
           </Navbar.Form>
           <Nav pullRight>
           {Auth.isUserAuthenticated() ? 
