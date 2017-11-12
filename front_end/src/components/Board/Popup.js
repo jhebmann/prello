@@ -11,6 +11,8 @@ import axios from 'axios'
 import url from '../../config'
 import moment from 'moment'
 import Markdown from 'react-remarkable'
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 
 
@@ -27,25 +29,34 @@ class Popup extends React.Component{
             showChecklists: []
         }
 
+        ////////////////////// Socket //////////////////////
         this.socket = this.props.io
-        this.deleteCard = this.deleteCard.bind(this)
+
+        ////////////////// Interface handler ///////////////////
+        this.handleInputChange = this.handleInputChange.bind(this)
+        this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
+
+        ////////////////////// Card //////////////////////
+        this.updateCard = this.updateCard.bind(this)
+        this.updateDoneDate = this.updateDoneDate.bind(this)
         this.updateTitleInput = this.updateTitleInput.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
-        this.handleInputChange = this.handleInputChange.bind(this)
-        this.updateCard = this.updateCard.bind(this)
-        this.updateChecklists =this.updateChecklists.bind(this)
-        this.updateDoneDate = this.updateDoneDate.bind(this)
-        this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
-        this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
-        this.updateTitleChecklist = this.updateTitleChecklist.bind(this)
+        this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
 
-        //Event Listeners
+        //////////////////// Checklists ////////////////////
+        this.updateChecklists =this.updateChecklists.bind(this)
+        this.updateTitleChecklist = this.updateTitleChecklist.bind(this)
+        this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
+        this.deleteChecklist = this.deleteChecklist.bind(this)
+
+        ////////////////// Event Listeners //////////////////
         this.socket.on('updateCardClient', this.updateCard)
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
-        console.log(this.state.attachments)
+        this.socket.on('deleteChecklistClient', this.deleteChecklist)
     }
 
+    
     componentWillReceiveProps(newProps) {
         this.setState({attachments: newProps.attachments});
     }
@@ -55,7 +66,7 @@ class Popup extends React.Component{
     }
 
     render(){
-
+        ////////////////// Popups style //////////////////   
         const memberPopup = {
             overflow: 'auto'
         }
@@ -65,23 +76,27 @@ class Popup extends React.Component{
         }
 
         const checklistPopup = {
-            overflow: 'auto'
+            height: '35%'
         }
 
         const attachmentPopup = {
-            overflow: 'auto'
+            overflow: 'auto',
+            height: '90%',
+            width: '60%',
+            top: '210px'
         }
 
         const dueDatePopup = {
             overflow: 'auto',
             height: '440px',
-            width: '320px'
+            width: '320px',
         }
 
         const movePopup = {
             overflow: 'auto'
         }
 
+        ////////////////// Card description //////////////////
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
             descriptionInput = <div onClick={this.updateDescriptionInput} id="textDescription">
@@ -92,6 +107,7 @@ class Popup extends React.Component{
             name="description" value={this.state.cardInfos.description} placeholder="Add a more detailed description..." className="inputPopup"/>                
         }
 
+        ////////////////// Checklist render //////////////////
         const checklists = this.state.cardInfos.checklists
         const checklistsLi = checklists.map((x, i) =>
             <li className="listChecklist" key={i}>
@@ -120,6 +136,7 @@ class Popup extends React.Component{
             </li>
         )
 
+        ////////////////// Due date render //////////////////
         let dueDateClass = ["dueDateType"]
         const now = moment()
         const dueDate = new Date(this.state.cardInfos.dueDate)
@@ -157,12 +174,14 @@ class Popup extends React.Component{
             cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
             name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
         }
+        ///////////////////////////////////////////////////
 
         return(
             <div className="popup">
                 <div id="divTitlePopup">
                     {cardInputTitle}
                 </div>
+                {/*//////////////// Left Menu /////////////////*/}
                 <div className="popupLeft">
                     <div className="inList"> In list <span id="spanTitlePopup">{this.state.listTitle}</span> </div>
                     <div id="inlineElements" className="space">
@@ -201,6 +220,7 @@ class Popup extends React.Component{
                     </div>
                 </div>
 
+                {/*//////////////// Right Menu /////////////////*/}
                 <div className="popupRight">
                     <div className="popupAdd">
                         <h3> Add </h3>
@@ -212,11 +232,12 @@ class Popup extends React.Component{
                     </div>
                     <div className="popupActions">
                         <h3> Actions </h3>
-                        <Button className='popupButton' onClick={() => this.moveCard.show()}><Glyphicon glyph="arrow-right"/> Move</Button>
-                        <Button className='popupButton' onClick={this.deleteCard}><Glyphicon glyph="remove"/> Delete</Button>
+                        {/*<Button className='popupButton' onClick={() => this.moveCard.show()}><Glyphicon glyph="arrow-right"/> Move</Button>*/}
+                        <Button className='popupButton' onClick={this.onClickDeleteCard}><Glyphicon glyph="remove"/> Delete</Button>
                     </div>
                 </div>
 
+                {/*//////////////// Popups Render /////////////////*/}
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
                     <Member parentClose={this.handlePopupClose.bind(this)}/>
                 </SkyLight>
@@ -240,6 +261,7 @@ class Popup extends React.Component{
         )
     }
 
+    ////////////////////// Interface handler //////////////////////
     handlePopupClose(namePopupToHide){
         if ("member" === namePopupToHide) this.addMember.hide()
         else if ("label" === namePopupToHide) this.addLabel.hide()
@@ -285,7 +307,7 @@ class Popup extends React.Component{
                 this.socket.emit('updateChecklistTitleServer', response.data)
             })
             .catch((error) => {
-                alert('An error occured when updating the list')
+                alert('An error occured when updating the checklist title')
             })
         }
         let newShowChecklists = this.state.showChecklists
@@ -293,48 +315,16 @@ class Popup extends React.Component{
         this.setState({showChecklists: newShowChecklists})
     }
 
-    onClickDeleteChecklist(e) {
-        console.log(e.target)
-        axios.delete(url.api + 'checklist/' + e.target.checklistid + '/card/' + this.state.cardInfos._id, url.config)
-        .then((response) => {
-            console.log(1)
-            this.socket.emit('deleteChecklistServer', response.data)
-            console.log(response.data)
-        })
-        .catch((error) => {
-            alert('An error occured when updating the list')
-        })
-    }
-
-    updateDoneDate() {
-        let newDoneDate = null
-        if (!this.state.cardInfos.doneDate) {
-            newDoneDate = new Date()
+    ////////////////////// Card //////////////////////
+    updateCard(card){
+        if (card._id === this.state.cardInfos._id){
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.title = card.title
+            newCardInfos.dueDate = card.dueDate
+            newCardInfos.description = card.description
+            newCardInfos.doneDate = card.doneDate
+            this.state.card.setState({cardInfos: newCardInfos})
         }
-        axios.put(url.api + 'card/' + this.state.cardInfos._id, {
-            doneDate : newDoneDate,
-        }, url.config).then((response) => {
-            this.socket.emit('updateCardServer', response.data)
-            this.updateCard(response.data)
-        })
-        .catch((error) => {
-            alert('An error occured when updating the list')
-        })
-    }
-
-    updateDescriptionInput() {
-        if (this.state.showDescriptionInput){
-            axios.put(url.api + 'card/' + this.state.cardInfos._id, {
-                description : this.state.cardInfos.description.trim(),
-            }, url.config).then((response) => {
-                this.socket.emit('updateCardServer', response.data)
-                this.updateCard(response.data)
-            })
-            .catch((error) => {
-                alert('An error occured when updating the list')
-            })
-        }
-        this.setState({showDescriptionInput: !this.state.showDescriptionInput})
     }
 
     updateTitleInput() {
@@ -347,7 +337,7 @@ class Popup extends React.Component{
                     this.setState({cardInfos: newCardInfos})
                 })
                 .catch((error) => {
-                    alert('An error occured when getting the cards')
+                    alert('An error occured when updating the card title')
                 })
             }
             else{
@@ -358,26 +348,74 @@ class Popup extends React.Component{
                     this.updateCard(response.data)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the list')
+                    alert('An error occured when updating the card title')
                 })
             }
         }
         this.setState({showCardTitle: !this.state.showCardTitle})
     }
 
-    updateCard(card){
-        if (card._id === this.state.cardInfos._id){
-            let newCardInfos = this.state.cardInfos
-            newCardInfos.title = card.title
-            newCardInfos.dueDate = card.dueDate
-            newCardInfos.description = card.description
-            newCardInfos.doneDate = card.doneDate
-            this.state.card.setState({cardInfos: newCardInfos})
+    updateDescriptionInput() {
+        if (this.state.showDescriptionInput){
+            axios.put(url.api + 'card/' + this.state.cardInfos._id, {
+                description : this.state.cardInfos.description.trim(),
+            }, url.config).then((response) => {
+                this.socket.emit('updateCardServer', response.data)
+                this.updateCard(response.data)
+            })
+            .catch((error) => {
+                alert('An error occured when the card description')
+            })
         }
+        this.setState({showDescriptionInput: !this.state.showDescriptionInput})
+    }
+    
+    updateDoneDate() {
+        let newDoneDate = null
+        if (!this.state.cardInfos.doneDate) {
+            newDoneDate = new Date()
+        }
+        axios.put(url.api + 'card/' + this.state.cardInfos._id, {
+            doneDate : newDoneDate,
+        }, url.config).then((response) => {
+            this.socket.emit('updateCardServer', response.data)
+            this.updateCard(response.data)
+        })
+        .catch((error) => {
+            alert('An error occured when updating the done date')
+        })
     }
 
-    deleteCard(e){
+    onClickDeleteCard() {
+        confirmAlert({
+            title: 'Delete the card ' + this.state.cardInfos.title + '?',
+            message: 'This card will be removed and you won\'t be able to re-open it. There is no undo !',
+            confirmLabel: 'Delete',                           // Text button confirm
+            cancelLabel: 'Cancel',                             // Text button cancel
+            onConfirm: () => (
+                axios.delete(url.api + 'card/' + this.state.cardInfos._id + '/list/' + this.props.listId + '/board/' + this.props.boardId, url.config)
+                .then((response) => {
+                    this.socket.emit('deleteCardServer', this.state.cardInfos._id)
+                    this.props.parentClose('popup')
+                })
+                .catch((error) => {
+                    alert('An error occured when deleting the card')
+                })
+            )
+        })
+    }
 
+    ////////////////////// Checklists //////////////////////
+    onClickDeleteChecklist(e) {
+        const checklistId = e.target.attributes.checklistid.value
+        axios.delete(url.api + 'checklist/' + checklistId + '/card/' + this.state.cardInfos._id, url.config)
+        .then((response) => {
+            this.socket.emit('deleteChecklistServer', checklistId)
+            this.deleteChecklist(checklistId)
+        })
+        .catch((error) => {
+            alert('An error occured when deleting the checklist')
+        })
     }
 
     updateChecklists(checklist){
@@ -395,6 +433,15 @@ class Popup extends React.Component{
             cardInfos: newCardInfos
         })
     }
+
+    deleteChecklist(checklistId) {
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.checklists = newCardInfos.checklists.filter(x => x._id !== checklistId)
+        this.setState({
+            cardInfos: newCardInfos
+        })
+    }
+    //////////////////////////////////
 }
 
 export default Popup

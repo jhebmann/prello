@@ -79,7 +79,6 @@ class Cascade extends React.Component{
   }
 
   revokeAdmin(){
-      console.log('revoke admin')
     const addr=url.api+'team/'+this.state.teamId + '/fromAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
     .then(()=>{alert('Admin revoked from the team!');this.props.onChange()})

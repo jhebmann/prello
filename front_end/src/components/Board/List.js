@@ -26,12 +26,14 @@ class List extends React.Component{
     this.onClickUpdateList = this.onClickUpdateList.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.updateListTitle = this.updateListTitle.bind(this)
+    this.deleteCard = this.deleteCard.bind(this)
 
     //Event Listeners
     this.socket.on('updateListTitle', this.updateListTitle)
     this.socket.on('addCard', this.addCard)
     this.socket.on('deleteCards', this.deleteCards)
-
+    this.socket.on('deleteCardClient', this.deleteCard)
+  
   }
 
   componentDidMount() {
@@ -75,7 +77,7 @@ class List extends React.Component{
   cardList(list){
     const cards=this.state.cards
     const cardItems= cards.map((card, index)=>
-      <Card listTitle={this.state.title} key={index} cardInfos={card} io={this.socket}/>
+      <Card boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={index} cardInfos={card} io={this.socket}/>
     )
     return cardItems
   }
@@ -150,7 +152,7 @@ class List extends React.Component{
     })
   }
 
-  onClickDeleteList(){
+  onClickDeleteList() {
     axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
     .then((response) => {
       this.deleteCards(this.props.id)
@@ -161,9 +163,15 @@ class List extends React.Component{
     })
   }
 
-  deleteCards(idList){
+  deleteCards(idList) {
     if(idList === this.props.id)
       this.setState({cards:[]})
+  }
+
+  deleteCard(cardId) {
+    this.setState({
+        cards: this.state.cards.checklists.filter(x => x._id !== cardId)
+    })
   }
 
 }

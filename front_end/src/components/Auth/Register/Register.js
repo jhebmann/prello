@@ -56,8 +56,7 @@ class Register extends React.Component{
     
 
     handleSubmit(event) {
-        /*console.log(this.props)
-        console.log(event)
+        /*
         const newUser = {
             nickname: this.state.nickname,
             mail: this.state.email,
