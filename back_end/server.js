@@ -115,6 +115,10 @@ io.on('connection', (client) => {
         client.broadcast.emit('updateCardClient', card)
     })
 
+    client.on('deleteCardServer', (cardId) => {
+        client.broadcast.emit('deleteCardClient', cardId)
+    })
+
     // ----- Handle checklist ----- //
     client.on('newChecklistServer', (checklist) => {
         client.broadcast.emit('newChecklistClient', checklist)

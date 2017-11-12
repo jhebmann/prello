@@ -11,6 +11,8 @@ import axios from 'axios'
 import url from '../../config'
 import moment from 'moment'
 import Markdown from 'react-remarkable'
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 
 
@@ -39,7 +41,7 @@ class Popup extends React.Component{
         this.updateDoneDate = this.updateDoneDate.bind(this)
         this.updateTitleInput = this.updateTitleInput.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
-        
+        this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
 
         //////////////////// Checklists ////////////////////
         this.updateChecklists =this.updateChecklists.bind(this)
@@ -230,8 +232,8 @@ class Popup extends React.Component{
                     </div>
                     <div className="popupActions">
                         <h3> Actions </h3>
-                        <Button className='popupButton' onClick={() => this.moveCard.show()}><Glyphicon glyph="arrow-right"/> Move</Button>
-                        <Button className='popupButton' onClick={this.deleteCard}><Glyphicon glyph="remove"/> Delete</Button>
+                        {/*<Button className='popupButton' onClick={() => this.moveCard.show()}><Glyphicon glyph="arrow-right"/> Move</Button>*/}
+                        <Button className='popupButton' onClick={this.onClickDeleteCard}><Glyphicon glyph="remove"/> Delete</Button>
                     </div>
                 </div>
 
@@ -305,7 +307,7 @@ class Popup extends React.Component{
                 this.socket.emit('updateChecklistTitleServer', response.data)
             })
             .catch((error) => {
-                alert('An error occured when updating the list')
+                alert('An error occured when updating the checklist title')
             })
         }
         let newShowChecklists = this.state.showChecklists
@@ -335,7 +337,7 @@ class Popup extends React.Component{
                     this.setState({cardInfos: newCardInfos})
                 })
                 .catch((error) => {
-                    alert('An error occured when getting the cards')
+                    alert('An error occured when updating the card title')
                 })
             }
             else{
@@ -346,7 +348,7 @@ class Popup extends React.Component{
                     this.updateCard(response.data)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the list')
+                    alert('An error occured when updating the card title')
                 })
             }
         }
@@ -362,7 +364,7 @@ class Popup extends React.Component{
                 this.updateCard(response.data)
             })
             .catch((error) => {
-                alert('An error occured when updating the list')
+                alert('An error occured when the card description')
             })
         }
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
@@ -380,7 +382,26 @@ class Popup extends React.Component{
             this.updateCard(response.data)
         })
         .catch((error) => {
-            alert('An error occured when updating the list')
+            alert('An error occured when updating the done date')
+        })
+    }
+
+    onClickDeleteCard() {
+        confirmAlert({
+            title: 'Delete the card ' + this.state.cardInfos.title + '?',
+            message: 'This card will be removed and you won\'t be able to re-open it. There is no undo !',
+            confirmLabel: 'Delete',                           // Text button confirm
+            cancelLabel: 'Cancel',                             // Text button cancel
+            onConfirm: () => (
+                axios.delete(url.api + 'card/' + this.state.cardInfos._id + '/list/' + this.props.listId + '/board/' + this.props.boardId, url.config)
+                .then((response) => {
+                    this.socket.emit('deleteCardServer', this.state.cardInfos._id)
+                    this.props.parentClose('popup')
+                })
+                .catch((error) => {
+                    alert('An error occured when deleting the card')
+                })
+            )
         })
     }
 
@@ -393,7 +414,7 @@ class Popup extends React.Component{
             this.deleteChecklist(checklistId)
         })
         .catch((error) => {
-            alert('An error occured when updating the list')
+            alert('An error occured when deleting the checklist')
         })
     }
 
