@@ -124,6 +124,10 @@ io.on('connection', (client) => {
         client.broadcast.emit('updateChecklistTitleClient', checklist)
     })
 
+    client.on('deleteChecklistServer', (checklistId) => {
+        client.broadcast.emit('deleteChecklistClient', checklistId)
+    })
+
 })
 
 // Server start
