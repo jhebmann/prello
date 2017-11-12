@@ -94,20 +94,22 @@ class Card extends React.Component{
     }
 
     loadAttachments(){
-        this.state.cardInfos.attachments.forEach((attachment) => {
-            axios.get(url.api + 'attachment/' + attachment._id)
-            .then((response) => {
-                this.setState(prevState=>({
-                    attachments: prevState.attachments.concat({
-                        image: response.data,
-                        title: attachment.title,
-                        postedBy: attachment.postedBy
-                    })
-                  }))
-            }).catch((error) => {
-                alert('An error occured when adding the attachment')
+        if (this.state.cardInfos.attachments) {
+            this.state.cardInfos.attachments.forEach((attachment) => {
+                axios.get(url.api + 'attachment/' + attachment._id)
+                .then((response) => {
+                    this.setState(prevState=>({
+                        attachments: prevState.attachments.concat({
+                            image: response.data,
+                            title: attachment.title,
+                            postedBy: attachment.postedBy
+                        })
+                      }))
+                }).catch((error) => {
+                    alert('An error occured when adding the attachment')
+                })
             })
-        })
+        }
     }
 }
 
