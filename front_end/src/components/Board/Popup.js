@@ -396,7 +396,6 @@ class Popup extends React.Component{
                 axios.delete(url.api + 'card/' + this.state.cardInfos._id + '/list/' + this.props.listId + '/board/' + this.props.boardId, url.config)
                 .then((response) => {
                     this.socket.emit('deleteCardServer', this.state.cardInfos._id)
-                    this.props.parentClose('popup')
                 })
                 .catch((error) => {
                     alert('An error occured when deleting the card')

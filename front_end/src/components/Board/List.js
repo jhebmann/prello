@@ -171,7 +171,7 @@ class List extends React.Component{
 
   deleteCard(cardId) {
     this.setState({
-        cards: this.state.cards.checklists.filter(x => x._id !== cardId)
+        cards: this.state.cards.filter(x => x._id !== cardId)
     })
   }
 
