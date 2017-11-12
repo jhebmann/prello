@@ -25,12 +25,18 @@ class Header extends React.Component{
           {Auth.isUserAuthenticated() ? 
           (
             <Nav pullRight>
+            <LinkContainer to="/profile">
+              <NavItem>
+                {Auth.getNickname()}
+              </NavItem>
+            </LinkContainer>
             <LinkContainer to="/login" onClick={Auth.deauthenticateUser}>
               <NavItem>
                 Log Out
               </NavItem>
             </LinkContainer>
-            </Nav>):
+            </Nav>
+          ):
             (<Nav pullRight>
             <LinkContainer to="/login">
               <NavItem>

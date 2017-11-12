@@ -18,9 +18,9 @@ module.exports = new PassportLocalStrategy({
     password: password.trim()
   };
 
-  // find a user by email address
+  // find a user by nickname
   return User.findOne({ "local.nickname" : userData.nickname }, (err, user) => {
-    if (err) { return done(err); }
+    if (err) { return done(err) }
 
     if (!user) {
       const error = new Error('Incorrect nickname');
@@ -47,7 +47,7 @@ module.exports = new PassportLocalStrategy({
       // create a token string
       const token = jwt.sign(payload, config.jwtSecret);
       const data = {
-        name: user.name,
+        nickname: user.local.nickname,
         id:user._id
       };
 

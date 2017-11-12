@@ -12,6 +12,10 @@ class Auth {
       static setUserId(id){
         localStorage.setItem('userId',id)
       }
+    
+      static setNickname(nickname){
+        localStorage.setItem('nickname',nickname)
+      }
       /**
        * Check if a user is authenticated - check if a token is saved in Local Storage
        *
@@ -28,6 +32,7 @@ class Auth {
       static deauthenticateUser() {
         localStorage.removeItem('userId')
         localStorage.removeItem('token');
+        localStorage.removeItem('nickname');
       }
     
       /**
@@ -42,6 +47,10 @@ class Auth {
 
       static getUserID(){
         return localStorage.getItem('userId')
+      }
+      
+      static getNickname(){
+        return localStorage.getItem('nickname')
       }
     }
     

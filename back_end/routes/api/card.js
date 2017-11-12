@@ -2,6 +2,7 @@ const models = require('../../models')
 const Card = models.cards
 const Board = models.boards
 const Label = models.labels
+const Attachment = models.attachments
 const ObjectId = require('mongoose').Types.ObjectId
 const router = require('express').Router()
 
@@ -272,10 +273,22 @@ router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
         (err, board) => {
             if (err) res.status(401).send(err)
             else {
-                Card.findOneAndRemove(
-                    {_id: id}
-                ).then(function() {
-                    res.status(200).send("The card of id " + id + " was successfully destroyed")
+                Card.findById(id)
+                .then(function(card) {
+                    const allAttachments = card.attachments.map((attachment) => attachment.imgId)
+                    Attachment.remove(
+                        {_id: {$in: allAttachments}}
+                    )
+                    .then(function() {
+                        card.remove()
+                        .then(function() {
+                            res.status(200).send("The card of id " + id + " was successfully destroyed")
+                        }).catch(function(err) {
+                            res.status(401).send(err)
+                        })
+                    }).catch(function(err) {
+                        res.status(401).send(err)
+                    })
                 }).catch(function(err) {
                     res.status(401).send(err)
                 })
@@ -302,10 +315,26 @@ router.delete('/list/:listId/board/:boardId', function (req, res, next) {
 
                 board.save()
                 .then(function() {
-                    Card.remove(
+                    Card.find(
                         {_id: {$in: cardsIds}}
-                    ).then(function() {
-                        res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
+                    ).then(function(cards) {
+                        if (cards === null) res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
+                        else {
+                            const allAttachments = cards.map((card) => card.attachments.imgId).reduce((a, b) => a.concat(b), [])
+                            Attachment.remove({_id: {$in: allAttachments}})
+                            .then(function() {
+                                Card.remove(
+                                    {_id: {$in: cardsIds}}
+                                )
+                                .then(function() {
+                                    res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
+                                }).catch(function(err) {
+                                    res.status(401).send(err)
+                                })
+                            }).catch(function(err) {
+                                res.status(401).send(err)
+                            })
+                        }
                     }).catch(function(err) {
                         res.status(401).send(err)
                     })

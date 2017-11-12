@@ -116,16 +116,17 @@ onClickAddBoard(){
     const boards = this.state.boards
     const boardItems = boards.map((board, index)=>
     <Col span={5}>
-        <a href={"/board/"+board._id}>
-        <Card title={board.title || 'Undefined'} extra={<Button type="danger"  icon="delete" size="small" onClick={() => this.onClickDeleteBoard(board._id)}>Delete</Button>} >
-          <Tag color="red">Tag</Tag>
-          <p>Description</p>
-          {(board.isPublic) ?(
-            <p>Public Board</p>):(
-            <p>Private Board</p>)
-          }
-        </Card>
-        </a>
+        <div class="clickable" onClick={() => window.location = "/board/"+board._id}>
+          <Card title={board.title || 'Undefined'} extra={<Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation()
+                                                                                                                            this.onClickDeleteBoard(board._id)}}>Delete</Button>} >
+            <Tag color="red">Tag</Tag>
+            <p>Description</p>
+            {(board.isPublic) ?(
+              <p>Public Board</p>):(
+              <p>Private Board</p>)
+            }
+          </Card>
+        </div>
     </Col>
     );
     return boardItems
