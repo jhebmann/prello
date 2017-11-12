@@ -119,6 +119,11 @@ io.on('connection', (client) => {
     client.on('newChecklistServer', (checklist) => {
         client.broadcast.emit('newChecklistClient', checklist)
     })
+
+    client.on('updateChecklistTitleServer', (checklist) => {
+        client.broadcast.emit('updateChecklistTitleClient', checklist)
+    })
+
 })
 
 // Server start

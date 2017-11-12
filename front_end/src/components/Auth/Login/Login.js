@@ -1,5 +1,4 @@
 import React from 'react'
-import { FormErrors } from './FormErrors';
 import './Form.css';
 import Auth from '../Auth.js';
 import { Redirect } from 'react-router-dom'
@@ -150,7 +149,6 @@ class Register extends React.Component{
             this.addNotification('success', 'You successfully logged in. You will be redirected to the front page soon')
         })
         .catch((error) => {
-            let errorType = null
             let fieldValidationErrors = this.state.formErrors
             const message = error.response.data.message
 

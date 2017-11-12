@@ -22,7 +22,8 @@ class Popup extends React.Component{
             card: this.props.card,
             cardInfos: this.props.cardInfos,
             showDescriptionInput: false,
-            showCardTitle: false
+            showCardTitle: false,
+            showChecklists: []
         }
 
         this.socket = this.props.io
@@ -33,10 +34,18 @@ class Popup extends React.Component{
         this.updateCard = this.updateCard.bind(this)
         this.updateChecklists =this.updateChecklists.bind(this)
         this.updateDoneDate = this.updateDoneDate.bind(this)
+        this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
+        this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
+        this.updateTitleChecklist = this.updateTitleChecklist.bind(this)
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
         this.socket.on('newChecklistClient', this.updateChecklists)
+        this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
+    }
+
+    componenWillMount() {
+        this.setState({showChecklists : this.state.cardInfos.checklists.map(() => false)})
     }
 
     render(){
@@ -80,17 +89,26 @@ class Popup extends React.Component{
         const checklists = this.state.cardInfos.checklists
         const checklistsLi = checklists.map((x, i) =>
             <li className="listChecklist" key={i}>
-                <Glyphicon glyph="check"/>{x.title}
+                {(!this.state.showChecklists[i]) ? 
+                (<div className="checklistTitleDiv">
+                    <div>
+                        <Glyphicon glyph="check"/>
+                        <span className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{x.title}</span>   
+                    </div>
+                    <span className="deleteChecklistSpan" checklistid = {x._id} onClick={this.onClickDeleteChecklist}>Delete..</span>
+                </div>) :
+                (<div className="inputCheklistUpdate" onBlur={this.onClickChecklistShow} >
+                    <FormControl componentClass="input" name="checklistTitle" autoFocus="true" type="text" 
+                        index={i} value={x.title} onChange={this.handleInputChange}
+                    />
+                </div>)}
                 <div className="checklistProgressDiv">
                     <span className="percentageLabel">0%</span>
                     <ProgressBar className="checklistProgressBar" striped now={100*0.0/x.items.length} bsStyle="info"/>
                 </div>
                 <div className="inputPopup">
                     <FormControl type = "textarea" name = "newItem" placeholder = "Add an item..." className="checkListNewItemText"
-                        /*onChange = {this.handleInputChange} id="addListInput" 
-                        onFocus = {()=>this.setState({showSaveButton: !this.state.showSaveButton})} 
-                        onBlur = {()=>this.setState({showSaveButton: !this.state.showSaveButton, titleNewList: ""})}*/ 
-                        onKeyPress={this.handleKeyPress}
+                        checklistid = {x._id} defaultValue = "" onKeyPress={this.handleKeyPress}
                     />
                 </div>
             </li>
@@ -130,8 +148,8 @@ class Popup extends React.Component{
         if(!this.state.showCardTitle) {
             cardInputTitle = <h2 onClick={this.updateTitleInput}>{this.state.cardInfos.title}</h2>
         } else{
-            cardInputTitle = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
-            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup"/>                
+            cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
+            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
         }
 
         return(
@@ -165,17 +183,10 @@ class Popup extends React.Component{
                             {descriptionInput}
                         </div>
                     </div>
-                    <div className="checklists space"> <span className="spanTitle"><Glyphicon glyph="list-alt"/>Checklists </span> 
+                    <div className="checklists space"> <span className="spanTitle checklistsSpan"><Glyphicon glyph="list-alt"/>Checklists </span> 
                         <ul>
                             {checklistsLi}
                         </ul>
-                    </div>
-                    <div className="comments space">
-                        <span className="spanTitle"><Glyphicon glyph="comment"/>Comments </span>
-                        <div className="inputPopup">
-                            <FormControl componentClass="textarea">
-                            </FormControl>
-                        </div>    
                     </div>
                 </div>
 
@@ -236,13 +247,52 @@ class Popup extends React.Component{
             newCardInfos.title = e.target.value
             this.setState({cardInfos: newCardInfos})
         }
+        else if (e.target.name === "checklistTitle") {
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.checklists[e.target.attributes.index.value].title = e.target.value
+            this.setState({cardInfos: newCardInfos})
+        }
     }
 
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             if ("description" === e.target.name) this.updateDescriptionInput()
-            else if ("newItem" === e.target.name) console.log(e)
+            else if ("newItem" === e.target.name) {
+                console.log(e.target)
+                console.log(e.view)
+            }
+            else if ("cardTitle" === e.target.name) this.updateTitleInput()
         }
+    }
+
+    onClickChecklistShow(e) {
+        const index = e.target.attributes.index.value
+        if (this.state.showChecklists[index] && this.state.cardInfos.checklists[index].title.trim().length > 0){
+            axios.put(url.api + 'checklist/' + this.state.cardInfos.checklists[index]._id + '/card/' + this.state.cardInfos._id, {
+                title : this.state.cardInfos.checklists[index].title.trim(),
+            }, url.config).then((response) => {
+                this.socket.emit('updateChecklistTitleServer', response.data)
+            })
+            .catch((error) => {
+                alert('An error occured when updating the list')
+            })
+        }
+        let newShowChecklists = this.state.showChecklists
+        newShowChecklists[index] = !newShowChecklists[index]
+        this.setState({showChecklists: newShowChecklists})
+    }
+
+    onClickDeleteChecklist(e) {
+        console.log(e.target)
+        axios.delete(url.api + 'checklist/' + e.target.checklistid + '/card/' + this.state.cardInfos._id, url.config)
+        .then((response) => {
+            console.log(1)
+            this.socket.emit('deleteChecklistServer', response.data)
+            console.log(response.data)
+        })
+        .catch((error) => {
+            alert('An error occured when updating the list')
+        })
     }
 
     updateDoneDate() {
@@ -278,15 +328,28 @@ class Popup extends React.Component{
 
     updateTitleInput() {
         if (this.state.showCardTitle){
-            axios.put(url.api + 'card/' + this.state.cardInfos._id, {
-                title : this.state.cardInfos.title.trim(),
-            }, url.config).then((response) => {
-                this.socket.emit('updateCardServer', response.data)
-                this.updateCard(response.data)
-            })
-            .catch((error) => {
-                alert('An error occured when updating the list')
-            })
+            if (this.state.cardInfos.title.trim().length === 0) {
+                axios.get(url.api + 'card/' + this.state.cardInfos._id, url.config)
+                .then((response) => {
+                    let newCardInfos = this.state.cardInfos
+                    newCardInfos.title = response.data.title
+                    this.setState({cardInfos: newCardInfos})
+                })
+                .catch((error) => {
+                    alert('An error occured when getting the cards')
+                })
+            }
+            else{
+                axios.put(url.api + 'card/' + this.state.cardInfos._id, {
+                    title : this.state.cardInfos.title.trim(),
+                }, url.config).then((response) => {
+                    this.socket.emit('updateCardServer', response.data)
+                    this.updateCard(response.data)
+                })
+                .catch((error) => {
+                    alert('An error occured when updating the list')
+                })
+            }
         }
         this.setState({showCardTitle: !this.state.showCardTitle})
     }
@@ -309,6 +372,14 @@ class Popup extends React.Component{
     updateChecklists(checklist){
         let newCardInfos = this.state.cardInfos
         newCardInfos.checklists.push(checklist)
+        this.setState({
+            cardInfos: newCardInfos
+        })
+    }
+
+    updateTitleChecklist(checklist){
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.checklists[newCardInfos.checklists.map((el) => el._id).indexOf(checklist._id)] = checklist
         this.setState({
             cardInfos: newCardInfos
         })

@@ -134,6 +134,10 @@ body {
     font-weight: bold;
 }
 
+.checklistsSpan {
+    margin-bottom: 20px;
+}
+
 .spanTitle2 {
     display: block;
     color: #838c91;
@@ -247,6 +251,16 @@ ul {
     margin-left: 10px;
 }
 
+#titleCardPopup:focus {
+    box-shadow: none;
+    margin-bottom: 4px;
+    max-height: 2pc;
+    overflow: hidden;
+    resize: none;
+    text-decoration: none;
+    cursor: auto;
+}
+
 .checkListNewItemText {
     background: 0 0;
     border-color: transparent;
@@ -345,10 +359,39 @@ ul {
     margin-bottom: 12px;
 }
 
+#divTitlePopup:hover {
+    cursor: pointer;
+}
+
 .popupAdd {
     margin-bottom: 25px
 }
 
 #titleCardPopup {
     width: 70%
+}
+
+.checklistTitleDiv {
+    display: flex;
+    justify-content: space-between;
+}
+
+.deleteChecklistSpan {
+    margin-right: 55px;
+    color: #838c91;
+    text-decoration: underline;
+    font-size: smaller;
+}
+
+.deleteChecklistSpan:hover {
+    color: black;
+    cursor: pointer;
+}
+
+.inputCheklistUpdate {
+    margin-right: 55px;
+}
+
+.checklistTitleSpan:hover {
+    cursor: pointer;
 }
