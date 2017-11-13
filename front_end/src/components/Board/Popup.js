@@ -304,15 +304,26 @@ class Popup extends React.Component{
 
     onClickChecklistShow(e) {
         const index = e.target.attributes.index.value
-        if (this.state.showChecklists[index] && this.state.cardInfos.checklists[index].title.trim().length > 0){
-            axios.put(url.api + 'checklist/' + this.state.cardInfos.checklists[index]._id + '/card/' + this.state.cardInfos._id, {
-                title : this.state.cardInfos.checklists[index].title.trim(),
-            }, url.config).then((response) => {
-                this.socket.emit('updateChecklistTitleServer', response.data)
-            })
-            .catch((error) => {
-                alert('An error occured when updating the checklist title')
-            })
+        if (this.state.showChecklists[index]){
+            if (this.state.cardInfos.checklists[index].title.trim().length > 0) {
+                axios.put(url.api + 'checklist/' + this.state.cardInfos.checklists[index]._id + '/card/' + this.state.cardInfos._id, {
+                    title : this.state.cardInfos.checklists[index].title.trim(),
+                }, url.config).then((response) => {
+                    this.socket.emit('updateChecklistTitleServer', response.data)
+                })
+                .catch((error) => {
+                    alert('An error occured when updating the checklist title')
+                })
+            }
+            else {
+                axios.get(url.api + 'checklist/' + this.state.cardInfos.checklists[index]._id + '/card/' + this.state.cardInfos._id, url.config)
+                .then((response) => {
+                    this.socket.emit('updateChecklistTitleServer', response.data)
+                })
+                .catch((error) => {
+                    alert('An error occured when updating the list')
+                })
+            }
         }
         let newShowChecklists = this.state.showChecklists
         newShowChecklists[index] = !newShowChecklists[index]

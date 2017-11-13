@@ -120,7 +120,9 @@ class List extends React.Component{
 
   handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      if ("title" === e.target.name) this.onClickUpdateList()
+      if ("title" === e.target.name) {
+        this.onClickUpdateList()
+      }
       else if ("titleNewCard" === e.target.name) {
         if (this.state.titleNewCard.trim().length > 0) {
           this.onClickAddCard()
@@ -131,16 +133,28 @@ class List extends React.Component{
 
   onClickUpdateList() {
     if (this.state.showInput){
-      axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
-        title: this.state.title.trim(),
-        pos : this.state.pos
-      }, url.config).then((response) => {
-        this.socket.emit('updateListTitle', response.data._id, this.state.title)
-        this.updateListTitle(response.data._id, this.state.title)
-      })
-      .catch((error) => {
-        alert('An error occured when updating the list')
-      })
+      if (!this.state.title || this.state.title.trim().length < 1) {
+        axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
+        .then((response) => {
+          this.socket.emit('updateListTitle', response.data._id, response.data.title)
+          this.updateListTitle(response.data._id, response.data.title)
+        })
+        .catch((error) => {
+          alert('An error occured when updating the list')
+        })
+      }
+      else {
+        axios.put(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, {
+          title: this.state.title.trim(),
+          pos : this.state.pos
+        }, url.config).then((response) => {
+          this.socket.emit('updateListTitle', response.data._id, response.data.title)
+          this.updateListTitle(response.data._id, response.data.title)
+        })
+        .catch((error) => {
+          alert('An error occured when updating the list')
+        })
+      }
     }
     this.setState({showInput: !this.state.showInput})
   }

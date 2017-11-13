@@ -132,6 +132,7 @@ io.on('connection', (client) => {
 
     client.on('updateChecklistTitleServer', (checklist) => {
         client.broadcast.emit('updateChecklistTitleClient', checklist)
+        client.emit('updateChecklistTitleClient', checklist)
     })
 
     client.on('deleteChecklistServer', (checklistId) => {

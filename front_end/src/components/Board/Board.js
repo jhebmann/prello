@@ -137,11 +137,13 @@ class Board extends React.Component{
 
     deleteList(listId) {
         let newBoard = this.state.board
+        console.log(listId)
         console.log(newBoard.lists)
         newBoard.lists = newBoard.lists.filter(list => list._id !== listId)
         this.setState( prevState => ({
           board: newBoard
         }))
+        console.log(this.state.board)
     }
 
     renderOptions(){
