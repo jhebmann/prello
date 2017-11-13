@@ -76,9 +76,8 @@ class List extends React.Component{
 
   //Renders the Cards stored in the cards array   
   cardList(list){
-    const cards=this.state.cards
-    const cardItems= cards.map((card, index)=>
-      <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={index} cardInfos={card} io={this.socket}/>
+    const cardItems= this.state.cards.map((card, index)=>
+      <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}/>
     )
     return cardItems
   }
@@ -174,11 +173,10 @@ class List extends React.Component{
   }
 
   deleteCard(cardId) {
-    const newCards = this.state.cards.filter(x => x._id !== cardId)
-    this.setState({
-        cards: newCards
-    })
-    console.log(this.state.cards)
+    //const newCards = this.state.cards.filter(x => x._id !== cardId)
+    this.setState( prevState => ({
+      cards: prevState.cards.filter(card => card._id !== cardId)
+    }))
   }
 
 }
