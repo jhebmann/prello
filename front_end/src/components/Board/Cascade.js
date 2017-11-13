@@ -22,7 +22,7 @@ class Cascade extends React.Component{
     }
 
     render(){
-        let memberOptions = this.state.members.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
+        const memberOptions = this.state.members.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
         return (
             <div className="textFormContainer">
               <Select
@@ -37,7 +37,7 @@ class Cascade extends React.Component{
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {memberOptions} 
             </Select>
-            <Button type="success" className='addTeamButton' onClick={this.onClick}>{this.props.task || "Add Member"}</Button>
+            <Button type="success" disabled={this.state.selected===null} className='addTeamButton' onClick={this.onClick}>{this.props.task || "Add Member"}</Button>
             </div>
         );
     }
@@ -56,10 +56,13 @@ class Cascade extends React.Component{
       case "Revoke Admin":
           this.revokeAdmin();
           break;    
+      case "Add Member":
+          this.revokeAdmin();
+          break;    
       default:
           this.addMember();
           break;
-  }
+    }
   }
   addMember(){
     axios.put(url.api + 'user/'+this.state.selected + '/team/add/' + this.state.teamId, {}, url.config)

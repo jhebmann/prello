@@ -13,7 +13,8 @@ class Home extends React.Component{
     this.state={
       boards: [],
       teamId: this.props.teamId,
-      titleNewBoard: null
+      titleNewBoard: null,
+      allTeams:this.props.allTeams
     }
     this.socket = this.props.socket
    
@@ -125,19 +126,26 @@ onClickAddBoard(){
     const boardItems = boards.map((board, index)=>
     <Col span={5} key={index}>
         <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
-          <Card title={board.title || 'Undefined'} extra={<Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation()
-                                                                                                                            this.onClickDeleteBoard(board._id)}}>Delete</Button>} >
-            <Tag color="red">Tag</Tag>
+          {this.renderCard(board)}                                                                                                                 
+        </div>
+    </Col>
+    );
+    return boardItems
+  }
+
+  renderCard(board){
+    let deleteBttn=''
+    if(board.admins.includes(Auth.getUserID()))
+      deleteBttn=<Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation();this.onClickDeleteBoard(board._id)}}>Delete</Button> 
+      return (
+    <Card title={board.title || 'Undefined'} extra={deleteBttn}>
+        <Tag color="red">Tag</Tag>
             <p>Description</p>
             {(board.isPublic) ?(
               <p>Public Board</p>):(
               <p>Private Board</p>)
             }
-          </Card>
-        </div>
-    </Col>
-    );
-    return boardItems
+    </Card>)
   }
 }
 

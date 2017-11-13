@@ -53,3 +53,7 @@
 .ant-collapse.selected{
     border: 3px solid #5cb85c;
 }
+
+.teamInputBoard{
+    width:20%;
+}
