@@ -7,6 +7,7 @@ import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
 import {Spin} from 'antd';
+import Auth from '../Auth/Auth.js'
 
 class Board extends React.Component{
     
@@ -76,7 +77,7 @@ class Board extends React.Component{
                     <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
                         Add List
                     </Button>
-                    <CascadeTeam teams={this.state.allTeams} boardId={this.props.id}/>
+                    {this.renderOptions()}
                     </div>
                     </div>):
                     (<div className="spinn"><Spin size='large' /></div>) }
@@ -110,7 +111,7 @@ class Board extends React.Component{
             this.createList(response.data, this.props.id)
         })
         .catch((error) => {
-            alert('An error occured when adding the lists')
+            alert('An error occured when adding the lists'+error)
         })
         this.setState({titleNewList: ""})
     }
@@ -121,9 +122,8 @@ class Board extends React.Component{
 
     createList(newList, idBoard){
         if (idBoard === this.props.id){
-            this.setState(prevState=>({board:{
-                lists: prevState.board.lists.concat(newList)
-            }}))
+            let newBoard = Object.assign({}, this.state.board, {lists:this.state.board.lists.concat(newList)});
+            this.setState({board: newBoard})
         }
     }
 
@@ -136,6 +136,17 @@ class Board extends React.Component{
 
     deleteAllLists(){
         this.setState({board:{lists: []}})
+    }
+
+    renderOptions(){
+        if(this.state.board.admins.includes(Auth.getUserID())){
+            return(
+            <div>
+                <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
+                <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true}/>
+            </div>
+            )
+        }    
     }
 }
 export default Board;
