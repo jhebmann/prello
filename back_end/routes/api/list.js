@@ -132,6 +132,7 @@ router.delete('/:id/board/:boardId', function (req, res, next) {
     
     Board.findOne(
         {_id: boardId, "lists._id": id},
+        {"lists.$": 1, _id: 0},
         (err, board) => {
             if (err) res.status(401).send(err)
             else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId + " or the list of id " + id)
