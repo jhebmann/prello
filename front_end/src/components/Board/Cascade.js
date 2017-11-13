@@ -24,7 +24,7 @@ class Cascade extends React.Component{
     render(){
         const memberOptions = this.state.members.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
         return (
-            <div className="textFormContainer">
+            <div >
               <Select
                 showSearch
                 style={{ width: 200 }}
@@ -50,15 +50,18 @@ class Cascade extends React.Component{
       case "Add Admin":
           this.addAdmin();
           break;
+      case "Add Admin Board":
+          this.addAdminBoard();
+          break;
       case "Remove Member":
           this.removeMember();
           break;
       case "Revoke Admin":
           this.revokeAdmin();
-          break;    
-      case "Add Member":
-          this.revokeAdmin();
-          break;    
+          break;
+      case "Revoke Admin Board":
+          this.revokeAdminBoard();
+          break;           
       default:
           this.addMember();
           break;
@@ -77,7 +80,7 @@ class Cascade extends React.Component{
     axios.put(addr, {}, url.config)
     .then(()=>{alert('Team member removed!');this.props.onChange()})
     .catch((error) => {
-        alert('An error occured when removing the user from the team')
+        alert('An error occured when removing the user from the team'+error)
     })
   }
 
@@ -96,6 +99,24 @@ class Cascade extends React.Component{
     .then(()=>{alert('Admin added to the team!');this.props.onChange()})
     .catch((error) => {
         alert('An error occured when adding admin to the team')
+    })
+  }
+
+  addAdminBoard(){
+    const addr=url.api+'board/'+this.props.boardId + '/toAdmin/' + this.state.selected
+    axios.put(addr, {}, url.config)
+    .then(()=>{alert('Admin added to the Board!')})
+    .catch((error) => {
+        alert('An error occured when adding admin to the Board'+error)
+    })
+  }
+
+  revokeAdminBoard(){
+    const addr=url.api+'board/'+this.props.boardId + '/fromAdmin/' + this.state.selected
+    axios.put(addr, {}, url.config)
+    .then(()=>{alert('Admin revoked from the Board!')})
+    .catch((error) => {
+        alert('An error occured when revoking admin from the Board'+error)
     })
   }
 

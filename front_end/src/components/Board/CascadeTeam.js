@@ -1,6 +1,5 @@
 import React from 'react'
-import {Select,Avatar} from 'antd'
-import {Button} from 'react-bootstrap';
+import {Select,Avatar,Button} from 'antd'
 import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
@@ -38,7 +37,7 @@ class CascadeTeam extends React.Component{
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {teamOptions} 
             </Select>
-            <Button bsStyle="success" id='addListButton' onClick={this.onClick} disabled={this.state.selected===null}>
+            <Button className='addTeamButton' onClick={this.onClick} disabled={this.state.selected===null}>
                        {this.props.remove?('Remove Team'):('Add Team')} 
                     </Button>
             </div>

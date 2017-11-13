@@ -2,11 +2,13 @@ import React from 'react';
 import List from './List.js';
 import {Button, FormControl} from 'react-bootstrap';
 import './board.css'
+import Cascade from './Cascade.js'
 import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
-import {Spin} from 'antd';
+import {Spin,Tabs,Icon} from 'antd';
 import Auth from '../Auth/Auth.js'
+const TabPane = Tabs.TabPane;
 
 class Board extends React.Component{
     
@@ -65,20 +67,20 @@ class Board extends React.Component{
         return(
             <div className='board'>
                 {
-                    this.state.pageLoaded ? 
-                    (
-                        <div>
-                            {this.cardList(this.state.board.lists)}
-                            <div id="addListDiv">
-                                <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
-                                    onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}
-                                />
-                                <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
-                                    Add List
-                                </Button>
-                                {this.renderOptions()}
-                            </div>
-                        </div>
+                    this.state.pageLoaded ?( 
+                        <Tabs defaultActiveKey="1" tabPosition="left" >
+                            <TabPane tab={<span><Icon type="layout" />{"Board "+this.state.board.title}</span>}  key="1">
+                                {this.cardList(this.state.board.lists)}
+                                <div id="addListDiv">
+                                    <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
+                                        onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}/>
+                                    <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
+                                        Add List
+                                    </Button>
+                                </div>
+                            </TabPane>
+                            {this.renderOptions()}
+                        </Tabs>
                     ):
                     (
                         <div className="spinn">
@@ -147,12 +149,16 @@ class Board extends React.Component{
     }
 
     renderOptions(){
+        const usersBoardArr=this.state.allTeams.filter(team=>team.boards.includes(this.state.board._id)).map((team)=>{return team.users})
+        let usersBoard=Array.from(new Set([].concat.apply([],usersBoardArr)))
         if(this.state.board.admins.includes(Auth.getUserID())){
             return(
-            <div>
+            <TabPane tab={<span><Icon type="contacts" />Admin Options</span>}  key="2">
                 <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
                 <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true}/>
-            </div>
+                <Cascade users={this.state.users.filter(usr=>usersBoard.includes(usr._id)&&!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id}/>
+                <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id}/>
+            </TabPane>      
             )
         }    
     }

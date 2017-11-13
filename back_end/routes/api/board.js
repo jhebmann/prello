@@ -195,6 +195,49 @@ router.put('/:id', function (req, res, next) {
     )
 })
 
+router.put('/:id/toAdmin/:userId', function (req, res, next) {
+    // Update the board with the id given in parameter to set the specified user as admin
+    const id = req.params.id
+    const userId = req.params.userId
+
+    Board.findOne(
+        {_id: id}
+    )
+    .then(function(board) {
+        board.admins.addToSet(userId)
+        board.save()
+        .then(function(board) {
+            res.status(200).send(board)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        console.log(err)
+        res.status(401).send(err)
+    })
+})
+
+router.put('/:id/fromAdmin/:userId', function (req, res, next) {
+    // Update the board with the id given in parameter to revoke the specified user as admin
+    const id = req.params.id
+    const userId = req.params.userId
+
+    Board.findOne(
+        {_id: id}
+    )
+    .then(function(board) {
+        board.admins.pull(userId)
+        board.save()
+        .then(function(board) {
+            res.status(200).send(board)
+        }).catch(function(err) {
+            res.status(401).send(err);
+        })
+    }).catch(function(err) {
+        res.status(401).send(err)
+    })
+})
+
 router.delete('/:id', function (req, res, next) {
     //delete the board of the given id
     const id = req.params.id
