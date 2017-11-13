@@ -110,9 +110,12 @@ class HomeUser extends React.Component{
               <div >
                 {Auth.isUserAuthenticated() ? 
                   (<div id="teamsForm" className="teamInput">
-                <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." 
+                <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." name="team"
                     value={this.state.textInput} onKeyPress={this.handleKeyPress}/>
-                <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam}>Create Team</Button></div>):(<div></div>)}
+                <Button type="primary" className='addTeamButton' onClick={this.onClickAddTeam} disabled={!this.state.textInput || this.state.textInput.trim().length < 1}>
+                  Create Team
+                </Button></div>) :
+                (<div></div>)}
               <div  className="teamsContainer">
                 <Row >
                   {this.renderTeams(this.state.teams)}
@@ -205,7 +208,11 @@ class HomeUser extends React.Component{
 
     handleKeyPress = (e) => {
       if (e.key === 'Enter') {
-        if ("team" === e.target.name) this.onClickAddTeam()
+        if ("team" === e.target.name) {
+          if (this.state.textInput && this.state.textInput.trim().length > 0) {
+            this.onClickAddTeam()
+          }
+        }
       }
     }
 }

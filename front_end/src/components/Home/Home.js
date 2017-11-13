@@ -43,13 +43,17 @@ class Home extends React.Component{
   render(){
     return(
         <div>
-            {Auth.isUserAuthenticated() ? (
+            {Auth.isUserAuthenticated() &&
               <div className='textFormContainer'>
-              <Input onChange={this.handleBoardTitleInputChange}  style={{ width: 200 }}
-              value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress} />
-              <Button type="success" className='addTeamButton' onClick={this.onClickAddBoard}>Add Board</Button>
+                <Input onChange={this.handleBoardTitleInputChange}  style={{ width: 200 }} name="addBoard"
+                value={this.state.titleNewBoard} placeholder="Board Title" onKeyPress={this.handleKeyPress} />
+                <Button type="success" className="addTeamButton" onClick={this.onClickAddBoard}
+                        disabled={!this.state.titleNewBoard || this.state.titleNewBoard.trim().length < 1}
+                >
+                  Add Board
+                </Button>
               </div>
-            ):(<div></div>)}
+            }
             <div id="homeDiv">
               <Row gutter={16}>
               {this.renderBoards(this.state.boards)}
@@ -80,7 +84,11 @@ onClickAddBoard(){
 
   handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      if ("board" === e.target.name) this.onClickAddBoard()
+      if ("addBoard" === e.target.name) {
+        if (e.target.value.trim().length > 0) {
+          this.onClickAddBoard()
+        }
+      }
     }
   }
 
@@ -134,13 +142,3 @@ onClickAddBoard(){
 }
 
 export default Home
-
-/*
-<Card title={board.title || 'Undefined'} className='card'>
-<p>Description</p>
-{(board.isPublic) ?(
-  <p>Public Board</p>):(
-  <p>Private Board</p>)
-}
-</Card>
-*/
