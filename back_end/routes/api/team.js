@@ -199,6 +199,7 @@ router.put('/:id', function (req, res, next) {
             else {
                 if ('undefined' !== typeof req.body.name) team.name = req.body.name
                 if ('undefined' !== typeof req.body.description) team.description = req.body.description
+                if ('undefined' !== typeof req.body.board) team.boards.addToSet(req.body.board)
                 team.save((err, team) => {
                     if (err) res.status(401).send(err)
                     else {

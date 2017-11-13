@@ -2,8 +2,11 @@ import React from 'react';
 import List from './List.js';
 import {Button, FormControl} from 'react-bootstrap';
 import './board.css'
+import Cascade from './Cascade.js'
+import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
+import {Spin} from 'antd';
 
 class Board extends React.Component{
     
@@ -11,9 +14,12 @@ class Board extends React.Component{
         super(props)
         
         this.state={
-            lists: [],
+            board:null,
+            allTeams:[],
+            users:[],
             titleNewList: "",
-            parameters: this.props.parentProps.location.state
+            parameters: this.props.parentProps.location.state,
+            pageLoaded:false
         }
 
         this.socket = this.props.io;
@@ -22,26 +28,46 @@ class Board extends React.Component{
         this.onClickDeleteLists = this.onClickDeleteLists.bind(this);
         this.createList = this.createList.bind(this);
         this.deleteAllLists = this.deleteAllLists.bind(this);
-
         this.socket.on('addList',this.createList)
         this.socket.on('deleteAllLists',this.deleteAllLists)
     }
 
     componentDidMount() {
-        axios.get(url.api + 'board/' + this.props.id + '/lists', url.config)
-        .then((response) => {
-            this.getAllLists(response.data)
-        })
+        const instance= this
+        axios.all([this.loadBoard(), this.loadTeams(),this.loadUsers()])
+        .then(axios.spread(function (res1, res2,res3) {
+          instance.getAllLists(res1.data.lists)
+          instance.setState({board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true})
+        }))
+    }
+
+    loadTeams(){
+        return axios.get(url.api + 'team', url.config)
         .catch((error) => {
-            alert('An error occured when getting the boards !')
+          alert('An error occured when getting the teams!\nHint: check that the server is running')
+        })
+      }
+
+    loadBoard(){
+        return axios.get(url.api + 'board/' + this.props.id , url.config)
+        .catch((error) => {
+          alert('An error occured when getting the Board!\nHint: check that the server is running')
         })
     }
 
+    loadUsers(){
+        return axios.get(url.api + 'user/', url.config)
+         .catch((error) => {
+           alert('An error occured when getting all the users!\nHint: check that the server is running'+error)
+         })
+       }
 
     render(){
         return(
             <div className='board'>
-                {this.cardList(this.state.lists)}
+                {this.state.pageLoaded ? ( 
+                <div>
+                {this.cardList(this.state.board.lists)}
                 <div id="addListDiv">
                     <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
                         onChange = {this.handleInputChange} id="addListInput" 
@@ -50,7 +76,10 @@ class Board extends React.Component{
                     <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
                         Add List
                     </Button>
-                </div>
+                    <CascadeTeam teams={this.state.allTeams} boardId={this.props.id}/>
+                    </div>
+                    </div>):
+                    (<div className="spinn"><Spin size='large' /></div>) }
             </div>
         )
     }
@@ -69,13 +98,13 @@ class Board extends React.Component{
 
     getAllLists(data){
         data.sort(function(a, b){ return a.pos - b.pos})
-        this.setState({lists: data})
+        this.setState({board:{lists: data}})
     }
 
     onClickAddList(){
         axios.post(url.api + 'list/board/' + this.props.id, {
             title: this.state.titleNewList.trim(),
-            pos: this.state.lists.length
+            pos: this.state.board.lists.length
         }, url.config).then((response) => {
             this.socket.emit('newList', response.data, this.props.id)
             this.createList(response.data, this.props.id)
@@ -92,9 +121,9 @@ class Board extends React.Component{
 
     createList(newList, idBoard){
         if (idBoard === this.props.id){
-            this.setState(prevState=>({
-                lists: prevState.lists.concat(newList)
-            }))
+            this.setState(prevState=>({board:{
+                lists: prevState.board.lists.concat(newList)
+            }}))
         }
     }
 
@@ -106,7 +135,7 @@ class Board extends React.Component{
     }
 
     deleteAllLists(){
-        this.setState({lists: []})
+        this.setState({board:{lists: []}})
     }
 }
 export default Board;

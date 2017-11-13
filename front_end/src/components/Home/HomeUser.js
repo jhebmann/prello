@@ -17,6 +17,7 @@ class HomeUser extends React.Component{
     //Default State
     this.state={
       teams: [],
+      allTeams:[],
       textInput: null,
       publicBoards:null,
       users:null,
@@ -32,6 +33,7 @@ class HomeUser extends React.Component{
     this.renderPublicBoards = this.renderPublicBoards.bind(this)
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
     this.updateTeams = this.updateTeams.bind(this)
+    this.userTeams = this.userTeams.bind(this)
     
     this.socket.on("addTeam", this.addTeam)
 
@@ -42,7 +44,7 @@ class HomeUser extends React.Component{
           const instance= this
           axios.all([this.loadTeams(), this.loadUsers()])
           .then(axios.spread(function (res1, res2) {
-            instance.setState({pageLoaded:true,teams:res1.data,users:res2.data})
+            instance.setState({pageLoaded:true,teams:instance.userTeams(res1.data),allTeams:res1.data,users:res2.data})
           }))
         }
         else
@@ -50,10 +52,14 @@ class HomeUser extends React.Component{
     }
 
     loadTeams(){
-      return axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
+      return axios.get(url.api + 'team', url.config)
       .catch((error) => {
         alert('An error occured when getting the teams!\nHint: check that the server is running')
       })
+    }
+
+    userTeams(teams){
+      return teams.filter(team=>team.users.includes(Auth.getUserID()))
     }
 
     loadUsers(){
@@ -136,7 +142,7 @@ class HomeUser extends React.Component{
           <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}>
             <Tabs defaultActiveKey="1">
               <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">
-                <Home key={index} teamId={team._id} public={false} socket={this.socket}/>
+                <Home key={index} teamId={team._id} public={false} socket={this.socket} allTeams={this.state.allTeams}/>
               </TabPane>
                 {this.renderTeamMembersTab(team)}
                 {this.renderAdminTab(team)}
