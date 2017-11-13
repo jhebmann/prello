@@ -23,7 +23,7 @@ class CascadeTeam extends React.Component{
     }
 
     render(){
-        const teamOptions=this.state.teams.filter(team=>!team.boards.includes(this.state.boardId)).map(team => <Option key={team._id} ><Avatar icon="team" size='small'/>{team.name}</Option>);
+        const teamOptions=this.state.teams.map(team => <Option key={team._id} ><Avatar icon="team" size='small'/>{team.name}</Option>);
         return (
             <div >
               <Select
@@ -39,7 +39,7 @@ class CascadeTeam extends React.Component{
                {teamOptions} 
             </Select>
             <Button bsStyle="success" id='addListButton' onClick={this.onClick} disabled={this.state.selected===null}>
-                        Add Team
+                       {this.props.remove?('Remove Team'):('Add Team')} 
                     </Button>
             </div>
         );
@@ -50,10 +50,10 @@ class CascadeTeam extends React.Component{
 
   onClick(){
     axios.put(url.api + 'team/'+this.state.selected, {
-        board:this.state.boardId}, url.config)
-    .then(()=>{alert('Board added to the team!')})
+        board:this.state.boardId,remove:this.props.remove}, url.config)
+    .then(()=>{alert('Board updated!')})
     .catch((error) => {
-        alert('An error occured when adding the team to the board')
+        alert('An error occured when updating the board')
     })
   }
 
