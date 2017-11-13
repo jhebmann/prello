@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Panel, FormControl} from 'react-bootstrap'
+import {Button, FormControl, Glyphicon, Panel} from 'react-bootstrap'
 import axios from 'axios'
 import Card from './Card.js'
 import url from '../../config'
@@ -19,15 +19,19 @@ class List extends React.Component{
     }
     
     this.socket = this.props.io
+
     this.onClickAddCard = this.onClickAddCard.bind(this)
+    this.onClickDeleteCards= this.onClickDeleteCards.bind(this)
+    this.onClickUpdateList = this.onClickUpdateList.bind(this)
+    this.onClickDeleteList = this.onClickDeleteList.bind(this)
+
     this.addCard = this.addCard.bind(this)
     this.deleteCards = this.deleteCards.bind(this)
-    this.onClickDeleteList= this.onClickDeleteList.bind(this)
     this.getAllCards= this.getAllCards.bind(this)
-    this.onClickUpdateList = this.onClickUpdateList.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
     this.updateListTitle = this.updateListTitle.bind(this)
     this.deleteCard = this.deleteCard.bind(this)
+
+    this.handleInputChange = this.handleInputChange.bind(this)
 
     //Event Listeners
     this.socket.on('updateListTitle', this.updateListTitle)
@@ -57,9 +61,14 @@ class List extends React.Component{
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
-        <Panel bsSize="small" className={('undefined' !== typeof this.state.parameters && this.props.id === this.state.parameters.listId) ? "selected list" : "list"}>
+        <Panel id="panelList" bsSize="small" className={('undefined' !== typeof this.state.parameters && this.props.id === this.state.parameters.listId) ? "selected list" : "list"}>
           <div className='listHead'>
-            {headList}
+            <div id="titleListDiv">
+              {headList}
+              <div id="glyphRemoveList" onClick={this.onClickDeleteList}>
+                <Glyphicon glyph='remove' id="glyphRemoveListChild"/>
+              </div>
+            </div>
           </div>
           <div className="listBody">
             {this.cardList(this.state.cards)} 
@@ -67,7 +76,7 @@ class List extends React.Component{
               <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
                             value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.trim().length < 1}>Add Card</Button>
-              <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteList}>Delete Cards</Button>
+              <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteCards}>Delete Cards</Button>
             </p>
           </div>
         </Panel>
@@ -156,11 +165,21 @@ class List extends React.Component{
     })
   }
 
-  onClickDeleteList() {
+  onClickDeleteCards() {
     axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
     .then((response) => {
       this.deleteCards(this.props.id)
       this.socket.emit('deleteAllCards', this.props.id)
+    })
+    .catch((error) => {
+      alert('An error occured when deleting the list')
+    })
+  }
+
+  onClickDeleteList() {
+    axios.delete(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
+    .then((response) => {
+      this.socket.emit('deleteListServer', this.props.id)
     })
     .catch((error) => {
       alert('An error occured when deleting the list')
@@ -173,7 +192,6 @@ class List extends React.Component{
   }
 
   deleteCard(cardId) {
-    //const newCards = this.state.cards.filter(x => x._id !== cardId)
     this.setState( prevState => ({
       cards: prevState.cards.filter(card => card._id !== cardId)
     }))

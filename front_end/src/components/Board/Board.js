@@ -2,7 +2,6 @@ import React from 'react';
 import List from './List.js';
 import {Button, FormControl} from 'react-bootstrap';
 import './board.css'
-import Cascade from './Cascade.js'
 import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
@@ -14,22 +13,21 @@ class Board extends React.Component{
         super(props)
         
         this.state={
-            board:null,
-            allTeams:[],
-            users:[],
+            board: null,
+            allTeams: [],
+            users: [],
             titleNewList: "",
             parameters: this.props.parentProps.location.state,
-            pageLoaded:false
+            pageLoaded: false
         }
 
         this.socket = this.props.io;
-        this.getAllLists = this.getAllLists.bind(this);
-        this.onClickAddList = this.onClickAddList.bind(this);
-        this.onClickDeleteLists = this.onClickDeleteLists.bind(this);
-        this.createList = this.createList.bind(this);
-        this.deleteAllLists = this.deleteAllLists.bind(this);
-        this.socket.on('addList',this.createList)
-        this.socket.on('deleteAllLists',this.deleteAllLists)
+        this.getAllLists = this.getAllLists.bind(this)
+        this.onClickAddList = this.onClickAddList.bind(this)
+        this.createList = this.createList.bind(this)
+        this.deleteList = this.deleteList.bind(this)
+        this.socket.on('addList', this.createList)
+        this.socket.on('deleteListClient', this.deleteList)
     }
 
     componentDidMount() {
@@ -65,21 +63,28 @@ class Board extends React.Component{
     render(){
         return(
             <div className='board'>
-                {this.state.pageLoaded ? ( 
-                <div>
-                {this.cardList(this.state.board.lists)}
-                <div id="addListDiv">
-                    <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
-                        onChange = {this.handleInputChange} id="addListInput" 
-                        onKeyPress={this.handleKeyPress}
-                    />
-                    <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
-                        Add List
-                    </Button>
-                    <CascadeTeam teams={this.state.allTeams} boardId={this.props.id}/>
-                    </div>
-                    </div>):
-                    (<div className="spinn"><Spin size='large' /></div>) }
+                {
+                    this.state.pageLoaded ? 
+                    (
+                        <div>
+                            {this.cardList(this.state.board.lists)}
+                            <div id="addListDiv">
+                                <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
+                                    onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}
+                                />
+                                <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
+                                    Add List
+                                </Button>
+                                <CascadeTeam teams={this.state.allTeams} boardId={this.props.id}/>
+                            </div>
+                        </div>
+                    ):
+                    (
+                        <div className="spinn">
+                            <Spin size='large' />
+                        </div>
+                    ) 
+                }
             </div>
         )
     }
@@ -114,10 +119,6 @@ class Board extends React.Component{
         })
         this.setState({titleNewList: ""})
     }
-    
-    onClickDeleteLists(){
-        this.socket.emit("deleteLists", this.props.id)
-    }
 
     createList(newList, idBoard){
         if (idBoard === this.props.id){
@@ -129,13 +130,18 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-            <List key={index} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.props.id}/>
+            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.props.id}/>
         )
         return listItems
     }
 
-    deleteAllLists(){
-        this.setState({board:{lists: []}})
+    deleteList(listId) {
+        let newBoard = this.state.board
+        console.log(newBoard.lists)
+        newBoard.lists = newBoard.lists.filter(list => list._id !== listId)
+        this.setState( prevState => ({
+          board: newBoard
+        }))
     }
 }
 export default Board;

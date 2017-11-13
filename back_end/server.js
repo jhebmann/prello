@@ -102,6 +102,11 @@ io.on('connection', (client) => {
         client.broadcast.emit('updateListTitle', idList, newTitle)
     })
 
+    client.on('deleteListServer', (idList) => {  
+        client.broadcast.emit('deleteListClient', idList)
+        client.emit('deleteListClient', idList)
+    })
+
     // ----- Handle cards ----- //
     client.on('newCard', (newCard, idList) => {
         client.broadcast.emit('addCard', newCard, idList)

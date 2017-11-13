@@ -79,6 +79,7 @@ body {
     text-align: center;
     padding-top: 0px;
     cursor: pointer;
+    margin-left: 8px;
 }
 
 .cardButton {
@@ -438,4 +439,25 @@ ul {
 #glyphRemoveCardChild:hover {
     background: rgba(0,0,0,.1);
     padding: 5px;
+}
+
+#glyphRemoveList {
+    margin-right: -5px;
+    border-radius: 3px;
+}
+
+#glyphRemoveListChild {
+    padding: 5px;
+    margin-top: -3px;
+}
+
+#titleListDiv {
+    display: flex;
+    justify-content: space-between;
+}
+
+#glyphRemoveListChild:hover {
+    background: rgba(0,0,0,.1);
+    padding: 5px;
+    cursor: pointer;
 }
