@@ -13,8 +13,8 @@ router.get('/:id', function (req, res, next) {
 
     Attachment.findById(id)
     .then(function(attachment){
-        res.contentType(attachment.contentType)
-        res.status(200).send(attachment.data)
+        //res.contentType(attachment.contentType)
+        res.status(200).send(attachment.data.toString('base64'))
     }).catch(function(err) {
         console.log(err)
         res.status(401).send(err);
