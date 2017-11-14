@@ -86,7 +86,7 @@ class List extends React.Component{
   //Renders the Cards stored in the cards array   
   cardList(list){
     const cardItems= this.state.cards.map((card, index)=>
-      <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}/>
+      <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket} usersBoard={this.props.usersBoard}/>
     )
     return cardItems
   }

@@ -113,6 +113,10 @@ router.put('/:id', function (req, res, next) {
                 if ('undefined' !== typeof req.body.dueDate) card.dueDate = req.body.dueDate
                 if ('undefined' !== typeof req.body.doneDate) card.doneDate = req.body.doneDate
                 if ('undefined' !== typeof req.body.isArchived) card.isArchived = req.body.isArchived
+                if ('undefined' !== typeof req.body.user){ 
+                        if(req.body.remove) card.users.pull(req.body.user)
+                        else card.users.addToSet(req.body.user)
+                    }
                 card.save((err, card) => {
                     if (err) res.status(401).send(err)
                     else {

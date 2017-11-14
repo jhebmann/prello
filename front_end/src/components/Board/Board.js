@@ -21,7 +21,8 @@ class Board extends React.Component{
             users: [],
             titleNewList: "",
             parameters: this.props.parentProps.location.state,
-            pageLoaded: false
+            pageLoaded: false,
+            usersBoard:null
         }
 
         this.socket = this.props.io;
@@ -29,6 +30,7 @@ class Board extends React.Component{
         this.onClickAddList = this.onClickAddList.bind(this)
         this.createList = this.createList.bind(this)
         this.deleteList = this.deleteList.bind(this)
+        this.renderOptions=this.renderOptions.bind(this)
         this.socket.on('addList', this.createList)
         this.socket.on('deleteListClient', this.deleteList)
     }
@@ -38,7 +40,9 @@ class Board extends React.Component{
         axios.all([this.loadBoard(), this.loadTeams(),this.loadUsers()])
         .then(axios.spread(function (res1, res2,res3) {
           instance.getAllLists(res1.data.lists)
-          instance.setState({board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true})
+          const usersBoardArr=res2.data.filter(team=>team.boards.includes(res1.data._id)).map((team)=>{return team.users})
+          let usersBoard2=res3.data.filter(usr=>(Array.from(new Set([].concat.apply([],usersBoardArr)))).includes(usr._id))
+          instance.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true})  
         }))
     }
 
@@ -69,6 +73,7 @@ class Board extends React.Component{
                 {
                     this.state.pageLoaded ?( 
                         <Tabs defaultActiveKey="1" tabPosition="left" >
+                            
                             <TabPane tab={<span><Icon type="layout" />{"Board "+this.state.board.title}</span>}  key="1">
                                 {this.cardList(this.state.board.lists)}
                                 <div id="addListDiv">
@@ -132,7 +137,7 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} idBoard={this.props.id}/>
+            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id}/>
         )
         return listItems
     }
@@ -156,7 +161,7 @@ class Board extends React.Component{
             <TabPane tab={<span><Icon type="contacts" />Admin Options</span>}  key="2">
                 <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
                 <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true}/>
-                <Cascade users={this.state.users.filter(usr=>usersBoard.includes(usr._id)&&!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id}/>
+                <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id}/>
                 <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id}/>
             </TabPane>      
             )

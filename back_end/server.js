@@ -125,6 +125,11 @@ io.on('connection', (client) => {
         client.broadcast.emit('deleteChecklistClient', checklistId)
     })
 
+    // ----- Handle items ----- //
+    client.on('postItemServer', (newItem, checklistId) => {
+        client.broadcast.emit('postItemClient', newItem, checklistId)
+    })
+
     // ----- Handle attachments ----- //
 
     client.on('deleteAttachmentServer', (checklistId) => {

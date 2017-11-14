@@ -13,6 +13,7 @@ import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import {Avatar,Tooltip} from 'antd';
 
 
 
@@ -55,12 +56,16 @@ class Popup extends React.Component{
         this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
         this.deleteChecklist = this.deleteChecklist.bind(this)
 
+        //////////////////// Items ////////////////////
+        this.addItem = this.addItem.bind(this)
+
         ////////////////// Event Listeners //////////////////
         this.socket.on('updateCardClient', this.updateCard)
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
         this.socket.on('deleteAttachmentClient', this.deleteAttachment)
+        this.socket.on('postItemClient', this.addItem)
     }
 
     
@@ -160,8 +165,7 @@ class Popup extends React.Component{
                 <img src={"data:image/jpeg;base64," + attachment.image} />
             </li>
         )
-
-        ////////////////// Due date render //////////////////
+       ////////////////// Due date render //////////////////
         let dueDateClass = ["dueDateType"]
         const now = moment()
         const dueDate = new Date(this.state.cardInfos.dueDate)
@@ -212,7 +216,7 @@ class Popup extends React.Component{
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
                             <span className="spanTitle2"> Members </span> 
-                            {this.state.cardInfos.users} <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
+                            {this.renderMembers(this.state.cardInfos.users)} <p/> <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
                         </div>
                         <div className="labels inline"> 
                             <span className="spanTitle2">Labels </span> 
@@ -268,7 +272,7 @@ class Popup extends React.Component{
 
                 {/*//////////////// Popups Render /////////////////*/}
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
-                    <Member parentClose={this.handlePopupClose.bind(this)}/>
+                    <Member popup={this} card={this.state.card} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard} io={this.socket} cardInfos={this.state.cardInfos}/>
                 </SkyLight>
                 <SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
                     <Label parentClose={this.handlePopupClose.bind(this)}/>
@@ -321,8 +325,8 @@ class Popup extends React.Component{
             if ("description" === e.target.name) this.updateDescriptionInput()
             else if ("newItem" === e.target.name) {
                 if (e.target.value.trim().length > 0) {
-                    console.log(e.target.value.trim(), e.target.attributes.checklistId.value)
                     this.postItem(e.target.value.trim(), e.target.attributes.checklistId.value)
+                    e.target.value = ""
                 }
             }
             else if ("cardTitle" === e.target.name) this.updateTitleInput()
@@ -355,6 +359,17 @@ class Popup extends React.Component{
         let newShowChecklists = this.state.showChecklists
         newShowChecklists[index] = !newShowChecklists[index]
         this.setState({showChecklists: newShowChecklists})
+    }
+
+    renderMembers(){
+        const users=this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+        <div key={index} >
+        <Tooltip title={usr.local.mail}>
+           <Avatar size="small" >{usr.local.nickname[0]}</Avatar>
+        </Tooltip>
+        {usr.local.nickname} 
+     </div>)
+        return users
     }
 
     ////////////////////// Card //////////////////////
@@ -522,7 +537,7 @@ class Popup extends React.Component{
             }, url.config
         ).then((response) => {
             this.socket.emit('postItemServer', response.data, checklistId)
-            // this.addItem(response.data, checklistId)
+            this.addItem(response.data, checklistId)
         })
         .catch((error) => {
             alert('An error occured when deleting the checklist')
@@ -531,10 +546,13 @@ class Popup extends React.Component{
 
     addItem(newItem, checklistId) {
         let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists = newCardInfos.checklists.filter(x => x._id !== checklistId)
-        this.setState({
-            cardInfos: newCardInfos
-        })
+        const index = newCardInfos.checklists.findIndex(el => el._id === checklistId)
+        if (index !== -1) {
+            newCardInfos.checklists[index].items.push(newItem)
+            this.setState({
+                cardInfos: newCardInfos
+            })
+        }
     }
 }
 
