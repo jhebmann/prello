@@ -58,7 +58,7 @@ router.get('/:id/card/:cardId/comment', function (req, res, next) {
 
 const fileParams = multer(
     {
-        dest: '/upload',
+        dest: __dirname + '/upload',
         fileFilter: function (req, file, cb) {
             if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
                 return cb(new Error('Only image files are allowed!'))
