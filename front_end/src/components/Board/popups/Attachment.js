@@ -92,7 +92,6 @@ class Attachment extends React.Component{
             attachment: undefined,
             title: ""
         })
-        console.log(this.state.imagePreviewUrl)
     }
 }
 

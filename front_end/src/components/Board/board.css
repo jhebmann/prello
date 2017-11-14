@@ -94,11 +94,13 @@ body {
 .popupLeft {
     float: left;
     width: 78%;
+    margin-bottom: 35px;
 }
 
 .popupRight {
     float: right;
     width: 22%;
+    margin-bottom: 35px;
 }
 
 .popupButton {
@@ -489,4 +491,52 @@ ul {
 .deleteAttachmentSpan:hover{
     color: black;
     cursor: pointer;
+}
+
+.itemDiv {
+    cursor: pointer;
+    margin-right: 50px;
+}
+
+.itemDiv:hover {
+    background: rgba(0,0,0,.08)
+}
+
+.itemDiv:active {
+    background: red;
+}
+
+.item {
+    padding: 7px 5px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.checkboxItemNotDone {
+    margin-right: 8px;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 2px 3px rgba(0,0,0,.1);
+    border: 1px solid #D6DADC;
+        border-bottom-color: rgb(214, 218, 220);
+    border-bottom-color: #C4C9CC;
+    font-weight: 700;
+    left: 5px;
+    line-height: 18px;
+    overflow: hidden;
+    text-align: center;
+    text-indent: 100%;
+    top: -1px;
+    height: 18px;
+    width: 18px;
+    white-space: nowrap;
+}
+
+.done {
+    text-decoration: line-through;
+}
+
+.notDone {
+    text-decoration: none;
 }
