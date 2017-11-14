@@ -131,9 +131,21 @@ io.on('connection', (client) => {
     })
 
     // ----- Handle attachments ----- //
+    client.on('newAttachmentServer', (attachment) => {
+        client.broadcast.emit('newAttachmentClient', attachment)
+    })
 
-    client.on('deleteAttachmentServer', (checklistId) => {
-        client.broadcast.emit('deleteAttachmentClient', checklistId)
+    client.on('deleteAttachmentServer', (attachmentId) => {
+        client.broadcast.emit('deleteAttachmentClient', attachmentId)
+    })
+    
+    client.on('updateAttachmentTitleServer', (attachment) => {
+        client.broadcast.emit('updateAttachmentTitleClient', attachment)
+        client.emit('updateAttachmentTitleClient', attachment)
+    })
+
+    client.on('deleteAttachmentServer', (attachmentId) => {
+        client.broadcast.emit('deleteAttachmentClient', attachmentId)
     })
 
 })

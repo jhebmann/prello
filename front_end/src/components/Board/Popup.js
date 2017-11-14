@@ -66,6 +66,8 @@ class Popup extends React.Component{
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
+        this.socket.on('newAttachmentClient', this.updateAttachments)
+        this.socket.on('updateAttachmentTitleClient', this.updateTitleAttachment)
         this.socket.on('deleteAttachmentClient', this.deleteAttachment)
         this.socket.on('postItemClient', this.addItem)
     }
@@ -145,7 +147,7 @@ class Popup extends React.Component{
                                 (checklist.items && checklist.items.length > 0) &&
                                     checklist.items.map((item, i) =>
                                         <li key={item._id}>
-                                            <div className="itemDiv" onClick={console.log("oh oui clique moi dessus")}> 
+                                            <div className="itemDiv" onClick={() => console.log("oh oui clique moi dessus")}> 
                                                 <span className={(item.isDone) ? "item done" : "item notDone"}>
                                                     <span className="checkboxItemNotDone">
                                                         {(item.isDone) ? <Glyphicon glyph='ok'/> : ""}
@@ -491,11 +493,19 @@ class Popup extends React.Component{
         })
     }
     
-    updateAttachments(checklist){
-        let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists.push(checklist)
+    updateAttachments(attachment){
+        let newAttachments = this.state.attachments
+        newAttachments.unshift(attachment)
         this.setState({
-            cardInfos: newCardInfos
+            attachments: newAttachments
+        })
+    }
+    
+    updateTitleAttachment(attachment){
+        let newAttachments = this.state.attachments
+        newAttachments[newAttachments.map((el) => el._id).indexOf(attachment._id)] = attachment
+        this.setState({
+            attachments: newAttachments
         })
     }
 

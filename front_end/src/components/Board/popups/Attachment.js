@@ -37,6 +37,9 @@ class Attachment extends React.Component{
                     <Button id='cardAttachment' className="attachmentFormSpace" bsStyle="primary" onClick={this.onClickAddAttachment} disabled={'undefined' === typeof this.state.file}>Add</Button>
                     {$imagePreview}
                 </div>
+                <div className = "dropboxDiv">
+
+                </div>
             </div>
         )
     }
@@ -67,27 +70,38 @@ class Attachment extends React.Component{
     }
     
     onClickAddAttachment() {
+        const dateNow = Date.now()
+
         let formData = new FormData()
         formData.append("attachment", this.state.file)
         formData.append("postedBy", Auth.getUserID())
         formData.append("title", this.state.title.trim())
+        formData.append("datePost", dateNow)
+
         axios.post(url.api + 'attachment/card/' + this.props.card.state.cardInfos._id, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
         }, url.config).then((response) => {
-            //this.socket.emit('newAttachmentServer', response.data)
-            this.addAttachment(response.data)
+            const newAttachment = {
+                _id: response.data._id,
+                image: response.data.image,
+                title: this.state.title.trim(),
+                postedBy: Auth.getUserID(),
+                datePost:dateNow
+            }
+            this.socket.emit('newAttachmentServer', newAttachment)
+            this.addAttachment(newAttachment)
         }).catch((error) => {
             alert('An error occured when adding the attachment')
         })
     }
 
     addAttachment(attachment) {
-        let newCardInfos = this.state.card.state.cardInfos
-        newCardInfos.attachments.push(attachment)
-        this.state.card.setState({cardInfos: newCardInfos})
-        this.state.popup.setState({cardInfos: newCardInfos})
+        let newAttachments = this.state.card.state.attachments
+        newAttachments.unshift(attachment)
+        this.state.card.setState({attachments: newAttachments})
+        this.state.popup.setState({attachments: newAttachments})
         this.setState({
             attachment: undefined,
             title: ""
