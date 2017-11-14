@@ -56,12 +56,16 @@ class Popup extends React.Component{
         this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
         this.deleteChecklist = this.deleteChecklist.bind(this)
 
+        //////////////////// Items ////////////////////
+        this.addItem = this.addItem.bind(this)
+
         ////////////////// Event Listeners //////////////////
         this.socket.on('updateCardClient', this.updateCard)
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
         this.socket.on('deleteAttachmentClient', this.deleteAttachment)
+        this.socket.on('postItemClient', this.addItem)
     }
 
     
@@ -321,8 +325,8 @@ class Popup extends React.Component{
             if ("description" === e.target.name) this.updateDescriptionInput()
             else if ("newItem" === e.target.name) {
                 if (e.target.value.trim().length > 0) {
-                    console.log(e.target.value.trim(), e.target.attributes.checklistId.value)
                     this.postItem(e.target.value.trim(), e.target.attributes.checklistId.value)
+                    e.target.value = ""
                 }
             }
             else if ("cardTitle" === e.target.name) this.updateTitleInput()
@@ -533,7 +537,7 @@ class Popup extends React.Component{
             }, url.config
         ).then((response) => {
             this.socket.emit('postItemServer', response.data, checklistId)
-            // this.addItem(response.data, checklistId)
+            this.addItem(response.data, checklistId)
         })
         .catch((error) => {
             alert('An error occured when deleting the checklist')
@@ -542,10 +546,13 @@ class Popup extends React.Component{
 
     addItem(newItem, checklistId) {
         let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists = newCardInfos.checklists.filter(x => x._id !== checklistId)
-        this.setState({
-            cardInfos: newCardInfos
-        })
+        const index = newCardInfos.checklists.findIndex(el => el._id === checklistId)
+        if (index !== -1) {
+            newCardInfos.checklists[index].items.push(newItem)
+            this.setState({
+                cardInfos: newCardInfos
+            })
+        }
     }
 }
 
