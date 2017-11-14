@@ -26,7 +26,8 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: []
+            showChecklists: this.props.cardInfos.checklists.map(() => false),
+            newItems: this.props.cardInfos.checklists.map(() => "")
         }
 
         ////////////////////// Socket //////////////////////
@@ -59,10 +60,6 @@ class Popup extends React.Component{
     
     componentWillReceiveProps(newProps) {
         this.setState({attachments: newProps.attachments});
-    }
-
-    componenWillMount() {
-        this.setState({showChecklists : this.state.cardInfos.checklists.map(() => false)})
     }
 
     render(){
@@ -109,29 +106,38 @@ class Popup extends React.Component{
 
         ////////////////// Checklist render //////////////////
         const checklists = this.state.cardInfos.checklists
-        const checklistsLi = checklists.map((x, i) =>
+        const checklistsLi = checklists.map((checklist, i) =>
             <li className="listChecklist" key={i}>
                 {(!this.state.showChecklists[i]) ? 
                 (<div className="checklistTitleDiv">
                     <div>
                         <Glyphicon glyph="check"/>
-                        <span className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{x.title}</span>   
+                        <span className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</span>   
                     </div>
-                    <span className="deleteChecklistSpan" checklistid = {x._id} onClick={this.onClickDeleteChecklist}>Delete..</span>
+                    <span className="deleteChecklistSpan" checklistid = {checklist._id} onClick={this.onClickDeleteChecklist}>Delete..</span>
                 </div>) :
                 (<div className="inputCheklistUpdate" onBlur={this.onClickChecklistShow} >
                     <FormControl componentClass="input" name="checklistTitle" autoFocus="true" type="text" 
-                        index={i} value={x.title} onChange={this.handleInputChange}
+                        index={i} value={checklist.title} onChange={this.handleInputChange}
                     />
                 </div>)}
                 <div className="checklistProgressDiv">
                     <span className="percentageLabel">0%</span>
-                    <ProgressBar className="checklistProgressBar" striped now={100*0.0/x.items.length} bsStyle="info"/>
+                    <ProgressBar className="checklistProgressBar" striped now={100*0.0/checklist.items.length} bsStyle="info"/>
                 </div>
-                <div className="inputPopup">
-                    <FormControl type = "textarea" name = "newItem" placeholder = "Add an item..." className="checkListNewItemText"
-                        checklistid = {x._id} defaultValue = "" onKeyPress={this.handleKeyPress}
-                    />
+                <div>
+                    <div>
+                        {
+                            (checklist.items && checklist.items.length > 0) &&
+                            checklist.items.map((item, i) => <div key={item._id}>{item.title}</div>)
+                        }
+                    </div>
+                    <div className="inputPopup">
+                        {console.log("- " + i + " " + this.state.newItems[i])}
+                        <FormControl type = "input" name = "newItem" placeholder = "Add an item..." className = "checkListNewItemText"
+                            checklistid = {checklist._id} onKeyPress = {this.handleKeyPress}
+                        />
+                    </div>
                 </div>
             </li>
         )
@@ -295,8 +301,10 @@ class Popup extends React.Component{
         if (e.key === 'Enter') {
             if ("description" === e.target.name) this.updateDescriptionInput()
             else if ("newItem" === e.target.name) {
-                console.log(e.target)
-                console.log(e.view)
+                if (e.target.value.trim().length > 0) {
+                    console.log(e.target.value.trim(), e.target.attributes.checklistId.value)
+                    this.postItem(e.target.value.trim(), e.target.attributes.checklistId.value)
+                }
             }
             else if ("cardTitle" === e.target.name) this.updateTitleInput()
         }
@@ -455,7 +463,29 @@ class Popup extends React.Component{
             cardInfos: newCardInfos
         })
     }
-    //////////////////////////////////
+    ////////////////////// Items //////////////////////
+
+    postItem(titleItem, checklistId) {
+        axios.post(url.api + "item/checklist/" + checklistId + "/card/" + this.state.cardInfos._id,
+            {
+                title: titleItem
+            }, url.config
+        ).then((response) => {
+            this.socket.emit('postItemServer', response.data, checklistId)
+            // this.addItem(response.data, checklistId)
+        })
+        .catch((error) => {
+            alert('An error occured when deleting the checklist')
+        })
+    }
+
+    addItem(newItem, checklistId) {
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.checklists = newCardInfos.checklists.filter(x => x._id !== checklistId)
+        this.setState({
+            cardInfos: newCardInfos
+        })
+    }
 }
 
 export default Popup
