@@ -13,6 +13,7 @@ import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import {Avatar,Tooltip} from 'antd';
 
 
 
@@ -135,8 +136,7 @@ class Popup extends React.Component{
                 </div>
             </li>
         )
-
-        ////////////////// Due date render //////////////////
+       ////////////////// Due date render //////////////////
         let dueDateClass = ["dueDateType"]
         const now = moment()
         const dueDate = new Date(this.state.cardInfos.dueDate)
@@ -187,7 +187,7 @@ class Popup extends React.Component{
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
                             <span className="spanTitle2"> Members </span> 
-                            {this.state.cardInfos.users} <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
+                            {this.renderMembers(this.state.cardInfos.users)} <p/> <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
                         </div>
                         <div className="labels inline"> 
                             <span className="spanTitle2">Labels </span> 
@@ -243,7 +243,7 @@ class Popup extends React.Component{
 
                 {/*//////////////// Popups Render /////////////////*/}
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
-                    <Member parentClose={this.handlePopupClose.bind(this)}/>
+                    <Member popup={this} card={this.state.card} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard} io={this.socket} cardInfos={this.state.cardInfos}/>
                 </SkyLight>
                 <SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
                     <Label parentClose={this.handlePopupClose.bind(this)}/>
@@ -328,6 +328,17 @@ class Popup extends React.Component{
         let newShowChecklists = this.state.showChecklists
         newShowChecklists[index] = !newShowChecklists[index]
         this.setState({showChecklists: newShowChecklists})
+    }
+
+    renderMembers(){
+        const users=this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+        <div key={index} >
+        <Tooltip title={usr.local.mail}>
+           <Avatar size="small" >{usr.local.nickname[0]}</Avatar>
+        </Tooltip>
+        {usr.local.nickname} 
+     </div>)
+        return users
     }
 
     ////////////////////// Card //////////////////////
