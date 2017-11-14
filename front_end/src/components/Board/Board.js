@@ -151,7 +151,7 @@ class Board extends React.Component{
     renderOptions(){
         const usersBoardArr=this.state.allTeams.filter(team=>team.boards.includes(this.state.board._id)).map((team)=>{return team.users})
         let usersBoard=Array.from(new Set([].concat.apply([],usersBoardArr)))
-        if(this.state.board.admins.includes(Auth.getUserID())){
+        if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())){
             return(
             <TabPane tab={<span><Icon type="contacts" />Admin Options</span>}  key="2">
                 <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
