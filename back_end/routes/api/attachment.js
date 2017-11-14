@@ -68,7 +68,7 @@ const fileParams = multer(
     }
 )
 
-router.post('/card/:cardId', fileParams.single('attachment'), async (req, res, next) => {
+router.post('/card/:cardId', fileParams.single('attachment'), function (req, res, next) {
     // Post a new attachment into a card
     Card.findById(req.params.cardId, function(err, card){
         let newAttachment = new Attachment()
