@@ -66,21 +66,7 @@ mongoose.connect(configDb.mongodbUri, configDb.options, function(err, db) {
 })
 
 // IO functions
-let numUsers = 0
 io.on('connection', (client) => {
-    // ----- Handle Users connections ----- //
-    numUsers++
-    client.broadcast.emit('connectedUser', numUsers)
-
-    client.emit('connectedUser', numUsers)
-
-    client.on('disconnect', ()=>{
-        numUsers--
-        client.broadcast.emit('connectedUser', numUsers)
-    })
-
-    //Update state of the new user
-    client.emit('connectedUser', numUsers)
 
     // ----- Handle Boards ----- //
     client.on('newBoard', (board,teamId) => {
@@ -137,6 +123,12 @@ io.on('connection', (client) => {
 
     client.on('deleteChecklistServer', (checklistId) => {
         client.broadcast.emit('deleteChecklistClient', checklistId)
+    })
+
+    // ----- Handle attachments ----- //
+
+    client.on('deleteAttachmentServer', (checklistId) => {
+        client.broadcast.emit('deleteAttachmentClient', checklistId)
     })
 
 })

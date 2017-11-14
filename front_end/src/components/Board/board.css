@@ -461,3 +461,32 @@ ul {
     padding: 5px;
     cursor: pointer;
 }
+
+.listAttachment {
+    text-align: center;
+    width: 100%;
+    padding-bottom: 25px;
+    font-size: 25px;
+}
+
+.listAttachment img{
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+.listAttachment .glyphicon{
+    vertical-align: text-bottom;
+}
+
+.deleteAttachmentSpan{
+    float: right;
+    margin-right: 55px;
+    color: #838c91;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.deleteAttachmentSpan:hover{
+    color: black;
+    cursor: pointer;
+}

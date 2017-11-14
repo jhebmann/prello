@@ -43,6 +43,11 @@ class Popup extends React.Component{
         this.updateTitleInput = this.updateTitleInput.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
+        
+        //////////////////// Attachments ////////////////////
+        this.updateAttachments =this.updateAttachments.bind(this)
+        this.onClickDeleteAttachment = this.onClickDeleteAttachment.bind(this)
+        this.deleteAttachment = this.deleteAttachment.bind(this)
 
         //////////////////// Checklists ////////////////////
         this.updateChecklists =this.updateChecklists.bind(this)
@@ -55,6 +60,7 @@ class Popup extends React.Component{
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
+        this.socket.on('deleteAttachmentClient', this.deleteAttachment)
     }
 
     
@@ -142,6 +148,19 @@ class Popup extends React.Component{
             </li>
         )
 
+        ////////////////// Attachments render //////////////////
+        let attachmentsList = this.state.attachments.map((attachment, i) => 
+            <li className="listAttachment" key={i}>
+                <div className = "attachmentInfos">
+                    <Glyphicon glyph="camera"/>
+                    <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
+                </div>
+                <span className="deleteAttachmentSpan" attachmentId = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
+                <br />
+                <img src={"data:image/jpeg;base64," + attachment.image} />
+            </li>
+        )
+
         ////////////////// Due date render //////////////////
         let dueDateClass = ["dueDateType"]
         const now = moment()
@@ -221,10 +240,10 @@ class Popup extends React.Component{
                             </ul>
                         </div>
                     }
-                    { (this.state.cardInfos.attachments && this.state.cardInfos.attachments.length > 0) &&
+                    { (this.state.attachments && this.state.attachments.length > 0) &&
                         <div className="attachments space"> <span className="spanTitle attachmentsSpan"><Glyphicon glyph="paperclip"/>Attachments</span> 
                             <ul>
-                                {/* put image here */}
+                                {attachmentsList}
                             </ul>
                         </div>
                     }
@@ -424,6 +443,37 @@ class Popup extends React.Component{
                     alert('An error occured when deleting the card')
                 })
             )
+        })
+    }
+    
+    ////////////////////// Attachments //////////////////////
+    onClickDeleteAttachment(e) {
+        const attachmentId = e.target.attributes.attachmentId.value
+        axios.delete(url.api + 'attachment/' + attachmentId + '/card/' + this.state.cardInfos._id, url.config)
+        .then((response) => {
+            this.socket.emit('deleteAttachmentServer', attachmentId)
+            this.deleteAttachment(attachmentId)
+        })
+        .catch((error) => {
+            alert('An error occured when deleting the attachment')
+        })
+    }
+    
+    updateAttachments(checklist){
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.checklists.push(checklist)
+        this.setState({
+            cardInfos: newCardInfos
+        })
+    }
+
+    deleteAttachment(attachmentId) {
+        let newCardInfos = this.state.cardInfos
+        newCardInfos.attachments = newCardInfos.attachments.filter(x => x._id !== attachmentId)
+        let newAttachments = this.state.attachments.filter(x => x._id !== attachmentId)
+        this.setState({
+            cardInfos: newCardInfos,
+            attachments: newAttachments
         })
     }
 
