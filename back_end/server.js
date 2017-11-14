@@ -130,6 +130,14 @@ io.on('connection', (client) => {
         client.broadcast.emit('postItemClient', newItem, checklistId)
     })
 
+    client.on('updateItemServer', (newItem, checklistId) => {
+        client.broadcast.emit('updateItemClient', newItem, checklistId)
+    })
+    
+    client.on('deleteItemServer', (itemId, checklistId) => {
+        client.broadcast.emit('deleteItemClient', itemId, checklistId)
+    })
+
     // ----- Handle attachments ----- //
 
     client.on('deleteAttachmentServer', (checklistId) => {

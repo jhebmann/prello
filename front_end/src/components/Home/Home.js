@@ -1,13 +1,11 @@
 import React from 'react'
 import axios from 'axios'
-import ReactConfirmAlert, { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
+import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';
 import {Card,Tag,Button,Row,Col,Input} from 'antd'
 import './home.css' 
 
-var Confirm = require('react-confirm-bootstrap')
 class Home extends React.Component{
     
   constructor(props){

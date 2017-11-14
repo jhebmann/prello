@@ -1,542 +1,569 @@
 body {
-    font: 13px "Helvetica Neue", Arial, Helvetica, sans-serif;
-	line-height: 18px;
-	color: #4d4d4d;
-	font-weight: 400;
-	padding: 0 10px;
-	background-color: rgb(201, 201, 201);
-	position: relative;
-	min-height: 100%;
-	padding: 0;
-    margin: 0;
-    overflow: -moz-scrollbars-vertical;
-    overflow-x: auto;
-    overflow-y: auto;
-    padding-top: 40px;
+  font: 13px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  line-height: 18px;
+  color: #4d4d4d;
+  font-weight: 400;
+  padding: 0 10px;
+  background-color: rgb(201, 201, 201);
+  position: relative;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: -moz-scrollbars-vertical;
+  overflow-x: auto;
+  overflow-y: auto;
+  padding-top: 40px;
 }
 
-.react-draggable, .cursor {
-    cursor: move;
+.react-draggable,
+.cursor {
+  cursor: move;
 }
 
 .board {
-    padding-left: 20px;
-    padding-bottom: 15px;
-    padding-right: 15px;
-    white-space: nowrap;
-	display: inline-block;
-    border-radius: 5px;
-    height: 85vh;
+  padding-left: 20px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  white-space: nowrap;
+  display: inline-block;
+  border-radius: 5px;
+  height: 85vh;
 }
 
 #addListDiv {
-    display: inline-block;
-    text-decoration: none;
-    font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
-	line-height: 30px;
-	position: relative;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+  display: inline-block;
+  text-decoration: none;
+  font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  line-height: 30px;
+  position: relative;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 #addListButton {
-    display: block;
-    margin-top: 8px;
+  display: block;
+  margin-top: 8px;
 }
 
 #addListInput {
-    width: 230px;
-    display: inline-block;
-    max-height: 100%;
-    background: rgba(0,0,0,.025);
+  width: 230px;
+  display: inline-block;
+  max-height: 100%;
+  background: rgba(0, 0, 0, 0.025);
 }
 
 #addListInput:focus {
-    background: rgba(255,255,255,.6);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .list {
-    width: 230px;
-	display: inline-block;
-	max-height: 100%;
-	background-color: #e2e4e6;
-	box-shadow: 1px 1px 1px rgba(0,0,0,.5);
-	border-radius: 3px;
-    margin-right: 10px;
-    margin-bottom: 15px;
-    vertical-align: top;
-    overflow: hidden;
-    overflow-y: auto;
+  width: 230px;
+  display: inline-block;
+  max-height: 100%;
+  background-color: #e2e4e6;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  border-radius: 3px;
+  margin-right: 10px;
+  margin-bottom: 15px;
+  vertical-align: top;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .listHead {
-    padding-bottom: 5px;
+  padding-bottom: 5px;
 }
 
 .listTitle {
-    text-align: center;
-    padding-top: 0px;
-    cursor: pointer;
-    margin-left: 8px;
+  text-align: center;
+  padding-top: 0px;
+  cursor: pointer;
+  margin-left: 8px;
 }
 
 .cardButton {
-    margin-top: 10px;
-    margin-left: 4px;
+  margin-top: 10px;
+  margin-left: 4px;
 }
 
 .popup {
-    padding-left: 15px;
+  padding-left: 15px;
 }
 
 .popupLeft {
-    float: left;
-    width: 78%;
-    margin-bottom: 35px;
+  float: left;
+  width: 78%;
+  margin-bottom: 35px;
 }
 
 .popupRight {
-    float: right;
-    width: 22%;
-    margin-bottom: 35px;
+  float: right;
+  width: 22%;
+  margin-bottom: 35px;
 }
 
 .popupButton {
-    display: block;
-    margin-top: 5px;
-    width: 90%;
-    text-align: left;
-    margin-bottom: 9px;
+  display: block;
+  margin-top: 5px;
+  width: 90%;
+  text-align: left;
+  margin-bottom: 9px;
 }
 
 .glyphicon {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
 #inlineElements {
-    display: flex;
+  display: flex;
 }
 
 .inline {
-    width: 30%;
-    display: inline;
-    margin-right: 10px;
+  width: 30%;
+  display: inline;
+  margin-right: 10px;
 }
 
 .spanTitle {
-    display: block;
-    font-size: 150%;
-    font-weight: bold;
+  display: block;
+  font-size: 150%;
+  font-weight: bold;
 }
 
 .checklistsSpan {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .spanTitle2 {
-    display: block;
-    color: #838c91;
-    padding-right: 50px;
-    font-size: 150%;
-    font-weight: bold;
-    padding-bottom: 10px;
+  display: block;
+  color: #838c91;
+  padding-right: 50px;
+  font-size: 150%;
+  font-weight: bold;
+  padding-bottom: 10px;
 }
 
 .space {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 #textDescription {
-    cursor: pointer;
-    line-height: 1.4em;
-    word-wrap: break-word;
+  cursor: pointer;
+  line-height: 1.4em;
+  word-wrap: break-word;
 }
 
 #textDescription:hover {
-    background: rgba(0,0,0,0.07)
+  background: rgba(0, 0, 0, 0.07);
 }
 
 .circularButton {
-    width: 30px;
-    height: 30px;
-    padding: 6px 0px;
-    border-radius: 15px;
-    text-align: right;
-    font-size: 12px;
-    line-height: 1.42857;
+  width: 30px;
+  height: 30px;
+  padding: 6px 0px;
+  border-radius: 15px;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.42857;
 }
 
 #editDescription {
-    color: rgba(0,0,0,.4)
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .inputPopup {
-    margin-top: 15px;
-    margin-right: 50px;
-    white-space: pre-wrap;
+  margin-top: 15px;
+  margin-right: 50px;
+  white-space: pre-wrap;
 }
 
 .comments {
-    margin-bottom: 25px;
+  margin-bottom: 25px;
 }
 
 .dueDateButton {
-    margin-left: 7px;
+  margin-left: 7px;
 }
 
 #dateText {
-    display: inline-block;
-    text-decoration: underline;
-    line-height: 1pc;
-    white-space: nowrap;
+  display: inline-block;
+  text-decoration: underline;
+  line-height: 1pc;
+  white-space: nowrap;
 }
 
 #checkboxNotDone {
-    border: 1px solid #fff;
-    border-radius: 2px;
-    display: inline-block;
-    width: 1pc;
-    height: 1pc;
-    margin-right: 8px;
-    background: rgba(255, 255, 255, .3);
+  border: 1px solid #fff;
+  border-radius: 2px;
+  display: inline-block;
+  width: 1pc;
+  height: 1pc;
+  margin-right: 8px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
 .listChecklist {
-    margin-top: 10px;
-    font-size: 130%;
-    font-weight: lighter;
+  margin-top: 10px;
+  font-size: 130%;
+  font-weight: lighter;
 }
 
 .checklistDiv {
-    width: 100%;
+  width: 100%;
 }
 
 .checklistForm {
-    display: inline-flex;
+  display: inline-flex;
 }
 
 #cardChecklist {
-    margin-left: 8px;
+  margin-left: 8px;
 }
 
 .checklistProgressDiv {
-    margin-top: 6px;
-    margin-bottom: 6px;
-    margin-right: 50px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-right: 50px;
 }
 
 .percentageLabel {
-    color: #838c91;
-    font-size: 11px;
-    line-height: 10px;
-    left: 0;
-    top: -1px;
-    text-align: center;
-    display: block;
-    margin-bottom: 5px;
+  color: #838c91;
+  font-size: 11px;
+  line-height: 10px;
+  left: 0;
+  top: -1px;
+  text-align: center;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .checklistProgressBar {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 #titleCardPopup:focus {
-    box-shadow: none;
-    margin-bottom: 4px;
-    max-height: 2pc;
-    overflow: hidden;
-    resize: none;
-    text-decoration: none;
-    cursor: auto;
+  box-shadow: none;
+  margin-bottom: 4px;
+  max-height: 2pc;
+  overflow: hidden;
+  resize: none;
+  text-decoration: none;
+  cursor: auto;
 }
 
 .checkListNewItemText {
-    background: 0 0;
-    border-color: transparent;
-    box-shadow: none;
-    color: #838c91;
-    cursor: pointer;
-    margin-bottom: 4px;
-    max-height: 2pc;
-    overflow: hidden;
-    resize: none;
-    text-decoration: none;
+  background: 0 0;
+  border-color: transparent;
+  box-shadow: none;
+  color: #838c91;
+  cursor: pointer;
+  margin-bottom: 4px;
+  max-height: 2pc;
+  overflow: hidden;
+  resize: none;
+  text-decoration: none;
 }
 
 .checkListNewItemText:hover {
-    background: rgba(0, 0, 0, 0.1)
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .checkListNewItemText:focus {
-    cursor: auto;
+  cursor: auto;
 }
 
 .checkListNewItemText:focus {
-    overflow-x: hidden;
-    overflow-y: scroll;
-    overflow-wrap: break-word;
-    height: 48px;
-    background: rgba(255, 255, 255)
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overflow-wrap: break-word;
+  height: 48px;
+  background: rgba(255, 255, 255);
 }
 
 .dueDateColors {
-    padding: 7px 5px;
-    border-radius: 6px;
+  padding: 7px 5px;
+  border-radius: 6px;
 }
 
 .dueDateTypeLate {
-    background-color: #cf513d;
-    color: white;
+  background-color: #cf513d;
+  color: white;
 }
 
 .dueDateTypeWarning {
-    background-color: #E6C60D;
-    color: white;
+  background-color: #e6c60d;
+  color: white;
 }
 
 .dueDateTypeDone {
-    background-color: #5aac44;
-    color: white;
+  background-color: #5aac44;
+  color: white;
 }
 
 .dueDateTypeStandard {
-    background-color: rgba(0,0,0,0.08);
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
 .myGlyph {
-    margin-right: 0px;
+  margin-right: 0px;
+}
+
+.myGlyphOk:hover {
+  color: rgba(0, 0, 0, 0.09);
+}
+
+.myGlyphOk {
+  color: #666;
 }
 
 #dueDateCentered {
-    display: inline-flex;
-    align-items: center;
+  display: inline-flex;
+  align-items: center;
 }
 
-#dueDatePopupDiv{
-    cursor: pointer;
+#dueDatePopupDiv {
+  cursor: pointer;
 }
 
 .inlineElements {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .alignElements {
-    margin-top: 5px;
-    font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    display: inline-flex;
+  margin-top: 5px;
+  font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  display: inline-flex;
 }
 
 #homeDiv {
-    padding: 0.5%;
+  padding: 0.5%;
 }
 
 #teamsForm {
-    display: "inline-flex"
+  display: "inline-flex";
 }
 
-
 .skylightHr {
-    margin-top: 20px;
-    margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 #spanTitlePopup {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 #divTitlePopup {
-    margin-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 #divTitlePopup:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .popupAdd {
-    margin-bottom: 25px
+  margin-bottom: 25px;
 }
 
 #titleCardPopup {
-    width: 70%
+  width: 70%;
 }
 
 .checklistTitleDiv {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .deleteChecklistSpan {
-    margin-right: 55px;
-    color: #838c91;
-    text-decoration: underline;
-    font-size: smaller;
+  margin-right: 55px;
+  color: #838c91;
+  text-decoration: underline;
+  font-size: smaller;
 }
 
 .deleteChecklistSpan:hover {
-    color: black;
-    cursor: pointer;
+  color: black;
+  cursor: pointer;
 }
 
 .inputCheklistUpdate {
-    margin-right: 55px;
+  margin-right: 55px;
 }
 
 .checklistTitleSpan:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .attachmentFormSpace {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .attachmentFormMedium {
-    width: 65%;
+  width: 65%;
 }
 
 #cardAttachment {
-    display: block;
+  display: block;
 }
 
 #attachmentImgPreview {
-    max-width: 95%;
+  max-width: 95%;
 }
 
-.selected{
-    border: 3px solid #5cb85c;
+.selected {
+  border: 3px solid #5cb85c;
 }
 
 .card {
-    overflow-y: auto;
-    height: 100%;
-    cursor: pointer;
+  overflow-y: auto;
+  height: 100%;
+  cursor: pointer;
 }
 
-.card:hover #glyphRemoveCard{
-    visibility: visible;
+.card:hover #glyphRemoveCard {
+  visibility: visible;
 }
 
 #glyphRemoveCard {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 #glyphRemoveCardChild {
-    background-clip: padding-box;
-    background-origin: padding-box;
-    border-radius: 3px;
-    padding: 5px;
-    position: absolute;
-    right: 2px;
-    top: 7px;
-    z-index: 50;
+  background-clip: padding-box;
+  background-origin: padding-box;
+  border-radius: 3px;
+  padding: 5px;
+  position: absolute;
+  right: 2px;
+  top: 7px;
+  z-index: 50;
 }
 
 #glyphRemoveCardChild:hover {
-    background: rgba(0,0,0,.1);
-    padding: 5px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 5px;
 }
 
 #glyphRemoveList {
-    margin-right: -5px;
-    border-radius: 3px;
+  margin-right: -5px;
+  border-radius: 3px;
 }
 
 #glyphRemoveListChild {
-    padding: 5px;
-    margin-top: -3px;
+  padding: 5px;
+  margin-top: -3px;
 }
 
 #titleListDiv {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 #glyphRemoveListChild:hover {
-    background: rgba(0,0,0,.1);
-    padding: 5px;
-    cursor: pointer;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  cursor: pointer;
 }
 
 .listAttachment {
-    text-align: center;
-    width: 100%;
-    padding-bottom: 25px;
-    font-size: 25px;
+  text-align: center;
+  width: 100%;
+  padding-bottom: 25px;
+  font-size: 25px;
 }
 
-.listAttachment img{
-    max-width: 100%;
-    margin-top: 10px;
+.listAttachment img {
+  max-width: 100%;
+  margin-top: 10px;
 }
 
-.listAttachment .glyphicon{
-    vertical-align: text-bottom;
+.listAttachment .glyphicon {
+  vertical-align: text-bottom;
 }
 
-.deleteAttachmentSpan{
-    float: right;
-    margin-right: 55px;
-    color: #838c91;
-    text-decoration: underline;
-    font-size: 14px;
+.deleteAttachmentSpan {
+  float: right;
+  margin-right: 55px;
+  color: #838c91;
+  text-decoration: underline;
+  font-size: 14px;
 }
 
-.deleteAttachmentSpan:hover{
-    color: black;
-    cursor: pointer;
+.deleteAttachmentSpan:hover {
+  color: black;
+  cursor: pointer;
 }
 
 .itemDiv {
-    cursor: pointer;
-    margin-right: 50px;
+  cursor: pointer;
+  margin-right: 50px;
+  position: relative;
 }
 
 .itemDiv:hover {
-    background: rgba(0,0,0,.08)
-}
-
-.itemDiv:active {
-    background: red;
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .item {
-    padding: 7px 5px;
-    border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
+  padding: 7px 5px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .checkboxItemNotDone {
-    margin-right: 8px;
-    background: #fff;
-    border-radius: 3px;
-    box-shadow: 0 2px 3px rgba(0,0,0,.1);
-    border: 1px solid #D6DADC;
-        border-bottom-color: rgb(214, 218, 220);
-    border-bottom-color: #C4C9CC;
-    font-weight: 700;
-    left: 5px;
-    line-height: 18px;
-    overflow: hidden;
-    text-align: center;
-    text-indent: 100%;
-    top: -1px;
-    height: 18px;
-    width: 18px;
-    white-space: nowrap;
+  display: inline-block;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d6dadc;
+  border-bottom-color: rgb(214, 218, 220);
+  border-bottom-color: #c4c9cc;
+  height: 1.1pc;
+  width: 1.1pc;
+}
+
+.checkboxItemDone {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d6dadc;
+  border-bottom-color: rgb(214, 218, 220);
+  border-bottom-color: #c4c9cc;
+  height: 1.1pc;
+  width: 1.1pc;
 }
 
 .done {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .notDone {
-    text-decoration: none;
+  text-decoration: none;
+}
+
+.itemTitleDiv {
+  line-height: 1pc;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+.glyphRemoveItem {
+  font-size: small;
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  visibility: hidden;
+}
+
+.itemDiv:hover .glyphRemoveItem{
+  visibility: visible;
 }
