@@ -24,7 +24,7 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: this.props.cardInfos.checklists.map(c => { return { 
+            showChecklists: this.state.cardInfos.checklists.map(c => { return { 
                 showChecklist: false,
                 itemState: c.items.map(item => false)
             }})
@@ -129,9 +129,9 @@ class Popup extends React.Component{
             <li className="listChecklist" key={i}>
                 {(!this.state.showChecklists[i].showChecklist) ? 
                 (<div className="checklistTitleDiv">
-                    <div>
+                    <div className="editChecklistDiv">
                         <Glyphicon glyph="check"/>
-                        <span className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</span>   
+                        <div className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</div>   
                     </div>
                     <span className="deleteChecklistSpan" checklistid = {checklist._id} onClick={this.onClickDeleteChecklist}>Delete..</span>
                 </div>) :
@@ -140,14 +140,16 @@ class Popup extends React.Component{
                         index={i} value={checklist.title} onChange={this.handleInputChange}
                     />
                 </div>)}
-                <div className="checklistProgressDiv">
-                    <span className="percentageLabel">
-                        {Math.round(100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length)}%
-                    </span>
-                    <ProgressBar className="checklistProgressBar" striped 
-                        now = {100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length} bsStyle="info"
-                    />
-                </div>
+                {checklist.items.length > 0 &&
+                    <div className="checklistProgressDiv">
+                        <span className="percentageLabel">
+                            {Math.round(100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length)}%
+                        </span>
+                        <ProgressBar className="checklistProgressBar" striped 
+                            now = {100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length} bsStyle="info"
+                        />
+                    </div>
+                }
                 <div>
                     <div>
                         <ul>
