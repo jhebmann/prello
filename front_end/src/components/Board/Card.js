@@ -66,7 +66,6 @@ class Card extends React.Component{
         
         return(
             <div>
-<<<<<<< HEAD
                 <div>
                     <Thumbnail onClick={() => this.customDialog.show()}
                         className={('undefined' !== typeof this.state.parameters && this.state.cardInfos._id === this.state.parameters.cardId) ? "selected card" : "card"}
@@ -87,30 +86,6 @@ class Card extends React.Component{
                 </div>
                
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
-=======
-                <Draggable>
-                    <div>
-                        <Thumbnail onClick={() => this.customDialog.show()}
-                            className={('undefined' !== typeof this.state.parameters.state && this.state.cardInfos._id === this.state.parameters.state.cardId) ? "selected card" : "card"}
-                        >
-                            {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
-                                <div>{this.state.cardInfos.labels.length} labels</div>
-                            }
-                            <div id="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' id="glyphRemoveCardChild"/></div>
-                            <h4>{this.state.cardInfos.title}</h4>
-                            {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) &&
-                                <div>
-                                    {dueDateDiv}
-                                    <div className="alignElements"><p> {(this.state.cardInfos.description) && <Glyphicon glyph='align-left'/>} </p></div>
-                                    <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
-                                </div>
-                            }
-                        </Thumbnail>
-                    </div>
-                </Draggable>
-                
-                <SkyLight className = "cardSkylight" dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
->>>>>>> 8c2cab01b9bb2865ea683c10a896a3b273a5914f
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
                     />
