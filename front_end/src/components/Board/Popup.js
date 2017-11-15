@@ -376,6 +376,7 @@ class Popup extends React.Component{
             newCardInfos.dueDate = card.dueDate
             newCardInfos.description = card.description
             newCardInfos.doneDate = card.doneDate
+            newCardInfos.users = card.users
             this.state.card.setState({cardInfos: newCardInfos})
         }
     }

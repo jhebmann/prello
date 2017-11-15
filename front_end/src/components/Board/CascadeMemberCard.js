@@ -16,6 +16,7 @@ class CascadeMemberCard extends React.Component{
             selected:null,
             card:this.props.card
         }
+        this.socket=this.props.io
         this.handleChange = this.handleChange.bind(this)
         this.onClick = this.onClick.bind(this)
         
@@ -53,8 +54,9 @@ class CascadeMemberCard extends React.Component{
     .then((response)=>{
         console.log(response.data)
         this.props.callback(response.data);
+        this.socket.emit('updateCardServer', response.data)
         alert('Card updated!');
-               })
+        })
     .catch((error) => {
         alert('An error occured when updating the Card'+error)
     })

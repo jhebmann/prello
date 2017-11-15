@@ -16,8 +16,8 @@ class Member extends React.Component{
         return(
             <div className="member">
                 <hr className="skylightHr"/>
-                <CascadeMemberCard members={this.props.usersBoard.filter(usr=>!this.state.card.state.cardInfos.users.includes(usr._id))} remove={false} card={this.state.card.state.cardInfos} callback={this.updateCard} />
-                <CascadeMemberCard members={this.props.usersBoard.filter(usr=>this.state.card.state.cardInfos.users.includes(usr._id))} remove={true} card={this.state.card.state.cardInfos} callback={this.updateCard}/>
+                <CascadeMemberCard members={this.props.usersBoard.filter(usr=>!this.state.card.state.cardInfos.users.includes(usr._id))} usersBoard={this.props.usersBoard} remove={false} card={this.state.card.state.cardInfos} callback={this.updateCard} io={this.socket}/>
+                <CascadeMemberCard members={this.props.usersBoard.filter(usr=>this.state.card.state.cardInfos.users.includes(usr._id))} remove={true} card={this.state.card.state.cardInfos} callback={this.updateCard} io={this.socket}/>
             </div>
         )
     }
@@ -28,7 +28,6 @@ class Member extends React.Component{
             newCardInfos.users = card.users
             this.state.card.setState({cardInfos: newCardInfos})
             this.state.popup.setState({cardInfos: newCardInfos})
-            this.props.parentClose("members")
         }
     }
 
