@@ -52,7 +52,6 @@ class CascadeMemberCard extends React.Component{
     axios.put(url.api + 'card/'+this.state.card._id, {
         user:this.state.selected,remove:this.props.remove}, url.config)
     .then((response)=>{
-        console.log(response.data)
         this.props.callback(response.data);
         this.socket.emit('updateCardServer', response.data)
         alert('Card updated!');

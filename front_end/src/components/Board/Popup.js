@@ -12,10 +12,6 @@ import url from '../../config'
 import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
-import 'react-confirm-alert/src/react-confirm-alert.css'
-import {Avatar,Tooltip} from 'antd';
-
-
 
 class Popup extends React.Component{
     constructor(props){
@@ -27,8 +23,10 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: this.props.cardInfos.checklists.map(() => false),
-            newItems: this.props.cardInfos.checklists.map(() => "")
+            showChecklists: this.props.cardInfos.checklists.map(c => { return { 
+                showChecklist: false,
+                itemState: c.items.map(item => false)
+            }})
         }
 
         ////////////////////// Socket //////////////////////
@@ -37,6 +35,7 @@ class Popup extends React.Component{
         ////////////////// Interface handler ///////////////////
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
+        this.onClickItemInput = this.onClickItemInput.bind(this)
 
         ////////////////////// Card //////////////////////
         this.updateCard = this.updateCard.bind(this)
@@ -56,12 +55,24 @@ class Popup extends React.Component{
         this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
         this.deleteChecklist = this.deleteChecklist.bind(this)
 
+        //////////////////// Items ////////////////////
+        this.addItem = this.addItem.bind(this)
+        this.OnclickUpdateItemIsDone = this.OnclickUpdateItemIsDone.bind(this)
+        this.updateItem = this.updateItem.bind(this)
+        this.onClickDeleteItem = this.onClickDeleteItem.bind(this)
+        this.deleteItem = this.deleteItem.bind(this)
+
         ////////////////// Event Listeners //////////////////
         this.socket.on('updateCardClient', this.updateCard)
         this.socket.on('newChecklistClient', this.updateChecklists)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
+        this.socket.on('newAttachmentClient', this.updateAttachments)
+        this.socket.on('updateAttachmentTitleClient', this.updateTitleAttachment)
         this.socket.on('deleteAttachmentClient', this.deleteAttachment)
+        this.socket.on('postItemClient', this.addItem)
+        this.socket.on('updateItemClient', this.updateItem)
+        this.socket.on('deleteItemClient', this.deleteItem)
     }
 
     
@@ -115,7 +126,7 @@ class Popup extends React.Component{
         const checklists = this.state.cardInfos.checklists
         const checklistsLi = checklists.map((checklist, i) =>
             <li className="listChecklist" key={i}>
-                {(!this.state.showChecklists[i]) ? 
+                {(!this.state.showChecklists[i].showChecklist) ? 
                 (<div className="checklistTitleDiv">
                     <div>
                         <Glyphicon glyph="check"/>
@@ -129,18 +140,47 @@ class Popup extends React.Component{
                     />
                 </div>)}
                 <div className="checklistProgressDiv">
-                    <span className="percentageLabel">0%</span>
-                    <ProgressBar className="checklistProgressBar" striped now={100*0.0/checklist.items.length} bsStyle="info"/>
+                    <span className="percentageLabel">
+                        {Math.round(100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length)}%
+                    </span>
+                    <ProgressBar className="checklistProgressBar" striped 
+                        now = {100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length} bsStyle="info"
+                    />
                 </div>
                 <div>
                     <div>
-                        {
-                            (checklist.items && checklist.items.length > 0) &&
-                            checklist.items.map((item, i) => <div key={item._id}>{item.title}</div>)
-                        }
+                        <ul>
+                            {
+                                (checklist.items && checklist.items.length > 0) &&
+                                checklist.items.map((item, j) =>
+                                    <li key={item._id}>
+                                        {
+                                            (this.state.showChecklists[i].itemState[j]) ?
+                                                (<div className="inputItemUpdate" onBlur={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)} >
+                                                    <FormControl componentClass="input" name="itemTitle" autoFocus="true" type="text" 
+                                                        checklistindex={i} itemindex={j} value={item.title} onChange={this.handleInputChange}
+                                                    />
+                                                </div>)
+                                            :
+                                                (<div className="itemDiv"> 
+                                                    <div className={(item.isDone) ? "item done" : "item notDone"}>
+                                                        <span className={(item.isDone) ? "checkboxItemDone" : "checkboxItemNotDone"} onClick={() => {this.OnclickUpdateItemIsDone(item, checklist)}}>
+                                                            {(item.isDone) && <Glyphicon glyph='ok' className="myGlyphOk"/>}
+                                                        </span>
+                                                        <div className="itemTitleDiv"
+                                                            onClick={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)}>
+                                                            <span>{item.title}</span>
+                                                            <span onClick={(e) => {e.stopPropagation(); this.onClickDeleteItem(item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
+                                                        </div>
+                                                    </div>
+                                                </div>)
+                                        }
+                                    </li> 
+                                )
+                            }
+                        </ul>
                     </div>
                     <div className="inputPopup">
-                        {console.log("- " + i + " " + this.state.newItems[i])}
                         <FormControl type = "input" name = "newItem" placeholder = "Add an item..." className = "checkListNewItemText"
                             checklistid = {checklist._id} onKeyPress = {this.handleKeyPress}
                         />
@@ -149,18 +189,6 @@ class Popup extends React.Component{
             </li>
         )
 
-        ////////////////// Attachments render //////////////////
-        let attachmentsList = this.state.attachments.map((attachment, i) => 
-            <li className="listAttachment" key={i}>
-                <div className = "attachmentInfos">
-                    <Glyphicon glyph="camera"/>
-                    <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
-                </div>
-                <span className="deleteAttachmentSpan" attachmentId = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
-                <br />
-                <img src={"data:image/jpeg;base64," + attachment.image} />
-            </li>
-        )
        ////////////////// Due date render //////////////////
         let dueDateClass = ["dueDateType"]
         const now = moment()
@@ -184,7 +212,7 @@ class Popup extends React.Component{
             <div id="dueDatePopupDiv"> 
                 <span className={dueDateClass.join("")+" dueDateColors"} id="dueDateCentered">
                     <span id="checkboxNotDone" onClick={this.updateDoneDate}>
-                        {(this.state.cardInfos.doneDate) ? <Glyphicon glyph='ok'/> : ""}
+                        {(this.state.cardInfos.doneDate) && <Glyphicon glyph='ok'/>}
                     </span>
                     <span id="dateText" onClick={() => this.addDueDate.show()}>
                         {moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}
@@ -199,6 +227,19 @@ class Popup extends React.Component{
             cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
             name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
         }
+
+        ////////////////// Attachments render //////////////////
+        let attachmentsList = this.state.attachments.map((attachment, i) => 
+            <li className="listAttachment" key={i}>
+                <div className = "attachmentInfos">
+                    <Glyphicon glyph="camera"/>
+                    <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
+                </div>
+                <span className="deleteAttachmentSpan" attachmentId = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
+                <br />
+                <img src={"data:image/jpeg;base64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
+            </li>
+        )
         ///////////////////////////////////////////////////
 
         return(
@@ -314,6 +355,11 @@ class Popup extends React.Component{
             newCardInfos.checklists[e.target.attributes.index.value].title = e.target.value
             this.setState({cardInfos: newCardInfos})
         }
+        else if (e.target.name === "itemTitle") {
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.checklists[e.target.attributes.checklistindex.value].items[e.target.attributes.itemindex.value].title = e.target.value
+            this.setState({cardInfos: newCardInfos})
+        }
     }
 
     handleKeyPress = (e) => {
@@ -321,8 +367,8 @@ class Popup extends React.Component{
             if ("description" === e.target.name) this.updateDescriptionInput()
             else if ("newItem" === e.target.name) {
                 if (e.target.value.trim().length > 0) {
-                    console.log(e.target.value.trim(), e.target.attributes.checklistId.value)
                     this.postItem(e.target.value.trim(), e.target.attributes.checklistId.value)
+                    e.target.value = ""
                 }
             }
             else if ("cardTitle" === e.target.name) this.updateTitleInput()
@@ -331,7 +377,7 @@ class Popup extends React.Component{
 
     onClickChecklistShow(e) {
         const index = e.target.attributes.index.value
-        if (this.state.showChecklists[index]){
+        if (this.state.showChecklists[index].showChecklist){
             if (this.state.cardInfos.checklists[index].title.trim().length > 0) {
                 axios.put(url.api + 'checklist/' + this.state.cardInfos.checklists[index]._id + '/card/' + this.state.cardInfos._id, {
                     title : this.state.cardInfos.checklists[index].title.trim(),
@@ -353,19 +399,40 @@ class Popup extends React.Component{
             }
         }
         let newShowChecklists = this.state.showChecklists
-        newShowChecklists[index] = !newShowChecklists[index]
+        newShowChecklists[index].showChecklist = !newShowChecklists[index].showChecklist
+        this.setState({showChecklists: newShowChecklists})
+    }
+
+    onClickItemInput(titleItem, checklistIndex, itemIndex, checklistId, itemId){
+        if (this.state.showChecklists[checklistIndex].itemState){
+            if (titleItem.trim().length > 0) {
+                axios.put(url.api + 'item/' + itemId + "/checklist/" + checklistId + '/card/' + this.state.cardInfos._id, {
+                    title : titleItem
+                }, url.config)
+                .then((response) => {
+                    this.updateItem(response.data, checklistId)
+                    this.socket.emit('updateItemServer', response.data, checklistId)
+                })
+                .catch((error) => {
+                    alert('An error occured when updating the checklist title')
+                })
+            }
+        }
+        let newShowChecklists = this.state.showChecklists
+        newShowChecklists[checklistIndex].itemState[itemIndex] = !newShowChecklists[checklistIndex].itemState[itemIndex]
         this.setState({showChecklists: newShowChecklists})
     }
 
     renderMembers(){
-        const users=this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
-        <div key={index} >
-        <Tooltip title={usr.local.mail}>
-           <Avatar size="small" >{usr.local.nickname[0]}</Avatar>
+        /* const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+        <div key = {index} >
+        <Tooltip title = {usr.local.mail}>
+           <Avatar size = "small" >{usr.local.nickname[0]}</Avatar>
         </Tooltip>
         {usr.local.nickname} 
      </div>)
-        return users
+        return users*/
+        return []
     }
 
     ////////////////////// Card //////////////////////
@@ -471,11 +538,19 @@ class Popup extends React.Component{
         })
     }
     
-    updateAttachments(checklist){
-        let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists.push(checklist)
+    updateAttachments(attachment){
+        let newAttachments = this.state.attachments
+        newAttachments.unshift(attachment)
         this.setState({
-            cardInfos: newCardInfos
+            attachments: newAttachments
+        })
+    }
+    
+    updateTitleAttachment(attachment){
+        let newAttachments = this.state.attachments
+        newAttachments[newAttachments.map((el) => el._id).indexOf(attachment._id)] = attachment
+        this.setState({
+            attachments: newAttachments
         })
     }
 
@@ -510,9 +585,9 @@ class Popup extends React.Component{
         })
     }
 
-    updateTitleChecklist(checklist){
+    updateTitleChecklist(newChecklist){
         let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists[newCardInfos.checklists.map((el) => el._id).indexOf(checklist._id)] = checklist
+        newCardInfos.checklists[newCardInfos.checklists.map(checklist => checklist._id).indexOf(newChecklist._id)] = newChecklist
         this.setState({
             cardInfos: newCardInfos
         })
@@ -534,7 +609,7 @@ class Popup extends React.Component{
             }, url.config
         ).then((response) => {
             this.socket.emit('postItemServer', response.data, checklistId)
-            // this.addItem(response.data, checklistId)
+            this.addItem(response.data, checklistId)
         })
         .catch((error) => {
             alert('An error occured when deleting the checklist')
@@ -543,10 +618,73 @@ class Popup extends React.Component{
 
     addItem(newItem, checklistId) {
         let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists = newCardInfos.checklists.filter(x => x._id !== checklistId)
-        this.setState({
-            cardInfos: newCardInfos
-        })
+        const index = newCardInfos.checklists.findIndex(el => el._id === checklistId)
+        if (index !== -1) {
+            newCardInfos.checklists[index].items.push(newItem)
+            this.setState({
+                cardInfos: newCardInfos
+            })
+        }
+    }
+
+    OnclickUpdateItemIsDone(item, checklist) {
+        const checklistIndex = this.state.cardInfos.checklists.findIndex(oldChecklist => oldChecklist._id === checklist._id)
+        if (-1 !== checklistIndex) {
+            const itemIndex = this.state.cardInfos.checklists[checklistIndex].items.findIndex(oldItem => oldItem._id === item._id)
+            if (-1 !== itemIndex) {
+                axios.put(url.api + 'item/' + item._id + "/checklist/" + checklist._id + '/card/' + this.state.cardInfos._id, {
+                    isDone : !this.state.cardInfos.checklists[checklistIndex]
+                                .items[itemIndex].isDone
+                }, url.config)
+                .then((response) => {
+                    this.updateItem(response.data, checklist._id)
+                    this.socket.emit('updateItemServer', response.data, checklist._id)
+                })
+                .catch((error) => {
+                    alert('An error occured when updating the checklist title')
+                })
+            }
+        }
+    }
+
+    updateItem(newItem, checklistId) {
+        let newCardInfos = this.state.cardInfos
+        const checklistIndex = newCardInfos.checklists.findIndex(checklist => checklist._id === checklistId)
+        if (-1 !== checklistIndex) {
+            const itemIndex = newCardInfos.checklists[checklistIndex].items.findIndex(item => item._id === newItem._id)
+            if (-1 !== itemIndex) {
+                newCardInfos.checklists[checklistIndex].items[itemIndex] = newItem
+                this.setState({
+                    cardInfos: newCardInfos
+                })
+            }
+        }
+    }
+
+    onClickDeleteItem(itemId, checklistId) {
+        const checklistIndex = this.state.cardInfos.checklists.findIndex(oldChecklist => oldChecklist._id === checklistId)
+        if (-1 !== checklistIndex) {
+            axios.delete(url.api + 'item/' + itemId + "/checklist/" + checklistId + '/card/' + this.state.cardInfos._id, url.config)
+            .then((response) => {
+                this.deleteItem(itemId, checklistId)
+                this.socket.emit('deleteItemServer', itemId, checklistId)
+            })
+            .catch((error) => {
+                alert('An error occured when updating the checklist title')
+            })
+        }
+    }
+
+    deleteItem(itemId, checklistId) {
+        let newCardInfos = this.state.cardInfos
+        const checklistIndex = newCardInfos.checklists.findIndex(checklist => checklist._id === checklistId)
+        if (-1 !== checklistIndex) {
+            const items = newCardInfos.checklists[checklistIndex].items.filter(item => item._id !== itemId)
+            newCardInfos.checklists[checklistIndex].items = items
+            this.setState({
+                cardInfos: newCardInfos
+            })
+        }
     }
 }
 

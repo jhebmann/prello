@@ -125,10 +125,35 @@ io.on('connection', (client) => {
         client.broadcast.emit('deleteChecklistClient', checklistId)
     })
 
-    // ----- Handle attachments ----- //
+    // ----- Handle items ----- //
+    client.on('postItemServer', (newItem, checklistId) => {
+        client.broadcast.emit('postItemClient', newItem, checklistId)
+    })
 
-    client.on('deleteAttachmentServer', (checklistId) => {
-        client.broadcast.emit('deleteAttachmentClient', checklistId)
+    client.on('updateItemServer', (newItem, checklistId) => {
+        client.broadcast.emit('updateItemClient', newItem, checklistId)
+    })
+    
+    client.on('deleteItemServer', (itemId, checklistId) => {
+        client.broadcast.emit('deleteItemClient', itemId, checklistId)
+    })
+
+    // ----- Handle attachments ----- //
+    client.on('newAttachmentServer', (attachment) => {
+        client.broadcast.emit('newAttachmentClient', attachment)
+    })
+
+    client.on('deleteAttachmentServer', (attachmentId) => {
+        client.broadcast.emit('deleteAttachmentClient', attachmentId)
+    })
+    
+    client.on('updateAttachmentTitleServer', (attachment) => {
+        client.broadcast.emit('updateAttachmentTitleClient', attachment)
+        client.emit('updateAttachmentTitleClient', attachment)
+    })
+
+    client.on('deleteAttachmentServer', (attachmentId) => {
+        client.broadcast.emit('deleteAttachmentClient', attachmentId)
     })
 
 })

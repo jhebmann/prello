@@ -13,7 +13,7 @@ router.get('/:id', function (req, res, next) {
 
     Attachment.findById(id)
     .then(function(attachment){
-        //res.contentType(attachment.contentType)
+        res.contentType(attachment.contentType)
         res.status(200).send(attachment.data.toString('base64'))
     }).catch(function(err) {
         console.log(err)
@@ -58,7 +58,7 @@ router.get('/:id/card/:cardId/comment', function (req, res, next) {
 
 const fileParams = multer(
     {
-        dest: '/upload',
+        dest: __dirname + '/upload',
         fileFilter: function (req, file, cb) {
             if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
                 return cb(new Error('Only image files are allowed!'))
@@ -68,7 +68,7 @@ const fileParams = multer(
     }
 )
 
-router.post('/card/:cardId', fileParams.single('attachment'), async (req, res, next) => {
+router.post('/card/:cardId', fileParams.single('attachment'), function (req, res, next) {
     // Post a new attachment into a card
     Card.findById(req.params.cardId, function(err, card){
         let newAttachment = new Attachment()
@@ -78,7 +78,7 @@ router.post('/card/:cardId', fileParams.single('attachment'), async (req, res, n
         .then(function(attachment){
             let newAttachmentInfos = {}
             newAttachmentInfos._id = attachment._id
-            newAttachmentInfos.datePost = Date.now()
+            newAttachmentInfos.datePost = ('undefined' !== typeof req.body.datePost) ? req.body.datePost : Date.now()
             newAttachmentInfos.title = ('undefined' !== typeof req.body.title) ? req.body.title : ''
             newAttachmentInfos.postedBy = req.body.postedBy
             newAttachmentInfos.linkedComment = ('undefined' === typeof req.body.linkedComment) ? req.body.linkedComment : null
@@ -87,7 +87,7 @@ router.post('/card/:cardId', fileParams.single('attachment'), async (req, res, n
             card.save()
             .then(function(){
                 res.contentType(newAttachment.contentType)
-                res.status(200).send(newAttachment.data)
+                res.status(200).send({image: newAttachment.data.toString('base64'), _id: newAttachment._id})
             }).catch(function(err) {
                 res.status(401).send(err);
             })

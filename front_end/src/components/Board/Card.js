@@ -118,7 +118,7 @@ class Card extends React.Component{
                             postedBy: attachment.postedBy,
                             _id: attachment._id,
                             datePost: attachment.datePost
-                        }).sort((a, b) => a.datePost > b.datePost)
+                        }).sort((a, b) => a.datePost < b.datePost)
                       }))
                 }).catch((error) => {
                     alert('An error occured when adding the attachment')

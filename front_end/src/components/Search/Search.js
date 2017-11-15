@@ -71,7 +71,6 @@ class Search extends React.Component{
         .then((response) => {
             this.setState({teams: response.data.teams, boards: response.data.boards, lists: response.data.lists, cards: response.data.cards, comments: response.data.comments, attachments: response.data.attachments, checklists: response.data.checklists, items: response.data.items, pageLoaded: true})
         }).catch((error) => {
-            console.log(error)
             alert('An error occured when searching for the text ' + this.state.text)
         })
     }
