@@ -12,6 +12,8 @@ import url from '../../config'
 import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
+import {Avatar,Tooltip} from 'antd'
 
 class Popup extends React.Component{
     constructor(props){
@@ -36,6 +38,7 @@ class Popup extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
         this.onClickItemInput = this.onClickItemInput.bind(this)
+        this.updateShows = this.updateShows.bind(this)
 
         ////////////////////// Card //////////////////////
         this.updateCard = this.updateCard.bind(this)
@@ -50,7 +53,7 @@ class Popup extends React.Component{
         this.deleteAttachment = this.deleteAttachment.bind(this)
 
         //////////////////// Checklists ////////////////////
-        this.updateChecklists =this.updateChecklists.bind(this)
+        this.addChecklist = this.addChecklist.bind(this)
         this.updateTitleChecklist = this.updateTitleChecklist.bind(this)
         this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
         this.deleteChecklist = this.deleteChecklist.bind(this)
@@ -64,7 +67,7 @@ class Popup extends React.Component{
 
         ////////////////// Event Listeners //////////////////
         this.socket.on('updateCardClient', this.updateCard)
-        this.socket.on('newChecklistClient', this.updateChecklists)
+        this.socket.on('newChecklistClient', this.addChecklist)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
         this.socket.on('newAttachmentClient', this.updateAttachments)
@@ -128,9 +131,9 @@ class Popup extends React.Component{
             <li className="listChecklist" key={i}>
                 {(!this.state.showChecklists[i].showChecklist) ? 
                 (<div className="checklistTitleDiv">
-                    <div>
+                    <div className="editChecklistDiv">
                         <Glyphicon glyph="check"/>
-                        <span className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</span>   
+                        <div className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</div>   
                     </div>
                     <span className="deleteChecklistSpan" checklistid = {checklist._id} onClick={this.onClickDeleteChecklist}>Delete..</span>
                 </div>) :
@@ -139,14 +142,16 @@ class Popup extends React.Component{
                         index={i} value={checklist.title} onChange={this.handleInputChange}
                     />
                 </div>)}
-                <div className="checklistProgressDiv">
-                    <span className="percentageLabel">
-                        {Math.round(100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length)}%
-                    </span>
-                    <ProgressBar className="checklistProgressBar" striped 
-                        now = {100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length} bsStyle="info"
-                    />
-                </div>
+                {checklist.items.length > 0 &&
+                    <div className="checklistProgressDiv">
+                        <span className="percentageLabel">
+                            {Math.round(100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length)}%
+                        </span>
+                        <ProgressBar className="checklistProgressBar" striped 
+                            now = {100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length} bsStyle="info"
+                        />
+                    </div>
+                }
                 <div>
                     <div>
                         <ul>
@@ -424,15 +429,18 @@ class Popup extends React.Component{
     }
 
     renderMembers(){
-        /* const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+         const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
         <div key = {index} >
         <Tooltip title = {usr.local.mail}>
            <Avatar size = "small" >{usr.local.nickname[0]}</Avatar>
         </Tooltip>
         {usr.local.nickname} 
      </div>)
-        return users*/
-        return []
+        return users
+    }
+
+    updateShows(checklistId, itemId){
+        console.log(this.state.showChecklists)
     }
 
     ////////////////////// Card //////////////////////
@@ -577,10 +585,20 @@ class Popup extends React.Component{
         })
     }
 
-    updateChecklists(checklist){
+    addChecklist(checklist){
         let newCardInfos = this.state.cardInfos
         newCardInfos.checklists.push(checklist)
+        const newShowChecklists = newCardInfos.checklists.map(c => { return { 
+            showChecklist: false,
+            itemState: c.items.map(item => false)
+        }})
+
         this.setState({
+            cardInfos: newCardInfos,
+            showChecklists: newShowChecklists
+        })
+
+        this.state.card.setState({
             cardInfos: newCardInfos
         })
     }
@@ -599,11 +617,14 @@ class Popup extends React.Component{
         this.setState({
             cardInfos: newCardInfos
         })
+        this.state.card.setState({
+            cardInfos: newCardInfos
+        })
     }
     ////////////////////// Items //////////////////////
 
     postItem(titleItem, checklistId) {
-        axios.post(url.api + "item/checklist/" + checklistId + "/card/" + this.state.cardInfos._id,
+        axios.post(`${url.api}item/checklist/${checklistId}/card/${this.state.cardInfos._id}`,
             {
                 title: titleItem
             }, url.config
@@ -622,6 +643,9 @@ class Popup extends React.Component{
         if (index !== -1) {
             newCardInfos.checklists[index].items.push(newItem)
             this.setState({
+                cardInfos: newCardInfos
+            })
+            this.state.card.setState({
                 cardInfos: newCardInfos
             })
         }
@@ -682,6 +706,9 @@ class Popup extends React.Component{
             const items = newCardInfos.checklists[checklistIndex].items.filter(item => item._id !== itemId)
             newCardInfos.checklists[checklistIndex].items = items
             this.setState({
+                cardInfos: newCardInfos
+            })
+            this.state.card.setState({
                 cardInfos: newCardInfos
             })
         }

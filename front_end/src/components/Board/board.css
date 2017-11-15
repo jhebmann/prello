@@ -401,6 +401,10 @@ ul {
   cursor: pointer;
 }
 
+.checklistTitleSpan {
+  width: 100%;
+}
+
 .attachmentFormSpace {
   margin-bottom: 10px;
 }
@@ -516,6 +520,7 @@ ul {
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
+  width: 100%;
 }
 
 .checkboxItemNotDone {
@@ -554,6 +559,7 @@ ul {
   line-height: 1pc;
   white-space: nowrap;
   margin-left: 10px;
+  width: 100%;
 }
 
 .glyphRemoveItem {
@@ -564,6 +570,11 @@ ul {
   visibility: hidden;
 }
 
-.itemDiv:hover .glyphRemoveItem{
+.itemDiv:hover .glyphRemoveItem {
   visibility: visible;
+}
+
+.editChecklistDiv {
+  width: 100%;
+  display: inline-flex;
 }

@@ -4,6 +4,7 @@ import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';
 import {Card,Tag,Button,Row,Col,Input} from 'antd'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 import './home.css' 
 
 class Home extends React.Component{

@@ -1,6 +1,5 @@
 import React from 'react'
 import {Select,Avatar,Button} from 'antd'
-import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'
@@ -31,8 +30,6 @@ class CascadeTeam extends React.Component{
                 placeholder="Select team name "
                 optionFilterProp="children"
                 onChange={this.handleChange}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
                 notFoundContent="Team not found"
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {teamOptions} 
@@ -54,10 +51,6 @@ class CascadeTeam extends React.Component{
     .catch((error) => {
         alert('An error occured when updating the board')
     })
-  }
-
-  setUsers(users){
-    this.setState({members:users.filter(member => member._id !== Auth.getUserID())})  
   }
 }
 
