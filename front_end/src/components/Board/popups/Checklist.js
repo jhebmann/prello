@@ -55,10 +55,19 @@ class Checklist extends React.Component{
     addChecklist(checklist) {
         let newCardInfos = this.state.card.state.cardInfos
         newCardInfos.checklists.push(checklist)
+        const newShowChecklists = newCardInfos.checklists.map(c => { return { 
+            showChecklist: false,
+            itemState: c.items.map(item => false)
+        }})
+        
+        this.state.popup.setState({
+            cardInfos: newCardInfos,
+            showChecklists: newShowChecklists
+        })
+        
         this.state.card.setState({cardInfos: newCardInfos})
-        this.state.popup.setState({cardInfos: newCardInfos})
+        
         this.setState({
-            checklists: newCardInfos.checklists,
             checklist: ""
         })
     }

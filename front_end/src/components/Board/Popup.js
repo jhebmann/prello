@@ -588,7 +588,17 @@ class Popup extends React.Component{
     addChecklist(checklist){
         let newCardInfos = this.state.cardInfos
         newCardInfos.checklists.push(checklist)
+        const newShowChecklists = newCardInfos.checklists.map(c => { return { 
+            showChecklist: false,
+            itemState: c.items.map(item => false)
+        }})
+
         this.setState({
+            cardInfos: newCardInfos,
+            showChecklists: newShowChecklists
+        })
+
+        this.state.card.setState({
             cardInfos: newCardInfos
         })
     }
@@ -607,11 +617,14 @@ class Popup extends React.Component{
         this.setState({
             cardInfos: newCardInfos
         })
+        this.state.card.setState({
+            cardInfos: newCardInfos
+        })
     }
     ////////////////////// Items //////////////////////
 
     postItem(titleItem, checklistId) {
-        axios.post(url.api + "item/checklist/" + checklistId + "/card/" + this.state.cardInfos._id,
+        axios.post(`${url.api}item/checklist/${checklistId}/card/${this.state.cardInfos._id}`,
             {
                 title: titleItem
             }, url.config
@@ -630,6 +643,9 @@ class Popup extends React.Component{
         if (index !== -1) {
             newCardInfos.checklists[index].items.push(newItem)
             this.setState({
+                cardInfos: newCardInfos
+            })
+            this.state.card.setState({
                 cardInfos: newCardInfos
             })
         }
@@ -692,8 +708,10 @@ class Popup extends React.Component{
             this.setState({
                 cardInfos: newCardInfos
             })
+            this.state.card.setState({
+                cardInfos: newCardInfos
+            })
         }
-        this.updateShows(checklistId, itemId)
     }
 }
 
