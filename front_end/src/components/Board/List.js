@@ -108,7 +108,8 @@ class List extends React.Component{
           date: card.date,
           checklists: [],
           labels: [],
-          comments: []
+          comments: [],
+          users:[]
         })
       }))
     }
