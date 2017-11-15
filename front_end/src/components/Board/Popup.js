@@ -23,8 +23,10 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: this.props.cardInfos.checklists.map(() => false),
-            newItems: this.props.cardInfos.checklists.map(() => "")
+            showChecklists: this.props.cardInfos.checklists.map(c => { return { 
+                showChecklist: false,
+                itemState: c.items.map(item => false)
+            }})
         }
 
         ////////////////////// Socket //////////////////////
@@ -33,6 +35,7 @@ class Popup extends React.Component{
         ////////////////// Interface handler ///////////////////
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
+        this.onClickItemInput = this.onClickItemInput.bind(this)
 
         ////////////////////// Card //////////////////////
         this.updateCard = this.updateCard.bind(this)
@@ -123,7 +126,7 @@ class Popup extends React.Component{
         const checklists = this.state.cardInfos.checklists
         const checklistsLi = checklists.map((checklist, i) =>
             <li className="listChecklist" key={i}>
-                {(!this.state.showChecklists[i]) ? 
+                {(!this.state.showChecklists[i].showChecklist) ? 
                 (<div className="checklistTitleDiv">
                     <div>
                         <Glyphicon glyph="check"/>
@@ -151,17 +154,27 @@ class Popup extends React.Component{
                                 (checklist.items && checklist.items.length > 0) &&
                                 checklist.items.map((item, j) =>
                                     <li key={item._id}>
-                                        <div className="itemDiv"> 
-                                            <div className={(item.isDone) ? "item done" : "item notDone"}>
-                                                <span className={(item.isDone) ? "checkboxItemDone" : "checkboxItemNotDone"} onClick={() => {this.OnclickUpdateItemIsDone(item, checklist)}}>
-                                                    {(item.isDone) && <Glyphicon glyph='ok' className="myGlyphOk"/>}
-                                                </span>
-                                                <div className="itemTitleDiv">
-                                                    <span>{item.title}</span>
-                                                    <span onClick={(e) => {e.stopPropagation(); this.onClickDeleteItem(item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {
+                                            (this.state.showChecklists[i].itemState[j]) ?
+                                                (<div className="inputItemUpdate" onBlur={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)} >
+                                                    <FormControl componentClass="input" name="itemTitle" autoFocus="true" type="text" 
+                                                        checklistindex={i} itemindex={j} value={item.title} onChange={this.handleInputChange}
+                                                    />
+                                                </div>)
+                                            :
+                                                (<div className="itemDiv"> 
+                                                    <div className={(item.isDone) ? "item done" : "item notDone"}>
+                                                        <span className={(item.isDone) ? "checkboxItemDone" : "checkboxItemNotDone"} onClick={() => {this.OnclickUpdateItemIsDone(item, checklist)}}>
+                                                            {(item.isDone) && <Glyphicon glyph='ok' className="myGlyphOk"/>}
+                                                        </span>
+                                                        <div className="itemTitleDiv"
+                                                            onClick={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)}>
+                                                            <span>{item.title}</span>
+                                                            <span onClick={(e) => {e.stopPropagation(); this.onClickDeleteItem(item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
+                                                        </div>
+                                                    </div>
+                                                </div>)
+                                        }
                                     </li> 
                                 )
                             }
@@ -342,6 +355,11 @@ class Popup extends React.Component{
             newCardInfos.checklists[e.target.attributes.index.value].title = e.target.value
             this.setState({cardInfos: newCardInfos})
         }
+        else if (e.target.name === "itemTitle") {
+            let newCardInfos = this.state.cardInfos
+            newCardInfos.checklists[e.target.attributes.checklistindex.value].items[e.target.attributes.itemindex.value].title = e.target.value
+            this.setState({cardInfos: newCardInfos})
+        }
     }
 
     handleKeyPress = (e) => {
@@ -359,7 +377,7 @@ class Popup extends React.Component{
 
     onClickChecklistShow(e) {
         const index = e.target.attributes.index.value
-        if (this.state.showChecklists[index]){
+        if (this.state.showChecklists[index].showChecklist){
             if (this.state.cardInfos.checklists[index].title.trim().length > 0) {
                 axios.put(url.api + 'checklist/' + this.state.cardInfos.checklists[index]._id + '/card/' + this.state.cardInfos._id, {
                     title : this.state.cardInfos.checklists[index].title.trim(),
@@ -381,7 +399,27 @@ class Popup extends React.Component{
             }
         }
         let newShowChecklists = this.state.showChecklists
-        newShowChecklists[index] = !newShowChecklists[index]
+        newShowChecklists[index].showChecklist = !newShowChecklists[index].showChecklist
+        this.setState({showChecklists: newShowChecklists})
+    }
+
+    onClickItemInput(titleItem, checklistIndex, itemIndex, checklistId, itemId){
+        if (this.state.showChecklists[checklistIndex].itemState){
+            if (titleItem.trim().length > 0) {
+                axios.put(url.api + 'item/' + itemId + "/checklist/" + checklistId + '/card/' + this.state.cardInfos._id, {
+                    title : titleItem
+                }, url.config)
+                .then((response) => {
+                    this.updateItem(response.data, checklistId)
+                    this.socket.emit('updateItemServer', response.data, checklistId)
+                })
+                .catch((error) => {
+                    alert('An error occured when updating the checklist title')
+                })
+            }
+        }
+        let newShowChecklists = this.state.showChecklists
+        newShowChecklists[checklistIndex].itemState[itemIndex] = !newShowChecklists[checklistIndex].itemState[itemIndex]
         this.setState({showChecklists: newShowChecklists})
     }
 

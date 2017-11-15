@@ -43,11 +43,11 @@ class Attachment extends React.Component{
                     {$imagePreview}
                 </div>
                 <div className = "dropboxDiv">
-                    <div class="container main">
+                    <div className="container main">
                         <div id="pre-auth-section" style={{display: "none"}}>
                             <p>This example takes the user through Dropbox's API OAuth flow using <code>Dropbox.getAuthenticationUrl()</code> method [<a href="http://dropbox.github.io/dropbox-sdk-js/Dropbox.html#getAuthenticationUrl">docs</a>] and then uses the generated access token to list the contents of their root directory.</p>
-                            <a href="" id="authlink" class="button">Authenticate</a>
-                            <p class="info">Once authenticated, it will use the access token to list the files in your root directory.</p>
+                            <a href="" id="authlink" className="button">Authenticate</a>
+                            <p className="info">Once authenticated, it will use the access token to list the files in your root directory.</p>
                         </div>
 
                         <div id="authed-section" style={{display: "none"}}>
