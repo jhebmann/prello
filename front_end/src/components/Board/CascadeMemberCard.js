@@ -32,8 +32,6 @@ class CascadeMemberCard extends React.Component{
                 placeholder="Select member name "
                 optionFilterProp="children"
                 onChange={this.handleChange}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
                 notFoundContent="Member not found"
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {memberOptions} 
@@ -59,11 +57,6 @@ class CascadeMemberCard extends React.Component{
     .catch((error) => {
         alert('An error occured when updating the Card'+error)
     })
-  }
-
-  
-  setUsers(users){
-    this.setState({members:users.filter(member => member._id !== Auth.getUserID())})  
   }
 }
 

@@ -5,10 +5,10 @@ import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import './home.css'
-import Cascade from '../Board/Cascade.js'
-import {Spin, Button, Input, Icon, Row,Collapse,Tabs,Avatar,Tooltip} from 'antd';
-const Panel = Collapse.Panel;
-const TabPane = Tabs.TabPane;
+import {Spin, Button, Input, Icon, Row,Collapse,Tabs,Avatar,Tooltip} from 'antd'
+import HomeAdminTab from './HomeAdminTab.js'
+const Panel = Collapse.Panel
+const TabPane = Tabs.TabPane
 
 class HomeUser extends React.Component{
     
@@ -32,7 +32,6 @@ class HomeUser extends React.Component{
     this.onClickAddTeam = this.onClickAddTeam.bind(this)
     this.renderPublicBoards = this.renderPublicBoards.bind(this)
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
-    this.updateTeams = this.updateTeams.bind(this)
     this.userTeams = this.userTeams.bind(this)
     
     this.socket.on("addTeam", this.addTeam)
@@ -166,23 +165,6 @@ class HomeUser extends React.Component{
         )
     }
 
-    renderAdminTab(team){
-      if(team.admins.includes(Auth.getUserID())){
-        const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id));
-        const notTeamMembers=this.state.users.filter(usr => !team.users.includes(usr._id))
-        const membersNotAdmin=teamMembers.filter(usr => team.users.filter(usr=>!team.admins.includes(usr)).includes(usr._id))
-        const membersAdmin=teamMembers.filter(usr=>team.admins.includes(usr._id))
-        return (
-            <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="3">
-              <Cascade users={notTeamMembers} teamId={team._id} task="Add Member" onChange={this.updateTeams}/>
-              <Cascade users={teamMembers} teamId={team._id} task="Remove Member" onChange={this.updateTeams}/>
-              <Cascade users={membersNotAdmin} teamId={team._id} task="Add Admin" onChange={this.updateTeams}/>
-              <Cascade users={membersAdmin} teamId={team._id} task="Revoke Admin" onChange={this.updateTeams}/>
-            </TabPane>
-          )
-        }
-    }
-
     renderTeamMembersTab(team){
       const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id))
       const teamMemberItems = teamMembers.map((member, index)=>
@@ -202,15 +184,15 @@ class HomeUser extends React.Component{
       )
     }
 
-    updateTeams(){
-      axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
-      .then((response) => {
-        this.setState({teams:response.data})
-      })
-      .catch((error) => {
-          alert('An error occured when getting the teams!'+error)
-      })
-    }
+    renderAdminTab(team){
+      if(team.admins.includes(Auth.getUserID()))
+        return (
+          <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="3">  
+            <HomeAdminTab team={team} users={this.state.users} />
+          </TabPane>
+          )
+      return
+      }
 
     handleKeyPress = (e) => {
       if (e.key === 'Enter') {
@@ -222,6 +204,5 @@ class HomeUser extends React.Component{
       }
     }
 }
-
 
 export default HomeUser

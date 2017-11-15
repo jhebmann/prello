@@ -12,6 +12,7 @@ import url from '../../config'
 import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
+import {Avatar,Tooltip} from 'antd'
 
 class Popup extends React.Component{
     constructor(props){
@@ -424,15 +425,14 @@ class Popup extends React.Component{
     }
 
     renderMembers(){
-        /* const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+         const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
         <div key = {index} >
         <Tooltip title = {usr.local.mail}>
            <Avatar size = "small" >{usr.local.nickname[0]}</Avatar>
         </Tooltip>
         {usr.local.nickname} 
      </div>)
-        return users*/
-        return []
+        return users
     }
 
     ////////////////////// Card //////////////////////

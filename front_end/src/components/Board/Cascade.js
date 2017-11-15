@@ -12,7 +12,7 @@ class Cascade extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            members: this.props.users,
+            users: this.props.users,
             selected:null,
             teamId:this.props.teamId
         }
@@ -22,17 +22,15 @@ class Cascade extends React.Component{
     }
 
     render(){
-        const memberOptions = this.state.members.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
+        const memberOptions = this.state.users.filter(user => user._id !== Auth.getUserID()).map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
         return (
             <div >
               <Select
                 showSearch
                 style={{ width: 200 }}
-                placeholder="Select nickname "
+                placeholder="Select nickname"
                 optionFilterProp="children"
                 onChange={this.handleChange}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
                 notFoundContent="User not found"
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {memberOptions} 
@@ -67,27 +65,28 @@ class Cascade extends React.Component{
           break;
     }
   }
+
   addMember(){
     axios.put(url.api + 'user/'+this.state.selected + '/team/add/' + this.state.teamId, {}, url.config)
-    .then(()=>{alert('Team member added!'); this.props.onChange()})
+    .then((response)=>{alert('Team member added!');this.props.onChange(response.data)})
     .catch((error) => {
-        alert('An error occured when adding the user to the team')
+        alert('An error occured when adding the user to the team '+error)
     })
   }
 
   removeMember(){
     const addr=url.api+'user/'+this.state.selected+'/team/remove/'+this.state.teamId
     axios.put(addr, {}, url.config)
-    .then(()=>{alert('Team member removed!');this.props.onChange()})
+    .then((response)=>{alert('Team member removed!');this.props.onChange(response.data)})
     .catch((error) => {
-        alert('An error occured when removing the user from the team'+error)
+        alert('An error occured when removing the user from the team '+error)
     })
   }
 
   revokeAdmin(){
     const addr=url.api+'team/'+this.state.teamId + '/fromAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then(()=>{alert('Admin revoked from the team!');this.props.onChange()})
+    .then((response)=>{alert('Admin revoked from the team!');this.props.onChange(response.data)})
     .catch((error) => {
         alert('An error occured when revoking admin from the team')
     })
@@ -96,7 +95,7 @@ class Cascade extends React.Component{
   addAdmin(){
     const addr=url.api+'team/'+this.state.teamId + '/toAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then(()=>{alert('Admin added to the team!');this.props.onChange()})
+    .then((response)=>{alert('Admin added to the team!');this.props.onChange(response.data)})
     .catch((error) => {
         alert('An error occured when adding admin to the team')
     })
@@ -120,9 +119,10 @@ class Cascade extends React.Component{
     })
   }
 
-  setUsers(users){
-    this.setState({members:users.filter(member => member._id !== Auth.getUserID())})  
+  componentWillReceiveProps(nextProps){
+    this.setState({users: nextProps.users})
   }
+
 }
 
 export default Cascade

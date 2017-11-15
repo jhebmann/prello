@@ -139,7 +139,7 @@ router.put('/:id/team/remove/:teamId', function(req, res, next){
                 team.admins.pull(user._id)
                 team.save()
                 .then(function() {
-                    res.status(200).send(user)
+                    res.status(200).send(team)
                 }).catch(function(err) {
                     res.status(401).send(err);
                 })
