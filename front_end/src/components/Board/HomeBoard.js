@@ -8,6 +8,7 @@ class HomeBoard extends React.Component{
     constructor(props){
       super(props)
       this.socket = SocketIOClient(url.socket);
+      console.log(this.props.location)
     }
 
     render(){
