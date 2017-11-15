@@ -7,7 +7,7 @@ import axios from 'axios'
 import url from '../../../config'
 const NotificationSystem = require('react-notification-system');
 
-class Register extends React.Component{
+class Login extends React.Component{
 
     constructor(props) {
         super(props);
@@ -176,4 +176,4 @@ class Register extends React.Component{
         }
 }
 
-export default Register;
+export default Login;

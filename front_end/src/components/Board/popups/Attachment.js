@@ -12,6 +12,7 @@ class Attachment extends React.Component{
             popup: this.props.popup,
             card: this.props.card,
             title: '',
+            cardId: this.props.card.state.cardInfos._id,
             file: null,
             imagePreviewUrl: ''
         }
@@ -20,6 +21,7 @@ class Attachment extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleNewFile = this.handleNewFile.bind(this)
         this.onClickAddAttachment = this.onClickAddAttachment.bind(this)
+        this.dropboxBegin = this.dropboxBegin.bind(this)
     }
 
     componentDidMount = () => {
@@ -39,20 +41,20 @@ class Attachment extends React.Component{
                 <div className="attachmentForm">
                     <FormControl type="file" name="file" placeholder="Attachment" onChange={this.handleNewFile} className="attachmentFormSpace"/>
                     <FormControl type="text" name="title" placeholder="Title" onChange={this.handleInputChange} className="attachmentFormSpace attachmentFormMedium"/>
-                    <Button id='cardAttachment' className="attachmentFormSpace" bsStyle="primary" onClick={this.onClickAddAttachment} disabled={'undefined' === typeof this.state.file}>Add</Button>
+                    <Button className='cardAttachment' className="attachmentFormSpace" bsStyle="primary" onClick={this.onClickAddAttachment} disabled={'undefined' === typeof this.state.file}>Add</Button>
                     {$imagePreview}
                 </div>
                 <div className = "dropboxDiv">
                     <div className="container main">
-                        <div id="pre-auth-section" style={{display: "none"}}>
+                        <div id={"pre-auth-section" + this.state.cardId} style={{display: "none"}}>
                             <p>This example takes the user through Dropbox's API OAuth flow using <code>Dropbox.getAuthenticationUrl()</code> method [<a href="http://dropbox.github.io/dropbox-sdk-js/Dropbox.html#getAuthenticationUrl">docs</a>] and then uses the generated access token to list the contents of their root directory.</p>
-                            <a href="" id="authlink" className="button">Authenticate</a>
+                            <a href="" id={"authlink" + this.state.cardId} className="button">Authenticate</a>
                             <p className="info">Once authenticated, it will use the access token to list the files in your root directory.</p>
                         </div>
 
-                        <div id="authed-section" style={{display: "none"}}>
+                        <div id={"authed-section" + this.state.cardId} style={{display: "none"}}>
                             <p>You have successfully authenticated. Below are the contents of your root directory. They were fetched using the SDK and access token.</p>
-                            <ul id="files"></ul>
+                            <ul id={"files" + this.state.cardId}></ul>
                         </div>
                     </div>
                 </div>
@@ -64,9 +66,8 @@ class Attachment extends React.Component{
 
     // Parses the url and gets the access token if it is in the urls hash
     getAccessTokenFromUrl = () => {
-        console.log(window.location)
-        console.log('ghjurihbjie')
-        return //utils.parseQueryString(window.location.hash).access_token;
+        return Auth.getDropboxToken()
+        //utils.parseQueryString(window.location.hash).access_token;
     }
     // If the user was just redirected from authenticating, the urls hash will
     // contain the access token.
@@ -75,40 +76,41 @@ class Attachment extends React.Component{
     }
     // Render a list of items to #files
     renderItems = (items) => {
-      var filesContainer = document.getElementById('files');
+      const filesContainer = document.getElementById('files' + this.state.cardId)
       items.forEach(function(item) {
-        var li = document.createElement('li');
-        li.innerHTML = item.name;
-        filesContainer.appendChild(li);
-      });
+        const li = document.createElement('li')
+        li.innerHTML = item.name
+        filesContainer.appendChild(li)
+      })
     }
     // This example keeps both the authenticate and non-authenticated setions
     // in the DOM and uses this function to show/hide the correct section.
     showPageSection = (elementId) => {
-      document.getElementById(elementId).style.display = 'block';
-      //document.getElementById(elementId).style={display: 'block'}
+      document.getElementById(elementId).style={display: 'block'}
     }
 
     dropboxBegin = () => {
-//        if (this.isAuthenticated()) {
-//            this.showPageSection('authed-section');
+        if (this.isAuthenticated()) {
+            this.showPageSection('authed-section' + this.state.cardId);
+        const self = this
         // Create an instance of Dropbox with the access token and use it to
         // fetch and render the files in the users root directory.
-/*        var dbx = new Dropbox({ accessToken: this.getAccessTokenFromUrl() });
+        const dbx = new Dropbox({ accessToken: this.getAccessTokenFromUrl() });
         dbx.filesListFolder({path: ''})
             .then(function(response) {
-            this.renderItems(response.entries);
+                console.log(response.entries)
+                self.renderItems(response.entries)
             })
             .catch(function(error) {
             console.error(error);
-            });*/
-//        } else {
+            });
+        } else {
             this.showPageSection('pre-auth-section');
             // Set the login anchors href using dbx.getAuthenticationUrl()
-            var dbx = new Dropbox({ clientId: "owvw24g2oefq2gs" });
-            var authUrl = dbx.getAuthenticationUrl('http://localhost:3000/dropboxAuth', window.location.pathname + '|' + this.state.card.state.cardInfos._id);
-            document.getElementById('authlink').href = authUrl;
-//        }
+            const dbx = new Dropbox({ clientId: "owvw24g2oefq2gs" });
+            const authUrl = dbx.getAuthenticationUrl('http://localhost:3000/dropboxAuth', window.location.pathname + '|' + this.state.card.state.cardInfos._id)
+            document.getElementById('authlink' + this.state.cardId).href = authUrl
+        }
     }
 
 

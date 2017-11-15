@@ -16,6 +16,10 @@ class Auth {
       static setNickname(nickname){
         localStorage.setItem('nickname',nickname)
       }
+      
+      static setDropboxToken(token){
+        localStorage.setItem('dropboxToken',token)
+      }
       /**
        * Check if a user is authenticated - check if a token is saved in Local Storage
        *
@@ -33,6 +37,7 @@ class Auth {
         localStorage.removeItem('userId')
         localStorage.removeItem('token');
         localStorage.removeItem('nickname');
+        localStorage.removeItem('dropboxToken');
       }
     
       /**
@@ -51,6 +56,10 @@ class Auth {
       
       static getNickname(){
         return localStorage.getItem('nickname')
+      }
+      
+      static getDropboxToken(){
+        return localStorage.getItem('dropboxToken')
       }
     }
     

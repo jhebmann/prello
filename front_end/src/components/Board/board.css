@@ -409,7 +409,7 @@ ul {
   width: 65%;
 }
 
-#cardAttachment {
+.cardAttachment {
   display: block;
 }
 

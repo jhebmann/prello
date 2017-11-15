@@ -28,7 +28,13 @@ class Card extends React.Component{
 
         this.loadAttachments()
     }
-
+    /*
+    componentDidMount(){
+        if (this.state.cardInfos._id === this.state.parameters.cardToFocus){
+            this.customDialog.show()
+        }
+    }
+*/
     render(){
 
         const bigPopup = {
@@ -63,7 +69,7 @@ class Card extends React.Component{
                 <Draggable>
                     <div>
                         <Thumbnail onClick={() => this.customDialog.show()}
-                            className={('undefined' !== typeof this.state.parameters && this.state.cardInfos._id === this.state.parameters.cardId) ? "selected card" : "card"}
+                            className={('undefined' !== typeof this.state.parameters.state && this.state.cardInfos._id === this.state.parameters.state.cardId) ? "selected card" : "card"}
                         >
                             {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
                                 <div>{this.state.cardInfos.labels.length} labels</div>
@@ -80,8 +86,8 @@ class Card extends React.Component{
                         </Thumbnail>
                     </div>
                 </Draggable>
-               
-                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
+                
+                <SkyLight className = "cardSkylight" dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
                     />
