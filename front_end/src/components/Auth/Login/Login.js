@@ -44,7 +44,7 @@ class Login extends React.Component{
     }
     
     componentWillMount = () => {
-        if (Auth.getUserID())
+        if (Auth.isUserAuthenticated())
             this.redirect()
     }
     
