@@ -7,6 +7,7 @@ import Draggable from 'react-draggable';
 import axios from 'axios'
 import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 class Card extends React.Component{
     constructor(props){

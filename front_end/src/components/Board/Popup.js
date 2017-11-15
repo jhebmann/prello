@@ -12,6 +12,7 @@ import url from '../../config'
 import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 import {Avatar,Tooltip} from 'antd'
 
 class Popup extends React.Component{
@@ -37,6 +38,7 @@ class Popup extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
         this.onClickItemInput = this.onClickItemInput.bind(this)
+        this.updateShows = this.updateShows.bind(this)
 
         ////////////////////// Card //////////////////////
         this.updateCard = this.updateCard.bind(this)
@@ -437,6 +439,10 @@ class Popup extends React.Component{
         return users
     }
 
+    updateShows(checklistId, itemId){
+        console.log(this.state.showChecklists)
+    }
+
     ////////////////////// Card //////////////////////
     updateCard(card){
         if (card._id === this.state.cardInfos._id){
@@ -687,6 +693,7 @@ class Popup extends React.Component{
                 cardInfos: newCardInfos
             })
         }
+        this.updateShows(checklistId, itemId)
     }
 }
 
