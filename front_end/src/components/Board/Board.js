@@ -24,7 +24,7 @@ class Board extends React.Component{
             pageLoaded: false,
             usersBoard:null
         }
-
+        
         this.socket = this.props.io;
         this.getAllLists = this.getAllLists.bind(this)
         this.onClickAddList = this.onClickAddList.bind(this)
@@ -137,7 +137,7 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id}/>
+            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox}/>
         )
         return listItems
     }

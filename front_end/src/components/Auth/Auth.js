@@ -28,6 +28,14 @@ class Auth {
       static isUserAuthenticated() {
         return localStorage.getItem('token') !== null;
       }
+      /**
+       * Check if a user is authenticated with dropbox - check if a dropbox token is saved in Local Storage
+       *
+       * @returns {boolean}
+       */
+      static isUserAuthenticatedWithDropbox() {
+        return localStorage.getItem('dropboxToken') !== null;
+      }
     
       /**
        * Deauthenticate a user. Remove a token from Local Storage.

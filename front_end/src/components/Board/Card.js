@@ -91,6 +91,7 @@ class Card extends React.Component{
                 <SkyLight className = "cardSkylight" dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
+                            dropbox={this.props.dropbox}
                     />
                 </SkyLight>
             </div>

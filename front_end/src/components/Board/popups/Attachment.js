@@ -14,7 +14,8 @@ class Attachment extends React.Component{
             title: '',
             cardId: this.props.card.state.cardInfos._id,
             file: null,
-            imagePreviewUrl: ''
+            imagePreviewUrl: '',
+            dropbox: this.props.dropbox
         }
 
         this.socket = this.props.io
@@ -27,8 +28,18 @@ class Attachment extends React.Component{
     componentDidMount = () => {
         this.dropboxBegin()
     }
+    
+    componentWillReceiveProps(nextProps){
+        this.setState({dropbox: nextProps.dropbox})
+    }
 
     render(){
+        let filesList = []
+        this.state.dropbox.files.forEach((file, i) =>{ 
+            filesList.push(<li key = {i}>{file.name}</li>)
+        })
+
+
         let $imagePreview = null
         if (this.state.imagePreviewUrl) {
           $imagePreview = <img id="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
@@ -46,68 +57,52 @@ class Attachment extends React.Component{
                 </div>
                 <div className = "dropboxDiv">
                     <div className="container main">
-                        <div id={"pre-auth-section" + this.state.cardId} style={{display: "none"}}>
+
+                        {(!Auth.isUserAuthenticatedWithDropbox()) ?
+                        <div id={"pre-auth-section" + this.state.cardId}>
                             <p>This example takes the user through Dropbox's API OAuth flow using <code>Dropbox.getAuthenticationUrl()</code> method [<a href="http://dropbox.github.io/dropbox-sdk-js/Dropbox.html#getAuthenticationUrl">docs</a>] and then uses the generated access token to list the contents of their root directory.</p>
                             <a href="" id={"authlink" + this.state.cardId} className="button">Authenticate</a>
                             <p className="info">Once authenticated, it will use the access token to list the files in your root directory.</p>
                         </div>
-
-                        <div id={"authed-section" + this.state.cardId} style={{display: "none"}}>
+                        :
+                        <div id={"authed-section" + this.state.cardId}>
                             <p>You have successfully authenticated. Below are the contents of your root directory. They were fetched using the SDK and access token.</p>
-                            <ul id={"files" + this.state.cardId}></ul>
+                            <ul id={"files" + this.state.cardId}>
+                                {filesList}
+                            </ul>
                         </div>
+                        }
                     </div>
                 </div>
             </div>
         )
     }
-
-
-
-    // Parses the url and gets the access token if it is in the urls hash
-    getAccessTokenFromUrl = () => {
-        return Auth.getDropboxToken()
-        //utils.parseQueryString(window.location.hash).access_token;
-    }
-    // If the user was just redirected from authenticating, the urls hash will
-    // contain the access token.
-    isAuthenticated = () => {
-      return !!this.getAccessTokenFromUrl();
-    }
+    
     // Render a list of items to #files
     renderItems = (items) => {
-      const filesContainer = document.getElementById('files' + this.state.cardId)
-      items.forEach(function(item) {
-        const li = document.createElement('li')
-        li.innerHTML = item.name
-        filesContainer.appendChild(li)
-      })
+        this.setState({files: items})
+        //items.filter(item => item.name.match(/\.(pdf)$/)).forEach((item) => this.printItem(item))
     }
-    // This example keeps both the authenticate and non-authenticated setions
-    // in the DOM and uses this function to show/hide the correct section.
-    showPageSection = (elementId) => {
-      document.getElementById(elementId).style={display: 'block'}
+
+    printItem = (item) => {
+        this.state.dbx.filesDownload({path: item.path_display})
+        .then(function (response) {
+            var blob = response.fileBlob;
+            var reader = new FileReader();
+            reader.addEventListener("loadend", function() {
+                console.log(reader.result); // will print out file content
+            });
+            reader.readAsText(blob);
+        })
+        .catch(function (error) {
+            console.log(error)
+        })
     }
 
     dropboxBegin = () => {
-        if (this.isAuthenticated()) {
-            this.showPageSection('authed-section' + this.state.cardId);
-        const self = this
-        // Create an instance of Dropbox with the access token and use it to
-        // fetch and render the files in the users root directory.
-        const dbx = new Dropbox({ accessToken: this.getAccessTokenFromUrl() });
-        dbx.filesListFolder({path: ''})
-            .then(function(response) {
-                console.log(response.entries)
-                self.renderItems(response.entries)
-            })
-            .catch(function(error) {
-            console.error(error);
-            });
-        } else {
-            this.showPageSection('pre-auth-section' + this.state.cardId);
+        if (!Auth.isUserAuthenticatedWithDropbox()) {
             // Set the login anchors href using dbx.getAuthenticationUrl()
-            const dbx = new Dropbox({ clientId: "owvw24g2oefq2gs" });
+            const dbx = new Dropbox({ clientId: "owvw24g2oefq2gs" })
             const authUrl = dbx.getAuthenticationUrl('http://localhost:3000/dropboxAuth', window.location.pathname + '|' + this.state.card.state.cardInfos._id)
             document.getElementById('authlink' + this.state.cardId).href = authUrl
         }
