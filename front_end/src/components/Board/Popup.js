@@ -24,7 +24,7 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: this.state.cardInfos.checklists.map(c => { return { 
+            showChecklists: this.props.cardInfos.checklists.map(c => { return { 
                 showChecklist: false,
                 itemState: c.items.map(item => false)
             }})
@@ -51,7 +51,7 @@ class Popup extends React.Component{
         this.deleteAttachment = this.deleteAttachment.bind(this)
 
         //////////////////// Checklists ////////////////////
-        this.updateChecklists =this.updateChecklists.bind(this)
+        this.addChecklist = this.addChecklist.bind(this)
         this.updateTitleChecklist = this.updateTitleChecklist.bind(this)
         this.onClickDeleteChecklist = this.onClickDeleteChecklist.bind(this)
         this.deleteChecklist = this.deleteChecklist.bind(this)
@@ -65,7 +65,7 @@ class Popup extends React.Component{
 
         ////////////////// Event Listeners //////////////////
         this.socket.on('updateCardClient', this.updateCard)
-        this.socket.on('newChecklistClient', this.updateChecklists)
+        this.socket.on('newChecklistClient', this.addChecklist)
         this.socket.on('updateChecklistTitleClient', this.updateTitleChecklist)
         this.socket.on('deleteChecklistClient', this.deleteChecklist)
         this.socket.on('newAttachmentClient', this.updateAttachments)
@@ -579,7 +579,7 @@ class Popup extends React.Component{
         })
     }
 
-    updateChecklists(checklist){
+    addChecklist(checklist){
         let newCardInfos = this.state.cardInfos
         newCardInfos.checklists.push(checklist)
         this.setState({
