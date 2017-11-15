@@ -3,7 +3,6 @@ import { Glyphicon, Thumbnail } from 'react-bootstrap'
 import SkyLight from 'react-skylight'
 import Popup from './Popup.js'
 import moment from 'moment'
-import Draggable from 'react-draggable';
 import axios from 'axios'
 import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
@@ -61,26 +60,24 @@ class Card extends React.Component{
         
         return(
             <div>
-                <Draggable>
-                    <div>
-                        <Thumbnail onClick={() => this.customDialog.show()}
-                            className={('undefined' !== typeof this.state.parameters && this.state.cardInfos._id === this.state.parameters.cardId) ? "selected card" : "card"}
-                        >
-                            {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
-                                <div>{this.state.cardInfos.labels.length} labels</div>
-                            }
-                            <div id="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' id="glyphRemoveCardChild"/></div>
-                            <h4>{this.state.cardInfos.title}</h4>
-                            {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) &&
-                                <div>
-                                    {dueDateDiv}
-                                    <div className="alignElements"><p> {(this.state.cardInfos.description) && <Glyphicon glyph='align-left'/>} </p></div>
-                                    <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
-                                </div>
-                            }
-                        </Thumbnail>
-                    </div>
-                </Draggable>
+                <div>
+                    <Thumbnail onClick={() => this.customDialog.show()}
+                        className={('undefined' !== typeof this.state.parameters && this.state.cardInfos._id === this.state.parameters.cardId) ? "selected card" : "card"}
+                    >
+                        {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
+                            <div>{this.state.cardInfos.labels.length} labels</div>
+                        }
+                        <div id="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' id="glyphRemoveCardChild"/></div>
+                        <h4>{this.state.cardInfos.title}</h4>
+                        {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) &&
+                            <div>
+                                {dueDateDiv}
+                                <div className="alignElements"><p> {(this.state.cardInfos.description) && <Glyphicon glyph='align-left'/>} </p></div>
+                                <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
+                            </div>
+                        }
+                    </Thumbnail>
+                </div>
                
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}

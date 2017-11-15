@@ -15,11 +15,6 @@ body {
   padding-top: 40px;
 }
 
-.react-draggable,
-.cursor {
-  cursor: move;
-}
-
 .board {
   padding-left: 20px;
   padding-bottom: 15px;
@@ -379,10 +374,15 @@ ul {
 .checklistTitleDiv {
   display: flex;
   justify-content: space-between;
+  margin-right: 55px;
+  padding: 4px;
+}
+
+.checklistTitleDiv:hover {
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .deleteChecklistSpan {
-  margin-right: 55px;
   color: #838c91;
   text-decoration: underline;
   font-size: smaller;
@@ -577,4 +577,9 @@ ul {
 .editChecklistDiv {
   width: 100%;
   display: inline-flex;
+}
+
+
+.react-draggable, .cursor {
+  cursor: move;
 }
