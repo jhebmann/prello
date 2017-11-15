@@ -20,7 +20,7 @@ class Board extends React.Component{
             allTeams: [],
             users: [],
             titleNewList: "",
-            parameters: this.props.parentProps.location.state,
+            parameters: this.props.parentProps.location,
             pageLoaded: false,
             usersBoard:null
         }

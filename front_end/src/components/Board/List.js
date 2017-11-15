@@ -105,7 +105,7 @@ class List extends React.Component{
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
-        <Panel id="panelList" bsSize="small" className={('undefined' !== typeof this.state.parameters && this.props.id === this.state.parameters.listId) ? "selected list" : "list"}>
+        <Panel id="panelList" bsSize="small" className={('undefined' !== typeof this.state.parameters.state && this.props.id === this.state.parameters.state.listId) ? "selected list" : "list"}>
           <div className='listHead'>
             <div id="titleListDiv">
               {headList}
