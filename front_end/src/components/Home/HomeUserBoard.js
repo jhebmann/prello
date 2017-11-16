@@ -4,6 +4,7 @@ import {Card,Tag,Button} from 'antd'
 import axios from 'axios'
 import url from '../../config'
 import { confirmAlert } from 'react-confirm-alert'
+import './home.css' 
 
 class HomeUserBoard extends React.Component{
 
@@ -28,13 +29,12 @@ class HomeUserBoard extends React.Component{
 
     render(){
         let deleteBttn=''
-        console.log(this.state.board.admins, Auth.getUserID())
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID()))
           deleteBttn=
           <Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation();this.onClickDeleteBoard(this.state.board._id)}}>Delete
           </Button> 
           return (
-            <Card title={this.handleBoardTitle()} extra={deleteBttn}>
+            <Card title={<div>{this.handleBoardTitle()}</div>} extra={deleteBttn}>
             <Tag color="red">Tag</Tag>
                 <p>Description</p>
                 {(this.state.board.isPublic) ?(
@@ -46,12 +46,17 @@ class HomeUserBoard extends React.Component{
     }
 
     handleBoardTitle(){
+<<<<<<< HEAD
         let  headBoard = <h4>{this.state.board.title || 'No title'}</h4>
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())){
+=======
+        let  headBoard = <span>{this.state.board.title || 'No title'}</span>
+        if(this.state.board.admins.includes(Auth.getUserID())){
+>>>>>>> 7fb3d37289a8a273e572e7255ed9e5a2878ac0e7
             if(!this.state.showInput ) {
-                headBoard = <h4  onClick={(e) => {e.stopPropagation();this.onClickUpdateTitle();}}>{this.state.board.title || 'No title'}</h4>
+                headBoard = <span  onClick={(e) => {e.stopPropagation();this.onClickUpdateTitle();}}>{this.state.board.title || 'No title'}</span>
             } else{
-                headBoard = <input onClick={(e) => {e.stopPropagation()}} autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateTitle} 
+                headBoard = <input className='inputBoardTitle' onClick={(e) => {e.stopPropagation()}} autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateTitle} 
                                 type="text" name="title" value={this.state.titleNewBoard} onKeyPress={this.handleKeyPress}/>
             }
         }
@@ -65,7 +70,6 @@ class HomeUserBoard extends React.Component{
       }
       
     onClickUpdateTitle(){
-        console.log(this.state.titleNewBoard)
         let newBoard=this.state.board
         if(this.state.titleNewBoard!==''){
             newBoard.title=this.state.titleNewBoard
@@ -79,8 +83,6 @@ class HomeUserBoard extends React.Component{
         axios.put(url.api + 'board/' + this.state.board._id , {
             title: title
           }, url.config).then((response) => {
-
-            console.log(response.data._id,response.data.title)
             this.socket.emit('updateBoardTitle', response.data._id, response.data.title)
           })
           .catch((error) => {
@@ -90,7 +92,6 @@ class HomeUserBoard extends React.Component{
     }
 
     updateBoardTitle(id, title){
-        console.log("board update")
         if(id === this.state.board._id){
             let newBoard=this.state.board
             newBoard.title=title
@@ -108,7 +109,6 @@ class HomeUserBoard extends React.Component{
             message: 'This board will be removed and you won\'t be able to re-open it. There is no undo !',
             confirmLabel: 'Delete',                           // Text button confirm
             cancelLabel: 'Cancel',                             // Text button cancel
-    
             onConfirm: () => (
               axios.delete(url.api + 'board/' + id, url.config)
               .then((response) => {

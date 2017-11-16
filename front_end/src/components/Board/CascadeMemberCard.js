@@ -1,11 +1,18 @@
 import React from 'react'
-import {Select,Avatar,Button} from 'antd'
+import {Select,Avatar,Button,message} from 'antd'
 import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'
 
 const Option = Select.Option;
+const success = (mssge) => {
+    message.config({
+        top: "10%",
+        duration: 2,
+      });
+    message.success(mssge);
+  };
 
 class CascadeMemberCard extends React.Component{
     
@@ -52,7 +59,7 @@ class CascadeMemberCard extends React.Component{
     .then((response)=>{
         this.props.callback(response.data);
         this.socket.emit('updateCardServer', response.data)
-        alert('Card updated!');
+        success('Card updated!');
         })
     .catch((error) => {
         alert('An error occured when updating the Card'+error)
