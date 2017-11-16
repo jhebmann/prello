@@ -30,7 +30,7 @@ class HomeBoard extends React.Component{
       const id = address.substring(address.lastIndexOf("/") + 1, address.length-1)
       const dropbox = {dbx: this.state.dbx, files: this.state.files}
       return(
-        <div>
+        <div className="boardContainer">
           <Board parentProps={this.props} io={this.socket} id={id} dropbox={dropbox} />
         </div>
       ) 

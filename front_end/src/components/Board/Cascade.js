@@ -1,11 +1,18 @@
 import React from 'react'
-import {Select, Avatar,Button} from 'antd'
+import {Select, Avatar,Button,message} from 'antd'
 import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
 import 'antd/dist/antd.css'
 
 const Option = Select.Option;
+const success = (mssge) => {
+    message.config({
+        top: "10%",
+        duration: 2,
+      });
+    message.success(mssge);
+  };
 
 class Cascade extends React.Component{
     
@@ -68,7 +75,7 @@ class Cascade extends React.Component{
 
   addMember(){
     axios.put(url.api + 'user/'+this.state.selected + '/team/add/' + this.state.teamId, {}, url.config)
-    .then((response)=>{alert('Team member added!');this.props.onChange(response.data)})
+    .then((response)=>{success('Team member added!');this.props.onChange(response.data)})
     .catch((error) => {
         alert('An error occured when adding the user to the team '+error)
     })
@@ -77,7 +84,7 @@ class Cascade extends React.Component{
   removeMember(){
     const addr=url.api+'user/'+this.state.selected+'/team/remove/'+this.state.teamId
     axios.put(addr, {}, url.config)
-    .then((response)=>{alert('Team member removed!');this.props.onChange(response.data)})
+    .then((response)=>{success('Team member removed!');this.props.onChange(response.data)})
     .catch((error) => {
         alert('An error occured when removing the user from the team '+error)
     })
@@ -86,7 +93,7 @@ class Cascade extends React.Component{
   revokeAdmin(){
     const addr=url.api+'team/'+this.state.teamId + '/fromAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then((response)=>{alert('Admin revoked from the team!');this.props.onChange(response.data)})
+    .then((response)=>{success('Admin revoked from the team!');this.props.onChange(response.data)})
     .catch((error) => {
         alert('An error occured when revoking admin from the team')
     })
@@ -95,7 +102,7 @@ class Cascade extends React.Component{
   addAdmin(){
     const addr=url.api+'team/'+this.state.teamId + '/toAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then((response)=>{alert('Admin added to the team!');this.props.onChange(response.data)})
+    .then((response)=>{success('Admin added to the team!');this.props.onChange(response.data)})
     .catch((error) => {
         alert('An error occured when adding admin to the team')
     })
@@ -104,7 +111,7 @@ class Cascade extends React.Component{
   addAdminBoard(){
     const addr=url.api+'board/'+this.props.boardId + '/toAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then(()=>{alert('Admin added to the Board!')})
+    .then(()=>{success('Admin added to the Board!')})
     .catch((error) => {
         alert('An error occured when adding admin to the Board'+error)
     })
@@ -113,7 +120,7 @@ class Cascade extends React.Component{
   revokeAdminBoard(){
     const addr=url.api+'board/'+this.props.boardId + '/fromAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then(()=>{alert('Admin revoked from the Board!')})
+    .then(()=>{success('Admin revoked from the Board!')})
     .catch((error) => {
         alert('An error occured when revoking admin from the Board'+error)
     })
