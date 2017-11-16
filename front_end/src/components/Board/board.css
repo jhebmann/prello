@@ -418,7 +418,9 @@ ul {
 }
 
 #attachmentImgPreview {
-  max-width: 95%;
+  max-width: 75%;
+  margin: 0 auto;
+  display: block;
 }
 
 .selected {
@@ -479,18 +481,21 @@ ul {
 
 .listAttachment {
   text-align: center;
-  width: 100%;
-  padding-bottom: 25px;
-  font-size: 25px;
+  font-size: 17px;
+  height: 400px;
+  display: block;
+  margin-bottom: 20px;
 }
 
 .listAttachment img {
   max-width: 100%;
-  margin-top: 10px;
+  max-height: 366px;
+  margin-top: 17px;
 }
 
 .listAttachment .glyphicon {
   vertical-align: text-bottom;
+  width: 17px;
 }
 
 .deleteAttachmentSpan {
@@ -499,11 +504,11 @@ ul {
   color: #838c91;
   text-decoration: underline;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .deleteAttachmentSpan:hover {
   color: black;
-  cursor: pointer;
 }
 
 .itemDiv {
@@ -583,4 +588,65 @@ ul {
 
 .react-draggable, .cursor {
   cursor: move;
+}
+
+.dropbox-button, label.btn{
+  display: inline-block;
+  height: 100%;
+  font-family: "Lucida Grande", "Segoe UI", "Tahoma", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #636363;
+  text-decoration: none;
+  padding: 5px 5px 5px 5px;
+  border: 1px solid #ebebeb;
+  border-radius: 2px;
+  border-bottom-color: #d4d4d4;
+  background: #fcfcfc;
+  background: -moz-linear-gradient(top, #fcfcfc 0%, #f5f5f5 100%);
+  background: -webkit-linear-gradient(top, #fcfcfc 0%, #f5f5f5 100%);
+  background: linear-gradient(to bottom, #fcfcfc 0%, #f5f5f5 100%);
+}
+
+.dropin-btn-status{
+  display: inline-block;
+  width: 15px;
+  height: 18px;
+  vertical-align: bottom;
+  margin: 0 5px 0 2px;
+  background: transparent url(https://www.dropbox.com/static/images/widgets/dbx-saver-status.png) no-repeat;
+  position: relative;
+  top: 2px;
+}
+
+input[type="file"].fileSpace{
+  display: none;
+}
+
+.filesSelect{
+  display: flex;
+  justify-content: center;
+}
+
+.centered{
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.or{
+  margin: 5px;
+}
+
+.attachmentTitle{
+  word-wrap: break-word;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 17px;
+}
+
+.attachmentInfos{
+  height: 17px;
 }

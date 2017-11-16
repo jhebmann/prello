@@ -70,31 +70,39 @@ const fileParams = multer(
 
 router.post('/card/:cardId', fileParams.single('attachment'), function (req, res, next) {
     // Post a new attachment into a card
-    Card.findById(req.params.cardId, function(err, card){
-        let newAttachment = new Attachment()
-        newAttachment.data = fs.readFileSync(req.file.path)
-        newAttachment.contentType = req.file.mimetype
-        newAttachment.save()
-        .then(function(attachment){
-            let newAttachmentInfos = {}
-            newAttachmentInfos._id = attachment._id
-            newAttachmentInfos.datePost = ('undefined' !== typeof req.body.datePost) ? req.body.datePost : Date.now()
-            newAttachmentInfos.title = ('undefined' !== typeof req.body.title) ? req.body.title : ''
-            newAttachmentInfos.postedBy = req.body.postedBy
-            newAttachmentInfos.linkedComment = ('undefined' === typeof req.body.linkedComment) ? req.body.linkedComment : null
-            
-            card.attachments.push(newAttachmentInfos)
-            card.save()
-            .then(function(){
-                res.contentType(newAttachment.contentType)
-                res.status(200).send({image: newAttachment.data.toString('base64'), _id: newAttachment._id})
+    if ('undefined' === typeof req.file){
+        console.log("No file provided")
+        res.status(401).send("No file provided")
+    }
+    else {
+        Card.findById(req.params.cardId, function(err, card){
+            let newAttachment = new Attachment()
+            newAttachment.data = fs.readFileSync(req.file.path)
+            newAttachment.contentType = req.file.mimetype
+            newAttachment.save()
+            .then(function(attachment){
+                let newAttachmentInfos = {}
+                newAttachmentInfos._id = attachment._id
+                newAttachmentInfos.datePost = ('undefined' !== typeof req.body.datePost) ? req.body.datePost : Date.now()
+                newAttachmentInfos.title = ('undefined' !== typeof req.body.title) ? req.body.title : ''
+                newAttachmentInfos.postedBy = req.body.postedBy
+                newAttachmentInfos.linkedComment = ('undefined' === typeof req.body.linkedComment) ? req.body.linkedComment : null
+                
+                card.attachments.push(newAttachmentInfos)
+                card.save()
+                .then(function(){
+                    res.contentType(newAttachment.contentType)
+                    res.status(200).send({image: newAttachment.data.toString('base64'), _id: newAttachment._id})
+                }).catch(function(err) {
+                    console.log(err)
+                    res.status(401).send(err);
+                })
             }).catch(function(err) {
+                console.log(err)
                 res.status(401).send(err);
             })
-        }).catch(function(err) {
-            res.status(401).send(err);
         })
-    })
+    }
 })
 
 router.put('/:id/card/:cardId', function (req, res, next) {
