@@ -77,7 +77,7 @@ class Attachment extends React.Component{
                                     success={file => this.printItem(file)}
                                     multiselect={false}
                                     extensions={['.png', '.jpg', '.jpeg', '.gif']} >
-                                    <a className="dropbox-button"><span className="dropin-btn-status"></span>Choose from Dropbox</a>        
+                                    <a className="dropbox-button" target="_blank"><span className="dropin-btn-status"></span>Choose from Dropbox</a>        
                                 </DropboxChooser>
                             </div>
                             }
