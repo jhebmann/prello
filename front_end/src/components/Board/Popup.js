@@ -13,7 +13,8 @@ import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
-import {Avatar,Tooltip} from 'antd'
+import {Tooltip} from 'antd'
+import Avatar from 'react-avatar'
 
 class Popup extends React.Component{
     constructor(props){
@@ -25,10 +26,7 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: this.props.cardInfos.checklists.map(c => { return { 
-                showChecklist: false,
-                itemState: c.items.map(item => false)
-            }})
+            showChecklists: []
         }
 
         ////////////////////// Socket //////////////////////
@@ -38,7 +36,6 @@ class Popup extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
         this.onClickItemInput = this.onClickItemInput.bind(this)
-        this.updateShows = this.updateShows.bind(this)
 
         ////////////////////// Card //////////////////////
         this.updateCard = this.updateCard.bind(this)
@@ -81,6 +78,14 @@ class Popup extends React.Component{
     
     componentWillReceiveProps(newProps) {
         this.setState({attachments: newProps.attachments});
+    }
+
+    componentWillMount() {
+        const newShowChecklists = this.props.cardInfos.checklists.map(c => { return { 
+            showChecklist: false,
+            itemState: c.items.map(item => false)
+        }})
+        this.setState({showChecklists: newShowChecklists})
     }
 
     render(){
@@ -256,8 +261,13 @@ class Popup extends React.Component{
                     <div className="inList"> In list <span id="spanTitlePopup">{this.state.listTitle}</span> </div>
                     <div id="inlineElements" className="space">
                         <div className="members inline"> 
-                            <span className="spanTitle2"> Members </span> 
-                            {this.renderMembers(this.state.cardInfos.users)} <p/> <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
+                            <span className="spanTitle2"> Members </span>
+                            <div className="membersAssigned"> 
+                                {this.renderMembers(this.state.cardInfos.users)}
+                                <Button className='circularButton' onClick={() => this.addMember.show()}>
+                                    <Glyphicon glyph="plus"/>
+                                </Button>
+                            </div>
                         </div>
                         <div className="labels inline"> 
                             <span className="spanTitle2">Labels </span> 
@@ -428,18 +438,17 @@ class Popup extends React.Component{
     }
 
     renderMembers(){
-         const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
-        <div key = {index} >
-        <Tooltip title = {usr.local.mail}>
-           <Avatar size = "small" >{usr.local.nickname[0]}</Avatar>
-        </Tooltip>
-        {usr.local.nickname} 
-     </div>)
+        const users = 
+            this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+                <div key = {index} className="avatarDiv">
+                    <Tooltip title = {usr.local.nickname} >
+                        <div>
+                            <Avatar name={usr.local.nickname} size={23} textSizeRatio={1.5} round/>
+                        </div>
+                    </Tooltip>
+                </div>
+            )
         return users
-    }
-
-    updateShows(checklistId, itemId){
-        console.log(this.state.showChecklists)
     }
 
     ////////////////////// Card //////////////////////

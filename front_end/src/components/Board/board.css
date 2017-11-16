@@ -118,7 +118,7 @@ body {
 
 .inline {
   width: 30%;
-  display: inline;
+  display: inline-block;
   margin-right: 10px;
 }
 
@@ -652,4 +652,15 @@ input[type="file"].fileSpace{
 
 .attachmentInfos{
   height: 17px;
+}
+
+.avatarDiv {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.membersAssigned {
+  display: inline-flex;
+  overflow: hidden;
 }
