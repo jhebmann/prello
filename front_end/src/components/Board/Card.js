@@ -114,7 +114,7 @@ class Card extends React.Component{
     loadAttachments(){
         if (this.state.cardInfos.attachments) {
             this.state.cardInfos.attachments.forEach((attachment) => {
-                axios.get(url.api + 'attachment/' + attachment._id)
+                axios.get(url.api + 'attachment/' + attachment._id, url.config)
                 .then((response) => {
                     this.setState(prevState=>({
                         attachments: prevState.attachments.concat({

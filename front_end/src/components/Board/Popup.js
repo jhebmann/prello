@@ -235,13 +235,12 @@ class Popup extends React.Component{
 
         ////////////////// Attachments render //////////////////
         let attachmentsList = this.state.attachments.map((attachment, i) => 
-            <li className="listAttachment" key={i}>
+            <li className="listAttachment col-sm-6" key={i}>
                 <div className = "attachmentInfos">
                     <Glyphicon glyph="camera"/>
                     <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
                 </div>
-                <span className="deleteAttachmentSpan" attachmentId = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
-                <br />
+                <span className="deleteAttachmentSpan" attachmentid = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
                 <img src={"data:image/jpeg;base64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
             </li>
         )

@@ -3,6 +3,7 @@ import { Button, FormControl } from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../../config'
 import Auth from '../../Auth/Auth.js'
+import DropboxChooser from 'react-dropbox-chooser'
 const Dropbox = require('dropbox')
 
 class Attachment extends React.Component{
@@ -23,6 +24,7 @@ class Attachment extends React.Component{
         this.handleNewFile = this.handleNewFile.bind(this)
         this.onClickAddAttachment = this.onClickAddAttachment.bind(this)
         this.dropboxBegin = this.dropboxBegin.bind(this)
+        this.printItem = this.printItem.bind(this)
     }
 
     componentDidMount = () => {
@@ -35,44 +37,48 @@ class Attachment extends React.Component{
 
     render(){
         let filesList = []
-        this.state.dropbox.files.forEach((file, i) =>{ 
+        this.state.dropbox.files.forEach((file, i) =>{
             filesList.push(<li key = {i}>{file.name}</li>)
         })
 
 
-        let $imagePreview = null
+        let imagePreview = null
         if (this.state.imagePreviewUrl) {
-          $imagePreview = <img id="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
+          imagePreview = <img id="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
         } else {
-          $imagePreview = ""
+          imagePreview = ""
         }
+
         return(
             <div className="AttachmentDiv">
                 <hr className="skylightHr"/>
                 <div className="attachmentForm">
-                    <FormControl type="file" name="file" placeholder="Attachment" onChange={this.handleNewFile} className="attachmentFormSpace"/>
-                    <FormControl type="text" name="title" placeholder="Title" onChange={this.handleInputChange} className="attachmentFormSpace attachmentFormMedium"/>
-                    <Button className='cardAttachment' className="attachmentFormSpace" bsStyle="primary" onClick={this.onClickAddAttachment} disabled={'undefined' === typeof this.state.file}>Add</Button>
-                    {$imagePreview}
-                </div>
-                <div className = "dropboxDiv">
-                    <div className="container main">
-
-                        {(!Auth.isUserAuthenticatedWithDropbox()) ?
-                        <div id={"pre-auth-section" + this.state.cardId}>
-                            <p>This example takes the user through Dropbox's API OAuth flow using <code>Dropbox.getAuthenticationUrl()</code> method [<a href="http://dropbox.github.io/dropbox-sdk-js/Dropbox.html#getAuthenticationUrl">docs</a>] and then uses the generated access token to list the contents of their root directory.</p>
-                            <a href="" id={"authlink" + this.state.cardId} className="button">Authenticate</a>
-                            <p className="info">Once authenticated, it will use the access token to list the files in your root directory.</p>
+                    <div className="filesSelect">
+                        <label htmlFor={"fileSpace" + this.state.cardId} className="btn">Select Image from your computer</label>
+                        <FormControl id={"fileSpace" + this.state.cardId} type="file" name="file" accept="image/*" placeholder="Attachment" onChange={this.handleNewFile} className="fileSpace attachmentFormSpace"/>
+                        <div className="or">or</div>
+                        <div className="attachmentFormSpace">
+                            {(!Auth.isUserAuthenticatedWithDropbox()) ?
+                            <div>
+                                <div id={"pre-auth-section" + this.state.cardId}>
+                                    <a href="" id={"authlink" + this.state.cardId} className="dropbox-button"><span className="dropin-btn-status"></span>Authenticate</a>
+                                </div>
+                            </div>
+                            :
+                            <div id={"authed-section" + this.state.cardId}>
+                                <DropboxChooser 
+                                    appKey={'owvw24g2oefq2gs'}
+                                    success={file => this.printItem(file)}
+                                    multiselect={false}
+                                    extensions={['.png', '.jpg', '.jpeg', '.gif']} >
+                                    <a className="dropbox-button"><span className="dropin-btn-status"></span>Choose from Dropbox</a>        
+                                </DropboxChooser>
+                            </div>
+                            }
                         </div>
-                        :
-                        <div id={"authed-section" + this.state.cardId}>
-                            <p>You have successfully authenticated. Below are the contents of your root directory. They were fetched using the SDK and access token.</p>
-                            <ul id={"files" + this.state.cardId}>
-                                {filesList}
-                            </ul>
-                        </div>
-                        }
                     </div>
+                    <Button className="attachmentFormSpace centered" bsStyle="primary" onClick={this.onClickAddAttachment} disabled={this.state.imagePreviewUrl.length === 0}>Add</Button>
+                    {imagePreview}
                 </div>
             </div>
         )
@@ -84,15 +90,21 @@ class Attachment extends React.Component{
         //items.filter(item => item.name.match(/\.(pdf)$/)).forEach((item) => this.printItem(item))
     }
 
-    printItem = (item) => {
-        this.state.dbx.filesDownload({path: item.path_display})
-        .then(function (response) {
-            var blob = response.fileBlob;
-            var reader = new FileReader();
-            reader.addEventListener("loadend", function() {
-                console.log(reader.result); // will print out file content
-            });
-            reader.readAsText(blob);
+    printItem = (items) => {
+        const item = items[0]
+        this.state.dropbox.dbx.sharingGetSharedLinkFile({url: item.link})
+        .then((response) => {
+            const blob = response.fileBlob
+            const file = new File([blob], item.name)
+            const reader = new FileReader()
+            reader.onloadend = (upload) => {
+                this.setState({
+                    file: file,
+                    title: item.name,
+                    imagePreviewUrl: reader.result
+                  })
+            }
+            reader.readAsDataURL(file)
         })
         .catch(function (error) {
             console.log(error)
@@ -123,18 +135,18 @@ class Attachment extends React.Component{
     }
 
     handleNewFile = (e) => {
-        const self = this;
-        const reader = new FileReader();
-        const file = e.target.files[0];
+        const reader = new FileReader()
+        const file = e.target.files[0]
     
-        reader.onloadend = function(upload) {
-          self.setState({
+        reader.onloadend = (upload) => {
+          this.setState({
             file: file,
+            title: file.name,
             imagePreviewUrl: reader.result
-          });
+          })
         }
     
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file)
     }
     
     onClickAddAttachment() {
@@ -146,11 +158,11 @@ class Attachment extends React.Component{
         formData.append("title", this.state.title.trim())
         formData.append("datePost", dateNow)
 
-        axios.post(url.api + 'attachment/card/' + this.props.card.state.cardInfos._id, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-        }, url.config).then((response) => {
+        let headers = url.config
+        headers["Content-Type"] = 'multipart/form-data'
+
+        axios.post(url.api + 'attachment/card/' + this.props.card.state.cardInfos._id, formData, headers)
+        .then((response) => {
             const newAttachment = {
                 _id: response.data._id,
                 image: response.data.image,
@@ -161,6 +173,7 @@ class Attachment extends React.Component{
             this.socket.emit('newAttachmentServer', newAttachment)
             this.addAttachment(newAttachment)
         }).catch((error) => {
+            console.log(error)
             alert('An error occured when adding the attachment')
         })
     }
@@ -172,8 +185,11 @@ class Attachment extends React.Component{
         this.state.popup.setState({attachments: newAttachments})
         this.setState({
             attachment: undefined,
-            title: ""
+            title: "",
+            file:null,
+            imagePreviewUrl: ''
         })
+        document.getElementById("fileSpace" + this.state.cardId).value = ""
     }
 }
 

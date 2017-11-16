@@ -40,7 +40,6 @@ class HomeBoard extends React.Component{
       if (Auth.isUserAuthenticatedWithDropbox()) {
         // Create an instance of Dropbox with the access token and use it to
         // fetch and render the files in the users root directory.
-        const self = this
         const dbx = new Dropbox({ accessToken: Auth.getDropboxToken() })
         this.setState({dbx: dbx})
         dbx.filesListFolder({path: ''})

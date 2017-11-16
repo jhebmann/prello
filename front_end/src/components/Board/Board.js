@@ -85,7 +85,7 @@ class Board extends React.Component{
                                             <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
                                                 Add List
                                             </Button>
-                                            <Button bsStyle="primary" id='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>
+                                            {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" id='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
                                         </div>
                                     </div>   
                                 </div>
