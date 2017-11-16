@@ -40,11 +40,16 @@ class HomeUser extends React.Component{
 
     componentWillMount() {
         if(Auth.isUserAuthenticated()){
-          const instance= this
-          axios.all([this.loadTeams(), this.loadUsers()])
-          .then(axios.spread(function (res1, res2) {
-            instance.setState({pageLoaded:true,teams:instance.userTeams(res1.data),allTeams:res1.data,users:res2.data})
-          }))
+          if (url.config.headers.authorization === "Bearer: null"){
+            window.location = "/"
+          }
+          else {
+            const instance= this
+            axios.all([this.loadTeams(), this.loadUsers()])
+            .then(axios.spread(function (res1, res2) {
+              instance.setState({pageLoaded:true,teams:instance.userTeams(res1.data),allTeams:res1.data,users:res2.data})
+            }))
+          }
         }
         else
           this.setState({pageLoaded:true})

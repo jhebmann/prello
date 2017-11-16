@@ -44,8 +44,9 @@ class Login extends React.Component{
     }
     
     componentWillMount = () => {
-        if (Auth.isUserAuthenticated())
+        if (Auth.isUserAuthenticated()){
             this.redirect()
+        }
     }
     
     componentDidMount = () => {
@@ -96,6 +97,7 @@ class Login extends React.Component{
     }
     
     redirect(){
+        console.log("youpi")
         this.setState({
             redirect: <Redirect to='/'/>
         })
@@ -138,13 +140,13 @@ class Login extends React.Component{
             password: this.state.password
         }
 
-        axios.post(url.socket + 'auth/login/', userData, url.config)
+        axios.post(url.socket + 'auth/login/', userData)
         .then((response) => {
             this.setState({
                 error: false,
                 errorMssge: null
             })
-            Auth.authenticateUser(response.data.token);
+            Auth.authenticateUser(response.data.token)
             Auth.setUserId(response.data.user.id)
             Auth.setNickname(response.data.user.nickname)
             this.addNotification('success', 'You successfully logged in. You will be redirected to the front page soon')

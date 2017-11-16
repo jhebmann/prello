@@ -2,10 +2,10 @@ const express = require('express')
 const app = express()
 const helmet = require('helmet')
 const router = express.Router()
-const passport = require('passport');
+const passport = require('passport')
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
-app.set('socketio', io);
+app.set('socketio', io)
 const bodyParser = require('body-parser')
 
 // Preparing app
@@ -21,34 +21,35 @@ const listModel = models.lists
 //To prevent errors from Cross Origin Resource Sharing, we will set 
 //our headers to allow CORS with middleware like so:
 app.use(function(req, res, next) {
- res.setHeader('Access-Control-Allow-Origin', '*');
- res.setHeader('Access-Control-Allow-Credentials', 'true');
- res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
- res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, authorization, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
+ res.setHeader('Access-Control-Allow-Origin', '*')
+ res.setHeader('Access-Control-Allow-Credentials', 'true')
+ res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE')
+ res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, authorization, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers')
 
 //and remove cacheing so we get the most recent comments
- res.setHeader('Cache-Control', 'no-cache');
- next();
+ res.setHeader('Cache-Control', 'no-cache')
+ next()
 })
 // pass the passport middleware
-app.use(passport.initialize());
+app.use(passport.initialize())
 
 // load passport strategies
-const localSignupStrategy = require('./passport/local-signup');
-const localLoginStrategy = require('./passport/local-login');
-passport.use('local-signup', localSignupStrategy);
-passport.use('local-login', localLoginStrategy);
+const localSignupStrategy = require('./passport/local-signup')
+const localLoginStrategy = require('./passport/local-login')
+passport.use('local-signup', localSignupStrategy)
+passport.use('local-login', localLoginStrategy)
 
-// pass the authenticaion checker middleware
-const authCheckMiddleware = require('./routes/api/authCheck');
+const authRoutes = require('./routes/auth/auth')
+app.use('/auth', authRoutes)
+
+// pass the authentication checker middleware
+const authCheckMiddleware = require('./routes/auth/authCheck')
 app.get('/api/*', authCheckMiddleware)
 app.post('/api/*', authCheckMiddleware)
 app.put('/api/*', authCheckMiddleware)
 app.delete('/api/*', authCheckMiddleware)
 
 // routes
-const authRoutes = require('./routes/api/auth');
-app.use('/auth', authRoutes);
 app.use('/api', require('./routes'))
 
 // Database declaration
