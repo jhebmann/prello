@@ -122,8 +122,8 @@ class Popup extends React.Component{
         ////////////////// Card description //////////////////
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
-            descriptionInput = <div onClick={this.updateDescriptionInput} id="textDescription">
-                {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span id="editDescription">Edit the description</span>}
+            descriptionInput = <div onClick={this.updateDescriptionInput} className="textDescription">
+                {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span className="editDescription">Edit the description</span>}
             </div>
         } else{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
@@ -219,12 +219,12 @@ class Popup extends React.Component{
         }
 
         const dueDateRender = 
-            <div id="dueDatePopupDiv"> 
-                <span className={dueDateClass.join("")+" dueDateColors"} id="dueDateCentered">
-                    <span id="checkboxNotDone" onClick={this.updateDoneDate}>
+            <div className="dueDatePopupDiv"> 
+                <span className={dueDateClass.join("")+" dueDateColors dueDateCentered"}>
+                    <span className="checkboxNotDone" onClick={this.updateDoneDate}>
                         {(this.state.cardInfos.doneDate) && <Glyphicon glyph='ok'/>}
                     </span>
-                    <span id="dateText" onClick={() => this.addDueDate.show()}>
+                    <span className="dateText" onClick={() => this.addDueDate.show()}>
                         {moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}
                     </span>
                 </span>
@@ -235,7 +235,7 @@ class Popup extends React.Component{
             cardInputTitle = <h2 onClick={this.updateTitleInput}>{this.state.cardInfos.title}</h2>
         } else{
             cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
-            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
+            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" className="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
         }
 
         ////////////////// Attachments render //////////////////
@@ -253,13 +253,13 @@ class Popup extends React.Component{
 
         return(
             <div className="popup">
-                <div id="divTitlePopup">
+                <div className="divTitlePopup">
                     {cardInputTitle}
                 </div>
                 {/*//////////////// Left Menu /////////////////*/}
                 <div className="popupLeft">
-                    <div className="inList"> In list <span id="spanTitlePopup">{this.state.listTitle}</span> </div>
-                    <div id="inlineElements" className="space">
+                    <div className="inList"> In list <span className="spanTitlePopup">{this.state.listTitle}</span> </div>
+                    <div className="inlineElements space">
                         <div className="members inline"> 
                             <span className="spanTitle2"> Members </span>
                             <div className="membersAssigned"> 

@@ -73,7 +73,7 @@ class Card extends React.Component{
                         {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
                             <div>{this.state.cardInfos.labels.length} labels</div>
                         }
-                        <div id="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' id="glyphRemoveCardChild"/></div>
+                        <div className="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' className="glyphRemoveCardChild"/></div>
                         <h4>{this.state.cardInfos.title}</h4>
                         {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) &&
                             <div>

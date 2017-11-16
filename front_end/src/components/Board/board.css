@@ -37,7 +37,7 @@ body {
   padding-bottom: 2px;
 }
 
-#addListButton {
+.addListButton {
   margin-left: 1%;
   display: block;
   margin-top: 8px;
@@ -112,10 +112,6 @@ body {
   margin-right: 8px;
 }
 
-#inlineElements {
-  display: flex;
-}
-
 .inline {
   width: 30%;
   display: inline-block;
@@ -145,13 +141,13 @@ body {
   padding-top: 20px;
 }
 
-#textDescription {
+.textDescription {
   cursor: pointer;
   line-height: 1.4em;
   word-wrap: break-word;
 }
 
-#textDescription:hover {
+.textDescription:hover {
   background: rgba(0, 0, 0, 0.07);
 }
 
@@ -165,7 +161,7 @@ body {
   line-height: 1.42857;
 }
 
-#editDescription {
+.editDescription {
   color: rgba(0, 0, 0, 0.4);
 }
 
@@ -183,14 +179,14 @@ body {
   margin-left: 7px;
 }
 
-#dateText {
+.dateText {
   display: inline-block;
   text-decoration: underline;
   line-height: 1pc;
   white-space: nowrap;
 }
 
-#checkboxNotDone {
+.checkboxNotDone {
   border: 1px solid #fff;
   border-radius: 2px;
   display: inline-block;
@@ -220,7 +216,7 @@ ul {
   display: inline-flex;
 }
 
-#cardChecklist {
+.cardChecklist {
   margin-left: 8px;
 }
 
@@ -245,7 +241,7 @@ ul {
   margin-left: 10px;
 }
 
-#titleCardPopup:focus {
+.titleCardPopup:focus {
   box-shadow: none;
   margin-bottom: 4px;
   max-height: 2pc;
@@ -295,7 +291,7 @@ ul {
 }
 
 .dueDateTypeWarning {
-  background-color: #e6c60d;
+  background-color: rgb(255, 153, 35);;
   color: white;
 }
 
@@ -320,17 +316,18 @@ ul {
   color: #666;
 }
 
-#dueDateCentered {
+.dueDateCentered {
   display: inline-flex;
   align-items: center;
 }
 
-#dueDatePopupDiv {
+.dueDatePopupDiv {
   cursor: pointer;
 }
 
 .inlineElements {
   margin-right: 5px;
+  display: flex;
 }
 
 .alignElements {
@@ -339,7 +336,7 @@ ul {
   display: inline-flex;
 }
 
-#homeDiv {
+.homeDiv {
   padding: 0.5%;
 }
 
@@ -352,15 +349,15 @@ ul {
   margin-bottom: 20px;
 }
 
-#spanTitlePopup {
+.spanTitlePopup {
   text-decoration: underline;
 }
 
-#divTitlePopup {
+.divTitlePopup {
   margin-bottom: 12px;
 }
 
-#divTitlePopup:hover {
+.divTitlePopup:hover {
   cursor: pointer;
 }
 
@@ -368,7 +365,7 @@ ul {
   margin-bottom: 25px;
 }
 
-#titleCardPopup {
+.titleCardPopup {
   width: 70%;
 }
 
@@ -418,7 +415,7 @@ ul {
   display: block;
 }
 
-#attachmentImgPreview {
+.attachmentImgPreview {
   max-width: 75%;
   margin: 0 auto;
   display: block;
@@ -434,18 +431,18 @@ ul {
   cursor: pointer;
 }
 
-.card:hover #glyphRemoveCard {
+.card:hover .glyphRemoveCard {
   visibility: visible;
 }
 
-#glyphRemoveCard {
+.glyphRemoveCard {
   position: relative;
   visibility: hidden;
   margin-right: -13px;
   margin-top: -7px;
 }
 
-#glyphRemoveCardChild {
+.glyphRemoveCardChild {
   background-clip: padding-box;
   background-origin: padding-box;
   border-radius: 3px;
@@ -456,27 +453,27 @@ ul {
   z-index: 50;
 }
 
-#glyphRemoveCardChild:hover {
+.glyphRemoveCardChild:hover {
   background: rgba(0, 0, 0, 0.1);
   padding: 5px;
 }
 
-#glyphRemoveList {
+.glyphRemoveList {
   margin-right: -15px;
   border-radius: 3px;
 }
 
-#glyphRemoveListChild {
+.glyphRemoveListChild {
   padding: 5px;
   margin-top: -3px;
 }
 
-#titleListDiv {
+.titleListDiv {
   display: flex;
   justify-content: space-between;
 }
 
-#glyphRemoveListChild:hover {
+.glyphRemoveListChild:hover {
   background: rgba(0, 0, 0, 0.1);
   padding: 5px;
   cursor: pointer;

@@ -81,10 +81,10 @@ class Board extends React.Component{
                                         <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
                                             onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}/>
                                         <div className="buttonsList">
-                                            <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
+                                            <Button bsStyle="success" className='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
                                                 Add List
                                             </Button>
-                                            {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" id='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
+                                            {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" className='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
                                         </div>
                                     </div>   
                                 </div>

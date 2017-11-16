@@ -44,7 +44,7 @@ class Attachment extends React.Component{
 
         let imagePreview = null
         if (this.state.imagePreviewUrl) {
-          imagePreview = <img id="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
+          imagePreview = <img className="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
         } else {
           imagePreview = ""
         }

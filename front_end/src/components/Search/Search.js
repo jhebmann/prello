@@ -131,7 +131,7 @@ class Search extends React.Component{
                 <Collapse bordered={false} defaultActiveKey={['1']}>
                     <Panel header={<h3><Icon type="team" />Lists</h3>} key="1"> 
                         <div>
-                            <div id="homeDiv">
+                            <div className="homeDiv">
                                 <Row gutter={16}>
                                     {this.renderLists()}
                                 </Row>
@@ -164,7 +164,7 @@ class Search extends React.Component{
                 <Collapse bordered={false} defaultActiveKey={['1']}>
                     <Panel header={<h3><Icon type="team" />Cards</h3>} key="1"> 
                         <div>
-                            <div id="homeDiv">
+                            <div className="homeDiv">
                                 <Row gutter={16}>
                                     {this.renderCards()}
                                 </Row>

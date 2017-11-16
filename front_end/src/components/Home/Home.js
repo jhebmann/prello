@@ -59,8 +59,8 @@ class Home extends React.Component{
             }
             <div id="homeDiv">
               <Row gutter={16}>
-              {this.renderBoards(this.state.boards)}
-            </Row>
+                {this.renderBoards(this.state.boards)}
+              </Row>
           </div>
        </div>
     )
