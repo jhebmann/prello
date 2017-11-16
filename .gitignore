@@ -5,3 +5,5 @@
 
 # windows script
 /*/start.bat
+
+/back_end/routes/api/upload/*
