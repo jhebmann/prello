@@ -133,16 +133,16 @@ router.get('/search/:text/user/:userId', function(req, res) {
           }
           res.status(200).send(finalResult)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
       }).catch(function(err) {
-          res.status(401).send(err);
+          res.status(401).send(err)
       })
     }).catch(function(err) {
-      res.status(401).send(err);
+      res.status(401).send(err)
     })
   }).catch(function(err) {
-      res.status(401).send(err);
+      res.status(401).send(err)
   })
 })
 

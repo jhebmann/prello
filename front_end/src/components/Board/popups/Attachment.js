@@ -4,6 +4,7 @@ import axios from 'axios'
 import url from '../../../config'
 import Auth from '../../Auth/Auth.js'
 import DropboxChooser from 'react-dropbox-chooser'
+import { Spin } from 'antd'
 const Dropbox = require('dropbox')
 
 class Attachment extends React.Component{
@@ -16,7 +17,8 @@ class Attachment extends React.Component{
             cardId: this.props.card.state.cardInfos._id,
             file: null,
             imagePreviewUrl: '',
-            dropbox: this.props.dropbox
+            dropbox: this.props.dropbox,
+            isLoading: false
         }
 
         this.socket = this.props.io
@@ -44,9 +46,13 @@ class Attachment extends React.Component{
 
         let imagePreview = null
         if (this.state.imagePreviewUrl) {
-          imagePreview = <img className="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
+            imagePreview = <img className="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
+        } else  if (this.state.isLoading){
+            imagePreview = <div className="spinn">
+                                <Spin size='large' />
+                            </div>
         } else {
-          imagePreview = ""
+            imagePreview = ""
         }
 
         return(
@@ -91,6 +97,13 @@ class Attachment extends React.Component{
     }
 
     printItem = (items) => {
+        this.setState({
+            file: null,
+            title: "",
+            imagePreviewUrl: "",
+            isLoading: true
+        })
+
         const item = items[0]
         this.state.dropbox.dbx.sharingGetSharedLinkFile({url: item.link})
         .then((response) => {
@@ -101,7 +114,8 @@ class Attachment extends React.Component{
                 this.setState({
                     file: file,
                     title: item.name,
-                    imagePreviewUrl: reader.result
+                    imagePreviewUrl: reader.result,
+                    isLoading: false
                   })
             }
             reader.readAsDataURL(file)
@@ -131,10 +145,17 @@ class Attachment extends React.Component{
     }
     
     handleInputChange = (e) => {
-        this.setState({[e.target.name]: e.target.value})
+        this.setState({
+            [e.target.name]: e.target.value,
+            title: "",
+            imagePreviewUrl: "",
+            isLoading: true
+        })
     }
 
     handleNewFile = (e) => {
+        this.setState({isLoading: true})
+        
         const reader = new FileReader()
         const file = e.target.files[0]
     
@@ -150,6 +171,7 @@ class Attachment extends React.Component{
     }
     
     onClickAddAttachment() {
+
         const dateNow = Date.now()
 
         let formData = new FormData()
@@ -187,8 +209,10 @@ class Attachment extends React.Component{
             attachment: undefined,
             title: "",
             file:null,
-            imagePreviewUrl: ''
+            imagePreviewUrl: '',
+            isLoading: false
         })
+        this.state.popup.handlePopupClose("attachment")
         document.getElementById("fileSpace" + this.state.cardId).value = ""
     }
 }

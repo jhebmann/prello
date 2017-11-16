@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
     Card.find().then(function(cards){
         res.status(200).send(cards)
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 

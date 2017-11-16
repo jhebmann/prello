@@ -77,7 +77,7 @@ class Popup extends React.Component{
 
     
     componentWillReceiveProps(newProps) {
-        this.setState({attachments: newProps.attachments});
+        this.setState({attachments: newProps.attachments})
     }
 
     componentWillMount() {
@@ -180,7 +180,7 @@ class Popup extends React.Component{
                                                         <div className="itemTitleDiv"
                                                             onClick={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)}>
                                                             <span>{item.title}</span>
-                                                            <span onClick={(e) => {e.stopPropagation(); this.onClickDeleteItem(item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
+                                                            <span onClick={(e) => {this.handleItemDelete(e, item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
                                                         </div>
                                                     </div>
                                                 </div>)
@@ -246,7 +246,7 @@ class Popup extends React.Component{
                     <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
                 </div>
                 <span className="deleteAttachmentSpan" attachmentid = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
-                <img src={"data:image/jpeg;base64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
+                <img src={"data:image/jpegbase64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
             </li>
         )
         ///////////////////////////////////////////////////
@@ -691,6 +691,11 @@ class Popup extends React.Component{
                 })
             }
         }
+    }
+
+    handleItemDelete(e, itemId, checklistId){
+        e.stopPropagation()
+        this.onClickDeleteItem(itemId, checklistId)
     }
 
     onClickDeleteItem(itemId, checklistId) {

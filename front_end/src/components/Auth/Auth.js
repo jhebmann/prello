@@ -6,7 +6,7 @@ class Auth {
        * @param {string} token
        */
       static authenticateUser(token) {
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', token)
       }
     
       static setUserId(id){
@@ -26,7 +26,7 @@ class Auth {
        * @returns {boolean}
        */
       static isUserAuthenticated() {
-        return localStorage.getItem('token') !== null;
+        return localStorage.getItem('token') !== null
       }
       /**
        * Check if a user is authenticated with dropbox - check if a dropbox token is saved in Local Storage
@@ -34,7 +34,7 @@ class Auth {
        * @returns {boolean}
        */
       static isUserAuthenticatedWithDropbox() {
-        return localStorage.getItem('dropboxToken') !== null;
+        return localStorage.getItem('dropboxToken') !== null
       }
     
       /**
@@ -55,7 +55,7 @@ class Auth {
        */
     
       static getToken() {
-        return localStorage.getItem('token');
+        return localStorage.getItem('token')
       }
 
       static getUserID(){
@@ -71,4 +71,4 @@ class Auth {
       }
     }
     
-    export default Auth;
+    export default Auth

@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
     User.find({}, {"local.password": 0, "ldap.password": 0}).then(function(users){
         res.status(200).send(users)
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -21,7 +21,7 @@ router.get('/:id', function (req, res, next) {
     User.findById(req.params.id, {"local.password": 0, "ldap.password": 0}).then(function(user){
         res.status(200).send(user)
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -62,9 +62,9 @@ router.post('/', function (req, res, next) {
             password : req.body.ldap.password
         }        
     }).then(function(user) {
-        res.status(200).send(user);
+        res.status(200).send(user)
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -110,16 +110,16 @@ router.put('/:id/team/add/:teamId', function(req, res, next){
                 .then(function() {
                     res.status(200).send(team)
                 }).catch(function(err) {
-                    res.status(401).send(err);
+                    res.status(401).send(err)
                 })
             }).catch(function(err) {
-                res.status(401).send(err);
+                res.status(401).send(err)
             })
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -141,16 +141,16 @@ router.put('/:id/team/remove/:teamId', function(req, res, next){
                 .then(function() {
                     res.status(200).send(team)
                 }).catch(function(err) {
-                    res.status(401).send(err);
+                    res.status(401).send(err)
                 })
             }).catch(function(err) {
-                res.status(401).send(err);
+                res.status(401).send(err)
             })
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 

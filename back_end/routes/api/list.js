@@ -55,7 +55,7 @@ router.get('/:id/board/:boardId/cards', function (req, res, next) {
                     ).then(function(){
                         res.status(200).send(cardsWithPos)
                     }).catch(function(err) {
-                        res.status(401).send(err);
+                        res.status(401).send(err)
                     })
                 }
             }

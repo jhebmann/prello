@@ -17,7 +17,7 @@ router.get('/:id', function (req, res, next) {
         res.status(200).send(attachment.data.toString('base64'))
     }).catch(function(err) {
         console.log(err)
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -34,10 +34,10 @@ router.get('/:id/card/:cardId/user', function (req, res, next) {
         .then(function(user){
             res.status(200).send(user)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -52,7 +52,7 @@ router.get('/:id/card/:cardId/comment', function (req, res, next) {
     .then(function(card){
         res.status(200).send(card.comments.id(card.attachments.id(id).linkedComment))
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -95,11 +95,11 @@ router.post('/card/:cardId', fileParams.single('attachment'), function (req, res
                     res.status(200).send({image: newAttachment.data.toString('base64'), _id: newAttachment._id})
                 }).catch(function(err) {
                     console.log(err)
-                    res.status(401).send(err);
+                    res.status(401).send(err)
                 })
             }).catch(function(err) {
                 console.log(err)
-                res.status(401).send(err);
+                res.status(401).send(err)
             })
         })
     }
@@ -123,10 +123,10 @@ router.put('/:id/card/:cardId', function (req, res, next) {
             console.log("The attachment of id " + id + " has been successfully updated")
             res.status(200).send(card.attachments[card.attachments.length - 1])
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -150,13 +150,13 @@ router.delete('/:id/card/:cardId', function (req, res, next) {
                 console.log("The attachment of id " + id + " has been successfully deleted")
                 res.status(200).send("The attachment of id " + id + " has been successfully deleted")
             }).catch(function(err) {
-                res.status(401).send(err);
+                res.status(401).send(err)
             })
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 

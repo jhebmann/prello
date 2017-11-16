@@ -4,19 +4,19 @@ import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'
 
-const Option = Select.Option;
+const Option = Select.Option
 const success = (mssge) => {
     message.config({
         top: "10%",
         duration: 2,
-      });
-    message.success(mssge);
-  };
+      })
+    message.success(mssge)
+  }
 
 class CascadeMemberCard extends React.Component{
     
     constructor(props){
-        super(props);
+        super(props)
         this.state={
             members: this.props.members,
             selected:null,
@@ -29,7 +29,7 @@ class CascadeMemberCard extends React.Component{
     }
 
     render(){
-        const memberOptions=this.state.members.map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>);
+        const memberOptions=this.state.members.map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>)
         return (
             <div >
               <Select
@@ -46,7 +46,7 @@ class CascadeMemberCard extends React.Component{
                        {this.props.remove?('Remove Member'):('Add Member')} 
                     </Button>
             </div>
-        );
+        )
     }
   handleChange(key) {
     this.setState({selected:key})
@@ -56,9 +56,9 @@ class CascadeMemberCard extends React.Component{
     axios.put(url.api + 'card/'+this.state.card._id, {
         user:this.state.selected,remove:this.props.remove}, url.config)
     .then((response)=>{
-        this.props.callback(response.data);
+        this.props.callback(response.data)
         this.socket.emit('updateCardServer', response.data)
-        success('Card updated!');
+        success('Card updated!')
         })
     .catch((error) => {
         alert('An error occured when updating the Card'+error)

@@ -88,7 +88,7 @@ class Search extends React.Component{
     }
 
     renderAllBoards(){
-        if (this.state.boards.length === 0) return ;
+        if (this.state.boards.length === 0) return 
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
@@ -120,12 +120,12 @@ class Search extends React.Component{
               </Card>
             </div>
         </Col>
-        );
+        )
         return boardItems
     }
 
     renderAllLists(){
-        if (this.state.lists.length === 0) return ;
+        if (this.state.lists.length === 0) return 
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
@@ -152,13 +152,13 @@ class Search extends React.Component{
                     </Card>
                 </div>
             </Col>
-        );
+        )
         return listItems
         //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }
     
     renderAllCards(){
-        if (this.state.cards.length === 0) return ;
+        if (this.state.cards.length === 0) return 
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
@@ -186,7 +186,7 @@ class Search extends React.Component{
                     </Card>
                 </div>
             </Col>
-        );
+        )
         return listItems
         //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }

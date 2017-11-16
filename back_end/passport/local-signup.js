@@ -1,5 +1,5 @@
-const User = require('mongoose').model('User');
-const PassportLocalStrategy = require('passport-local').Strategy;
+const User = require('mongoose').model('User')
+const PassportLocalStrategy = require('passport-local').Strategy
 
 
 /**
@@ -17,12 +17,15 @@ module.exports = new PassportLocalStrategy({
           password: password.trim(),
           nickname: req.body.name.trim().toLowerCase()
         }
-};
+}
 
-  const newUser = new User(userData);
+  const newUser = new User(userData)
   newUser.save((err) => {
-    if (err) { console.log('Error creating user',userData, err); return done(err); }
+    if (err) {
+      console.log('Error creating user',userData, err)
+      return done(err)
+    }
 
-    return done(null);
-  });
-});
+    return done(null)
+  })
+})

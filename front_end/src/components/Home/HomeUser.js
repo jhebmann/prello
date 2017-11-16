@@ -13,7 +13,7 @@ const TabPane = Tabs.TabPane
 class HomeUser extends React.Component{
     
   constructor(props){
-    super(props);
+    super(props)
     //Default State
     this.state={
       teams: [],
@@ -27,7 +27,7 @@ class HomeUser extends React.Component{
     }
 
     this.socket = SocketIOClient(url.socket)
-    this.addTeam = this.addTeam.bind(this);
+    this.addTeam = this.addTeam.bind(this)
     this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)
     this.onClickAddTeam = this.onClickAddTeam.bind(this)
     this.renderPublicBoards = this.renderPublicBoards.bind(this)
@@ -40,11 +40,16 @@ class HomeUser extends React.Component{
 
     componentWillMount() {
         if(Auth.isUserAuthenticated()){
-          const instance= this
-          axios.all([this.loadTeams(), this.loadUsers()])
-          .then(axios.spread(function (res1, res2) {
-            instance.setState({pageLoaded:true,teams:instance.userTeams(res1.data),allTeams:res1.data,users:res2.data})
-          }))
+          if (url.config.headers.authorization === "Bearer: null"){
+            window.location = "/"
+          }
+          else {
+            const instance= this
+            axios.all([this.loadTeams(), this.loadUsers()])
+            .then(axios.spread(function (res1, res2) {
+              instance.setState({pageLoaded:true,teams:instance.userTeams(res1.data),allTeams:res1.data,users:res2.data})
+            }))
+          }
         }
         else
           this.setState({pageLoaded:true})
@@ -105,7 +110,7 @@ class HomeUser extends React.Component{
       }
 
     handleTeamInputChange(e) {  
-      this.setState({textInput: e.target.value});
+      this.setState({textInput: e.target.value})
     }
 
     render(){
