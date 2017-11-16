@@ -438,6 +438,7 @@ ul {
 #glyphRemoveCard {
   position: relative;
   visibility: hidden;
+  margin-right: -12px;
 }
 
 #glyphRemoveCardChild {
@@ -457,7 +458,7 @@ ul {
 }
 
 #glyphRemoveList {
-  margin-right: -5px;
+  margin-right: -15px;
   border-radius: 3px;
 }
 

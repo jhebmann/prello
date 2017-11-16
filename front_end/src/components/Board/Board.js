@@ -73,7 +73,6 @@ class Board extends React.Component{
                 {
                     this.state.pageLoaded ?( 
                         <Tabs defaultActiveKey="1" tabPosition="left" >
-                            
                             <TabPane tab={<span><Icon type="layout" />{"Board "+this.state.board.title}</span>}  key="1">
                                 {this.cardList(this.state.board.lists)}
                                 <div id="addListDiv">
