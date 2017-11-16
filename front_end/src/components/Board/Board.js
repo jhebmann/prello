@@ -25,7 +25,7 @@ class Board extends React.Component{
             modalVisible:false
         }
         
-        this.socket = this.props.io;
+        this.socket = this.props.io
         this.getAllLists = this.getAllLists.bind(this)
         this.onClickAddList = this.onClickAddList.bind(this)
         this.createList = this.createList.bind(this)
@@ -133,7 +133,7 @@ class Board extends React.Component{
 
     createList(newList, idBoard){
         if (idBoard === this.props.id){
-            let newBoard = Object.assign({}, this.state.board, {lists:this.state.board.lists.concat(newList)});
+            let newBoard = Object.assign({}, this.state.board, {lists:this.state.board.lists.concat(newList)})
             this.setState({board: newBoard})
         }
     }
@@ -178,4 +178,4 @@ class Board extends React.Component{
         this.setState({ modalVisible })
       }
 }
-export default Board;
+export default Board

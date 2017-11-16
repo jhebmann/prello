@@ -2,7 +2,7 @@ const models = require('../../models')
 const Board = models.boards
 const Team = models.teams
 const router = require('express').Router()
-const ObjectId = require('mongodb').ObjectID;
+const ObjectId = require('mongodb').ObjectID
 
 router.get('/', function (req, res, next) {
     // Get all boards
@@ -209,7 +209,7 @@ router.put('/:id/toAdmin/:userId', function (req, res, next) {
         .then(function(board) {
             res.status(200).send(board)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
         console.log(err)
@@ -231,7 +231,7 @@ router.put('/:id/fromAdmin/:userId', function (req, res, next) {
         .then(function(board) {
             res.status(200).send(board)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
         res.status(401).send(err)

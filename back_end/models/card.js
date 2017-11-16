@@ -62,6 +62,6 @@ const CardSchema = new Schema({
       ref: 'Label',
       default: []
     }
-  });
+  })
 
-  module.exports = mongoose.model('Card', CardSchema);
+  module.exports = mongoose.model('Card', CardSchema)

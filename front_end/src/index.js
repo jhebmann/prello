@@ -14,7 +14,7 @@ import { Redirect } from 'react-router-dom'
 
 import './index.css'
 
-const queryString = require('query-string');
+const queryString = require('query-string')
 render((
   
   <BrowserRouter>
@@ -34,5 +34,5 @@ render((
     </div>
   </BrowserRouter>
   
-), document.getElementById('root'));
+), document.getElementById('root'))
     

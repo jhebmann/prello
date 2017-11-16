@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const FormErrors = ({formErrors}) =>
   <div className='formErrors'>
@@ -8,7 +8,7 @@ export const FormErrors = ({formErrors}) =>
           <p key={i}>{fieldName} {formErrors[fieldName]}</p>
         )        
       } else {
-        return '';
+        return ''
       }
     })}
 </div>

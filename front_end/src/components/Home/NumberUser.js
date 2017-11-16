@@ -3,26 +3,26 @@ import React from 'react'
 class NumberUser extends React.Component{
 
     constructor(props){
-        super(props);
+        super(props)
         this.state={
             numberUsers:null
-        };
+        }
         
-        this.initialize = this.initialize.bind(this);
-        this.onConnectedUser = this.onConnectedUser.bind(this);
-        this.connectUser = this.connectUser.bind(this);
-        this.socket = this.props.io;
+        this.initialize = this.initialize.bind(this)
+        this.onConnectedUser = this.onConnectedUser.bind(this)
+        this.connectUser = this.connectUser.bind(this)
+        this.socket = this.props.io
         
-        this.socket.on('connectedUser', this.onConnectedUser);
-        this.socket.on('initialize', this.initialize);  //We should use componentDidMount() ?
+        this.socket.on('connectedUser', this.onConnectedUser)
+        this.socket.on('initialize', this.initialize)  //We should use componentDidMount() ?
     }
 
     initialize(){
-        this.socket.emit('newUser', null);
+        this.socket.emit('newUser', null)
     }
 
     onConnectedUser(number) {
-        this.connectUser(number);
+        this.connectUser(number)
       }
 
     connectUser(number){
@@ -30,7 +30,7 @@ class NumberUser extends React.Component{
     }
 
     render() {
-        return (<h3 className='numberUser'>Users Online : {this.state.numberUsers}</h3>);
+        return (<h3 className='numberUser'>Users Online : {this.state.numberUsers}</h3>)
     }
 }
 

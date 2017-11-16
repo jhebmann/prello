@@ -27,7 +27,7 @@ class DueDate extends React.Component{
         const yesterday = DateTime.moment().subtract( 1, 'day' )
         const valid = function( current ){
             return current.isAfter( yesterday )
-        };
+        }
         return(
             <div className="dueDate">
                 <hr className="skylightHr"/>

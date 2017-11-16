@@ -46,7 +46,7 @@ router.post('/card/:cardId', function (req, res, next) {
         .then(function(card){
             res.status(200).send(card.checklists[card.checklists.length - 1])
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     })
 })

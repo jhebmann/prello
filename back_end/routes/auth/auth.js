@@ -1,8 +1,8 @@
-const express = require('express');
-const validator = require('validator');
-const passport = require('passport');
+const express = require('express')
+const validator = require('validator')
+const passport = require('passport')
 
-const router = new express.Router();
+const router = new express.Router()
 
 /**
  * Validate the sign up form
@@ -12,34 +12,34 @@ const router = new express.Router();
  *                   errors tips, and a global message for the whole form.
  */
 function validateSignupForm(payload) {
-  const errors = {};
-  let isFormValid = true;
-  let message = '';
+  const errors = {}
+  let isFormValid = true
+  let message = ''
 
   if (!payload || typeof payload.email !== 'string' || !validator.isEmail(payload.email)) {
-    isFormValid = false;
-    errors.email = 'Please provide a correct email address.';
+    isFormValid = false
+    errors.email = 'Please provide a correct email address.'
   }
 
   if (!payload || typeof payload.password !== 'string' || payload.password.trim().length < 6) {
-    isFormValid = false;
-    errors.password = 'Password must have at least 6 characters.';
+    isFormValid = false
+    errors.password = 'Password must have at least 6 characters.'
   }
 
   if (!payload || typeof payload.name !== 'string' || payload.name.trim().length === 0) {
-    isFormValid = false;
-    errors.name = 'Please provide your name.';
+    isFormValid = false
+    errors.name = 'Please provide your name.'
   }
 
   if (!isFormValid) {
-    message = 'Check the form for errors.';
+    message = 'Check the form for errors.'
   }
 
   return {
     success: isFormValid,
     message,
     errors
-  };
+  }
 }
 
 /**
@@ -50,39 +50,39 @@ function validateSignupForm(payload) {
  *                   errors tips, and a global message for the whole form.
  */
 function validateLoginForm(payload) {
-  const errors = {};
-  let isFormValid = true;
-  let message = '';
+  const errors = {}
+  let isFormValid = true
+  let message = ''
 
   if (!payload || typeof payload.nickname !== 'string' || payload.nickname.trim().length === 0) {
-    isFormValid = false;
-    errors.nickname = 'Please provide your nickname.';
+    isFormValid = false
+    errors.nickname = 'Please provide your nickname.'
   }
 
   if (!payload || typeof payload.password !== 'string' || payload.password.trim().length === 0) {
-    isFormValid = false;
-    errors.password = 'Please provide your password.';
+    isFormValid = false
+    errors.password = 'Please provide your password.'
   }
 
   if (!isFormValid) {
-    message = 'Check the form for errors.';
+    message = 'Check the form for errors.'
   }
 
   return {
     success: isFormValid,
     message,
     errors
-  };
+  }
 }
 
 router.post('/signup', (req, res, next) => {
-  const validationResult = validateSignupForm(req.body);
+  const validationResult = validateSignupForm(req.body)
   if (!validationResult.success) {
     return res.status(400).json({
       success: false,
       message: validationResult.message,
       errors: validationResult.errors
-    });
+    })
   }
 
 
@@ -113,24 +113,24 @@ router.post('/signup', (req, res, next) => {
       return res.status(400).json({
         success: false,
         message: 'Could not process the form.'
-      });
+      })
     }
 
     return res.status(200).json({
       success: true,
       message: 'You have successfully signed up! Now you should be able to log in.'
-    });
-  })(req, res, next);
-});
+    })
+  })(req, res, next)
+})
 
 router.post('/login', (req, res, next) => {
-  const validationResult = validateLoginForm(req.body);
+  const validationResult = validateLoginForm(req.body)
   if (!validationResult.success) {
     return res.status(400).json({
       success: false,
       message: validationResult.message,
       errors: validationResult.errors
-    });
+    })
   }
 
 
@@ -140,13 +140,13 @@ router.post('/login', (req, res, next) => {
         return res.status(400).json({
           success: false,
           message: err.message
-        });
+        })
       }
 
       return res.status(400).json({
         success: false,
         message: 'Could not process the form.'
-      });
+      })
     }
 
 
@@ -155,9 +155,9 @@ router.post('/login', (req, res, next) => {
       message: 'You have successfully logged in!',
       token,
       user: userData
-    });
-  })(req, res, next);
-});
+    })
+  })(req, res, next)
+})
 
 
-module.exports = router;
+module.exports = router

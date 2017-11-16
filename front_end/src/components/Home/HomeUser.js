@@ -13,7 +13,7 @@ const TabPane = Tabs.TabPane
 class HomeUser extends React.Component{
     
   constructor(props){
-    super(props);
+    super(props)
     //Default State
     this.state={
       teams: [],
@@ -27,7 +27,7 @@ class HomeUser extends React.Component{
     }
 
     this.socket = SocketIOClient(url.socket)
-    this.addTeam = this.addTeam.bind(this);
+    this.addTeam = this.addTeam.bind(this)
     this.onClickAddPublicBoard = this.onClickAddPublicBoard.bind(this)
     this.onClickAddTeam = this.onClickAddTeam.bind(this)
     this.renderPublicBoards = this.renderPublicBoards.bind(this)
@@ -110,7 +110,7 @@ class HomeUser extends React.Component{
       }
 
     handleTeamInputChange(e) {  
-      this.setState({textInput: e.target.value});
+      this.setState({textInput: e.target.value})
     }
 
     render(){

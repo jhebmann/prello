@@ -4,19 +4,19 @@ import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'
 
-const Option = Select.Option;
+const Option = Select.Option
 const success = (mssge) => {
     message.config({
         top: "10%",
         duration: 2,
-      });
-    message.success(mssge);
-  };
+      })
+    message.success(mssge)
+  }
 
 class CascadeTeam extends React.Component{
     
     constructor(props){
-        super(props);
+        super(props)
         this.state={
             teams: this.props.teams,
             selected:null,
@@ -28,7 +28,7 @@ class CascadeTeam extends React.Component{
     }
 
     render(){
-        const teamOptions=this.state.teams.map(team => <Option key={team._id} ><Avatar icon="team" size='small'/>{team.name}</Option>);
+        const teamOptions=this.state.teams.map(team => <Option key={team._id} ><Avatar icon="team" size='small'/>{team.name}</Option>)
         return (
             <div >
               <Select
@@ -45,7 +45,7 @@ class CascadeTeam extends React.Component{
                        {this.props.remove?('Remove Team'):('Add Team')} 
                     </Button>
             </div>
-        );
+        )
     }
   handleChange(key) {
     this.setState({selected:key})
