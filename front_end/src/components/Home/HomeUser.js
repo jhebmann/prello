@@ -174,7 +174,7 @@ class HomeUser extends React.Component{
       const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id))
       const teamMemberItems = teamMembers.map((member, index)=>
         <div className="teamMember" key={index}>
-           <Tooltip title={member.local.mail}>
+           <Tooltip title={member.local.nickname}>
               <Avatar size="medium" >{member.local.nickname[0]}</Avatar>
            </Tooltip>
            {member.local.nickname} 

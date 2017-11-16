@@ -12,6 +12,8 @@
     "input-moment": "^0.4.0",
     "moment": "^2.19.1",
     "react": "^16.0.0",
+    "react-addons-shallow-compare": "^15.6.2",
+    "react-avatar": "^2.4.0",
     "react-beautiful-dnd": "^2.6.1",
     "react-bootstrap": "^0.31.3",
     "react-bootstrap-date-picker": "^5.1.0",
