@@ -326,8 +326,13 @@ ul {
 }
 
 .inlineElements {
-  margin-right: 5px;
   display: flex;
+  justify-content: space-between;
+
+}
+
+.inlineElementsCard {
+  margin-right: 5px;
 }
 
 .alignElements {
