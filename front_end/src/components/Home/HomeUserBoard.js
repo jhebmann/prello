@@ -46,7 +46,7 @@ class HomeUserBoard extends React.Component{
     }
 
     handleBoardTitle(){
-        let  headBoard = <h4>{this.state.board.title || 'No title'}</h4>
+        let  headBoard = <span>{this.state.board.title || 'No title'}</span>
         if(this.state.board.admins.includes(Auth.getUserID())){
             if(!this.state.showInput ) {
                 headBoard = <span  onClick={(e) => {e.stopPropagation();this.onClickUpdateTitle();}}>{this.state.board.title || 'No title'}</span>

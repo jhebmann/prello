@@ -38,6 +38,7 @@ body {
 }
 
 #addListButton {
+  margin-left: 1%;
   display: block;
   margin-top: 8px;
 }

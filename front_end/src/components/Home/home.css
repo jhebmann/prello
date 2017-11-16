@@ -62,3 +62,19 @@
     height:25px;
     width:100px;
 }
+
+.boardContainer{
+    display: flex;
+    flex-direction: column;
+}
+.listContainer{
+    margin: .5%;
+}
+.buttonsList{
+    display: flex;
+}
+.optionsContainer{
+    display: flex;
+    flex-direction: row;
+    margin: .5%;
+}
