@@ -19,7 +19,7 @@ class CascadeMemberCard extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            members: this.props.members.filter(usr=>usr._id!==Auth.getUserID()),
+            members: this.props.members,
             selected:null,
             card:this.props.card
         }
