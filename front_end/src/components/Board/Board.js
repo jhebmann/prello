@@ -1,14 +1,13 @@
-import React from 'react';
-import List from './List.js';
-import {Button, FormControl} from 'react-bootstrap';
+import React from 'react'
+import List from './List.js'
+import {Button, FormControl} from 'react-bootstrap'
 import './board.css'
 import Cascade from './Cascade.js'
 import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
-import {Spin,Tabs,Icon,Modal} from 'antd';
+import {Modal, Spin} from 'antd'
 import Auth from '../Auth/Auth.js'
-const TabPane = Tabs.TabPane;
 
 class Board extends React.Component{
     

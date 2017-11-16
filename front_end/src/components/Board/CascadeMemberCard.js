@@ -1,6 +1,5 @@
 import React from 'react'
 import {Select,Avatar,Button,message} from 'antd'
-import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'

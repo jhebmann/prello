@@ -1,9 +1,8 @@
 import React from 'react'
 import axios from 'axios'
-import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';
-import {Card,Tag,Button,Row,Col,Input} from 'antd'
+import {Button, Col, Input, Row} from 'antd'
 import HomeUserBoard from './HomeUserBoard.js'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import './home.css' 
