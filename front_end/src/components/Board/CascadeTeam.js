@@ -1,10 +1,17 @@
 import React from 'react'
-import {Select,Avatar,Button} from 'antd'
+import {Select,Avatar,Button,message} from 'antd'
 import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'
 
 const Option = Select.Option;
+const success = (mssge) => {
+    message.config({
+        top: "10%",
+        duration: 2,
+      });
+    message.success(mssge);
+  };
 
 class CascadeTeam extends React.Component{
     
@@ -47,7 +54,7 @@ class CascadeTeam extends React.Component{
   onClick(){
     axios.put(url.api + 'team/'+this.state.selected, {
         board:this.state.boardId,remove:this.props.remove}, url.config)
-    .then(()=>{alert('Board updated!')})
+    .then(()=>{success('Board updated!')})
     .catch((error) => {
         alert('An error occured when updating the board')
     })

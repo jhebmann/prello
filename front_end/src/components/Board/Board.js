@@ -6,7 +6,7 @@ import Cascade from './Cascade.js'
 import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
-import {Spin,Tabs,Icon} from 'antd';
+import {Spin,Tabs,Icon,Modal} from 'antd';
 import Auth from '../Auth/Auth.js'
 const TabPane = Tabs.TabPane;
 
@@ -22,7 +22,8 @@ class Board extends React.Component{
             titleNewList: "",
             parameters: this.props.parentProps.location,
             pageLoaded: false,
-            usersBoard:null
+            usersBoard:null,
+            modalVisible:false
         }
         
         this.socket = this.props.io;
@@ -31,6 +32,7 @@ class Board extends React.Component{
         this.createList = this.createList.bind(this)
         this.deleteList = this.deleteList.bind(this)
         this.renderOptions=this.renderOptions.bind(this)
+        this.setModalVisible=this.setModalVisible.bind(this)
         this.socket.on('addList', this.createList)
         this.socket.on('deleteListClient', this.deleteList)
     }
@@ -72,20 +74,22 @@ class Board extends React.Component{
             <div className='board'>
                 {
                     this.state.pageLoaded ?( 
-                        <Tabs defaultActiveKey="1" tabPosition="left" >
-                            
-                            <TabPane tab={<span><Icon type="layout" />{"Board "+this.state.board.title}</span>}  key="1">
-                                {this.cardList(this.state.board.lists)}
-                                <div id="addListDiv">
-                                    <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
-                                        onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}/>
-                                    <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
-                                        Add List
-                                    </Button>
+                            <div className="boardContainer">
+                                    {this.renderOptions()}
+                                <div className="listContainer">
+                                    {this.cardList(this.state.board.lists)}
+                                    <div id="addListDiv">
+                                        <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
+                                            onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}/>
+                                        <div className="buttonsList">
+                                            <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
+                                                Add List
+                                            </Button>
+                                            {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" id='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
+                                        </div>
+                                    </div>   
                                 </div>
-                            </TabPane>
-                            {this.renderOptions()}
-                        </Tabs>
+                        </div>
                     ):
                     (
                         <div className="spinn">
@@ -151,18 +155,28 @@ class Board extends React.Component{
     }
 
     renderOptions(){
-        // const usersBoardArr=this.state.allTeams.filter(team=>team.boards.includes(this.state.board._id)).map((team)=>{return team.users})
-        // let usersBoard=Array.from(new Set([].concat.apply([],usersBoardArr)))
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())){
             return(
-            <TabPane tab={<span><Icon type="contacts" />Admin Options</span>}  key="2">
-                <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
-                <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true}/>
-                <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id}/>
-                <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id}/>
-            </TabPane>      
+            <div className="optionsContainer">
+                <Modal
+                    title="Board Admin Options"
+                    style={{ top: "10%" }}
+                    visible={this.state.modalVisible}
+                    onOk={() => this.setModalVisible(false)}
+                    onCancel={() => this.setModalVisible(false)}
+                    footer={null} >
+                    <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
+                    <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true}/>
+                    <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id}/>
+                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id}/>            
+                </Modal>
+            </div>
             )
-        }    
+        }
     }
+
+    setModalVisible(modalVisible) {
+        this.setState({ modalVisible })
+      }
 }
 export default Board;

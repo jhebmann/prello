@@ -4,6 +4,7 @@ import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
 import Auth from '../Auth/Auth.js';
 import {Card,Tag,Button,Row,Col,Input} from 'antd'
+import HomeUserBoard from './HomeUserBoard.js'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import './home.css' 
 
@@ -106,26 +107,7 @@ onClickAddBoard(){
     this.setState({titleNewBoard: e.target.value});
   }
 
-  onClickDeleteBoard(id){
 
-    confirmAlert({
-        title: 'Delete the board ?',
-        message: 'This card will be removed and you won\'t be able to re-open it. There is no undo !',
-        confirmLabel: 'Delete',                           // Text button confirm
-        cancelLabel: 'Cancel',                             // Text button cancel
-
-        onConfirm: () => (
-          axios.delete(url.api + 'board/' + id, url.config)
-          .then((response) => {
-            this.socket.emit('deleteBoard', id)
-            this.deleteBoard(id)
-          })
-          .catch((error) => {
-            alert('An error occured when deleting the board')
-          })
-        )
-    })
-}
   
 
   deleteBoard(id){
@@ -139,31 +121,11 @@ onClickAddBoard(){
     const boardItems = boards.map((board, index)=>
     <Col span={5} key={index}>
         <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
-          {this.renderCard(board)}                                                                                                                 
+          <HomeUserBoard board={board} deleteBoard={this.deleteBoard} socket={this.props.socket}/>                                                                                                                 
         </div>
     </Col>
     );
     return boardItems
-  }
-
-  renderCard(board){
-
-    let deleteBttn=''
-    if(board.admins && board.admins.includes(Auth.getUserID()))
-      deleteBttn=
-      <Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation();this.onClickDeleteBoard(board._id)}}>Delete
-      </Button> 
-      return (
-    <Card title={board.title || 'Undefined'} extra={deleteBttn}>
-        <Tag color="red">Tag</Tag>
-            <p>Description</p>
-            {(board.isPublic) ?(
-              <p>Public Board</p>):(
-              <p>Private Board</p>)
-            }
-    </Card>
-   )
-
   }
 }
 

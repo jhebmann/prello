@@ -3,32 +3,6 @@ import {Button, FormControl, Glyphicon, Panel} from 'react-bootstrap'
 import axios from 'axios'
 import Card from './Card.js'
 import url from '../../config'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-
-  return result
-}
-
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver && 'lightblue',
-  marginTop: "10px",
-})
-
-const getItemStyle = (draggableStyle, isDragging) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: 'none',
-
-  // change background colour if dragging
-  background: isDragging && 'lightgreen',
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
-})
 
 class List extends React.Component{
 
@@ -58,7 +32,6 @@ class List extends React.Component{
     this.deleteCard = this.deleteCard.bind(this)
 
     this.handleInputChange = this.handleInputChange.bind(this)
-    this.onDragEnd = this.onDragEnd.bind(this)
 
     //Event Listeners
     this.socket.on('updateListTitle', this.updateListTitle)
@@ -68,25 +41,7 @@ class List extends React.Component{
   
   }
 
-  onDragEnd(result) {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-
-    const newCards = reorder(
-      this.state.cards,
-      result.source.index,
-      result.destination.index
-    );
-
-    this.setState({
-      cards: newCards
-    });
-  }
-
   componentDidMount() {
-    // console.dir(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards')
     axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards', url.config)
     .then((response) => {
       this.getAllCards(response.data, this.props.id)
@@ -115,24 +70,12 @@ class List extends React.Component{
             </div>
           </div>
           <div className="listBody">
-            <DragDropContext onDragEnd={this.onDragEnd}>
-              <Droppable droppableId="droppable">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
-                  >
                     {this.cardList()}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-
             <p>
               <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
                             value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.trim().length < 1}>Add Card</Button>
-              <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteCards}>Delete Cards</Button>
+              <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteCards} disabled={this.state.cards.length < 1}>Delete Cards</Button>
             </p>
           </div>
         </Panel>
@@ -142,22 +85,10 @@ class List extends React.Component{
   //Renders the Cards stored in the cards array   
   cardList(){
     const cardItems= this.state.cards.map((card, index) =>
-    <Draggable key={card._id} draggableId={card._id}>
-      {(provided, snapshot) => (
-        <div>
-          <div ref={provided.innerRef}
-            style={getItemStyle(
-              provided.draggableStyle,
-              snapshot.isDragging
-            )}
-            {...provided.dragHandleProps}
-          >
-            <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title} listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket} usersBoard={this.props.usersBoard} dropbox={this.props.dropbox}/>
-          </div>
-          {provided.placeholder}
-        </div>
-      )}
-    </Draggable>
+            <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
+                listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket} 
+                usersBoard={this.props.usersBoard} dropbox={this.props.dropbox}
+              />
     )
     return cardItems
   }
