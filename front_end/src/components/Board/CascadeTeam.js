@@ -47,18 +47,23 @@ class CascadeTeam extends React.Component{
             </div>
         )
     }
-  handleChange(key) {
-    this.setState({selected:key})
-  }
 
-  onClick(){
-    axios.put(url.api + 'team/'+this.state.selected, {
-        board:this.state.boardId,remove:this.props.remove}, url.config)
-    .then(()=>{success('Board updated!')})
-    .catch((error) => {
-        alert('An error occured when updating the board')
-    })
-  }
+    handleChange(key) {
+        this.setState({selected:key})
+    }
+
+    onClick(){
+        axios.put(url.api + 'team/'+this.state.selected, {
+            board:this.state.boardId,remove:this.props.remove}, url.config)
+        .then((response)=>{success('Board updated!');this.props.updateAllTeams(response.data)})
+        .catch((error) => {
+            alert('An error occured when updating the board'+error)
+        })
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.setState({teams: nextProps.teams})
+    }
 }
 
 export default CascadeTeam
