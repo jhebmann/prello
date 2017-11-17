@@ -88,7 +88,7 @@ class Search extends React.Component{
     }
 
     renderAllBoards(){
-        if (this.state.boards.length === 0) return ;
+        if (this.state.boards.length === 0) return 
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
@@ -120,18 +120,18 @@ class Search extends React.Component{
               </Card>
             </div>
         </Col>
-        );
+        )
         return boardItems
     }
 
     renderAllLists(){
-        if (this.state.lists.length === 0) return ;
+        if (this.state.lists.length === 0) return 
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
                     <Panel header={<h3><Icon type="team" />Lists</h3>} key="1"> 
                         <div>
-                            <div id="homeDiv">
+                            <div className="homeDiv">
                                 <Row gutter={16}>
                                     {this.renderLists()}
                                 </Row>
@@ -152,19 +152,19 @@ class Search extends React.Component{
                     </Card>
                 </div>
             </Col>
-        );
+        )
         return listItems
         //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }
     
     renderAllCards(){
-        if (this.state.cards.length === 0) return ;
+        if (this.state.cards.length === 0) return 
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
                     <Panel header={<h3><Icon type="team" />Cards</h3>} key="1"> 
                         <div>
-                            <div id="homeDiv">
+                            <div className="homeDiv">
                                 <Row gutter={16}>
                                     {this.renderCards()}
                                 </Row>
@@ -186,7 +186,7 @@ class Search extends React.Component{
                     </Card>
                 </div>
             </Col>
-        );
+        )
         return listItems
         //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }

@@ -5,7 +5,7 @@ import Cascade from '../Board/Cascade.js'
 class HomeAdminTab extends React.Component{
 
     constructor(props){
-        super(props);
+        super(props)
         this.state={
             team: this.props.team,
             users:this.props.users,
@@ -17,7 +17,7 @@ class HomeAdminTab extends React.Component{
     }   
     
     render(){
-            const teamMembers=this.state.users.filter(usr => this.state.team.users.includes(usr._id));
+            const teamMembers=this.state.users.filter(usr => this.state.team.users.includes(usr._id))
             const notTeamMembers=this.state.users.filter(usr => !this.state.team.users.includes(usr._id))
             const membersNotAdmin=teamMembers.filter(usr => this.state.team.users.filter(usr=>!this.state.team.admins.includes(usr)).includes(usr._id))
             const membersAdmin=teamMembers.filter(usr=>this.state.team.admins.includes(usr._id))

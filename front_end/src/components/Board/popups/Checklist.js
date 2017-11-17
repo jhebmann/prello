@@ -25,7 +25,7 @@ class Checklist extends React.Component{
                 <div className="checklistForm">
                     <FormControl type="text" onChange={this.handleInputChange} name="checklist" value={this.state.checklist}
                                     onKeyPress={this.handleKeyPress} placeholder="Checklist"/>
-                    <Button id='cardChecklist' bsStyle="primary" onClick={this.onClickAddChecklist} disabled={this.state.checklist.trim().length < 1}>Add</Button>
+                    <Button className='cardChecklist' bsStyle="primary" onClick={this.onClickAddChecklist} disabled={this.state.checklist.trim().length < 1}>Add</Button>
                 </div>
             </div>
         )
@@ -44,7 +44,7 @@ class Checklist extends React.Component{
     onClickAddChecklist() {
         axios.post(url.api + 'checklist/card/' + this.props.card.state.cardInfos._id, {
             title: this.state.checklist.trim()
-        }).then((response) => {
+        }, url.config).then((response) => {
             this.socket.emit('newChecklistServer', response.data)
             this.addChecklist(response.data)
         }).catch((error) => {

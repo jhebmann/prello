@@ -1,14 +1,13 @@
-import React from 'react';
-import List from './List.js';
-import {Button, FormControl} from 'react-bootstrap';
+import React from 'react'
+import List from './List.js'
+import {Button, FormControl} from 'react-bootstrap'
 import './board.css'
 import Cascade from './Cascade.js'
 import CascadeTeam from './CascadeTeam.js'
 import axios from 'axios'
 import url from '../../config'
-import {Spin,Tabs,Icon,Modal} from 'antd';
+import {Modal, Spin} from 'antd'
 import Auth from '../Auth/Auth.js'
-const TabPane = Tabs.TabPane;
 
 class Board extends React.Component{
     
@@ -26,13 +25,15 @@ class Board extends React.Component{
             modalVisible:false
         }
         
-        this.socket = this.props.io;
+        this.socket = this.props.io
         this.getAllLists = this.getAllLists.bind(this)
         this.onClickAddList = this.onClickAddList.bind(this)
         this.createList = this.createList.bind(this)
         this.deleteList = this.deleteList.bind(this)
         this.renderOptions=this.renderOptions.bind(this)
         this.setModalVisible=this.setModalVisible.bind(this)
+        this.updateAllTeams=this.updateAllTeams.bind(this)
+        this.updateBoard=this.updateBoard.bind(this)
         this.socket.on('addList', this.createList)
         this.socket.on('deleteListClient', this.deleteList)
     }
@@ -82,10 +83,10 @@ class Board extends React.Component{
                                         <FormControl type = "text" name = "titleNewList" value = {this.state.titleNewList} placeholder = "Add a list..."
                                             onChange = {this.handleInputChange} id="addListInput" onKeyPress={this.handleKeyPress}/>
                                         <div className="buttonsList">
-                                            <Button bsStyle="success" id='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
+                                            <Button bsStyle="success" className='addListButton' onClick={this.onClickAddList} disabled={this.state.titleNewList.trim().length < 1}>
                                                 Add List
                                             </Button>
-                                            {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" id='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
+                                            {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" className='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
                                         </div>
                                     </div>   
                                 </div>
@@ -134,7 +135,7 @@ class Board extends React.Component{
 
     createList(newList, idBoard){
         if (idBoard === this.props.id){
-            let newBoard = Object.assign({}, this.state.board, {lists:this.state.board.lists.concat(newList)});
+            let newBoard = Object.assign({}, this.state.board, {lists:this.state.board.lists.concat(newList)})
             this.setState({board: newBoard})
         }
     }
@@ -165,18 +166,27 @@ class Board extends React.Component{
                     onOk={() => this.setModalVisible(false)}
                     onCancel={() => this.setModalVisible(false)}
                     footer={null} >
-                    <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false}/>
-                    <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true}/>
-                    <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id}/>
-                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id}/>            
+                    <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false} updateAllTeams={this.updateAllTeams}/>
+                    <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true} updateAllTeams={this.updateAllTeams}/>
+                    <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
+                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>            
                 </Modal>
             </div>
             )
         }
     }
 
+    updateAllTeams(team){
+        let newAllTeams=this.state.allTeams.filter(t=>t._id!==team._id)
+        this.setState({allTeams:newAllTeams.concat(team)})
+    }
+
+    updateBoard(board){
+        this.setState({board})
+    }
+
     setModalVisible(modalVisible) {
         this.setState({ modalVisible })
       }
 }
-export default Board;
+export default Board

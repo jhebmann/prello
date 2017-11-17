@@ -9,7 +9,7 @@ import './home.css'
 class HomeUserBoard extends React.Component{
 
     constructor(props){
-        super(props);
+        super(props)
         this.state={
           board:this.props.board,
           titleNewBoard: '',
@@ -22,6 +22,8 @@ class HomeUserBoard extends React.Component{
         this.onClickUpdateTitle = this.onClickUpdateTitle.bind(this)
         this.updateBoardTitle = this.updateBoardTitle.bind(this)
         this.onClickDeleteBoard = this.onClickDeleteBoard.bind(this)
+        this.handleBoardDelete = this.handleBoardDelete.bind(this)
+        this.handleTitleupdate = this.handleTitleupdate.bind(this)
         
         this.socket.on('updateBoardTitle', this.updateBoardTitle)
         
@@ -31,7 +33,7 @@ class HomeUserBoard extends React.Component{
         let deleteBttn=''
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID()))
           deleteBttn=
-          <Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation();this.onClickDeleteBoard(this.state.board._id)}}>Delete
+          <Button type="danger"  icon="delete" size="small" onClick={(e) => {this.handleBoardDelete(e)}}>Delete
           </Button> 
           return (
             <Card title={<div>{this.handleBoardTitle()}</div>} extra={deleteBttn}>
@@ -45,11 +47,26 @@ class HomeUserBoard extends React.Component{
        )
     }
 
+    handleBoardDelete(e){
+        e.stopPropagation()
+        this.onClickDeleteBoard(this.state.board._id)
+    }
+
+    handleTitleupdate(e){
+        e.stopPropagation()
+        this.onClickUpdateTitle()
+    }
+
     handleBoardTitle(){
+<<<<<<< HEAD
         let  headBoard = <h4>{this.state.board.title || 'No title'}</h4>
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())){
+=======
+        let  headBoard = <span>{this.state.board.title || 'No title'}</span>
+        if(this.state.board.admins.includes(Auth.getUserID())){
+>>>>>>> 03246c4d4b3b2cf2569a3b5f9e4afd8c38cf1cec
             if(!this.state.showInput ) {
-                headBoard = <span  onClick={(e) => {e.stopPropagation();this.onClickUpdateTitle();}}>{this.state.board.title || 'No title'}</span>
+                headBoard = <span  onClick={(e) => {this.handleTitleupdate(e)}}>{this.state.board.title || 'No title'}</span>
             } else{
                 headBoard = <input className='inputBoardTitle' onClick={(e) => {e.stopPropagation()}} autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateTitle} 
                                 type="text" name="title" value={this.state.titleNewBoard} onKeyPress={this.handleKeyPress}/>

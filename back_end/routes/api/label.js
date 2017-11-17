@@ -41,7 +41,7 @@ router.post('/board/:boardId', function (req, res, next) {
                 .then(function(board){
                     res.status(200).send(board.labels[board.labels.length - 1])
                 }).catch(function(err) {
-                    res.status(401).send(err);
+                    res.status(401).send(err)
                 })
             }
         }
@@ -68,7 +68,7 @@ router.put('/:id/board/:boardId', function (req, res, next) {
                 .then(function(board){
                     res.status(200).send(board.labels.id(id))
                 }).catch(function(err) {
-                    res.status(401).send(err);
+                    res.status(401).send(err)
                 })
             }
         }

@@ -37,7 +37,7 @@ body {
   padding-bottom: 2px;
 }
 
-#addListButton {
+.addListButton {
   margin-left: 1%;
   display: block;
   margin-top: 8px;
@@ -112,13 +112,9 @@ body {
   margin-right: 8px;
 }
 
-#inlineElements {
-  display: flex;
-}
-
 .inline {
   width: 30%;
-  display: inline;
+  display: inline-block;
   margin-right: 10px;
 }
 
@@ -145,13 +141,13 @@ body {
   padding-top: 20px;
 }
 
-#textDescription {
+.textDescription {
   cursor: pointer;
   line-height: 1.4em;
   word-wrap: break-word;
 }
 
-#textDescription:hover {
+.textDescription:hover {
   background: rgba(0, 0, 0, 0.07);
 }
 
@@ -165,7 +161,7 @@ body {
   line-height: 1.42857;
 }
 
-#editDescription {
+.editDescription {
   color: rgba(0, 0, 0, 0.4);
 }
 
@@ -183,14 +179,14 @@ body {
   margin-left: 7px;
 }
 
-#dateText {
+.dateText {
   display: inline-block;
   text-decoration: underline;
   line-height: 1pc;
   white-space: nowrap;
 }
 
-#checkboxNotDone {
+.checkboxNotDone {
   border: 1px solid #fff;
   border-radius: 2px;
   display: inline-block;
@@ -220,7 +216,7 @@ ul {
   display: inline-flex;
 }
 
-#cardChecklist {
+.cardChecklist {
   margin-left: 8px;
 }
 
@@ -245,7 +241,7 @@ ul {
   margin-left: 10px;
 }
 
-#titleCardPopup:focus {
+.titleCardPopup:focus {
   box-shadow: none;
   margin-bottom: 4px;
   max-height: 2pc;
@@ -295,7 +291,7 @@ ul {
 }
 
 .dueDateTypeWarning {
-  background-color: #e6c60d;
+  background-color: rgb(255, 153, 35);;
   color: white;
 }
 
@@ -320,16 +316,22 @@ ul {
   color: #666;
 }
 
-#dueDateCentered {
+.dueDateCentered {
   display: inline-flex;
   align-items: center;
 }
 
-#dueDatePopupDiv {
+.dueDatePopupDiv {
   cursor: pointer;
 }
 
 .inlineElements {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.inlineElementsCard {
   margin-right: 5px;
 }
 
@@ -339,7 +341,7 @@ ul {
   display: inline-flex;
 }
 
-#homeDiv {
+.homeDiv {
   padding: 0.5%;
 }
 
@@ -352,15 +354,15 @@ ul {
   margin-bottom: 20px;
 }
 
-#spanTitlePopup {
+.spanTitlePopup {
   text-decoration: underline;
 }
 
-#divTitlePopup {
+.divTitlePopup {
   margin-bottom: 12px;
 }
 
-#divTitlePopup:hover {
+.divTitlePopup:hover {
   cursor: pointer;
 }
 
@@ -368,7 +370,7 @@ ul {
   margin-bottom: 25px;
 }
 
-#titleCardPopup {
+.titleCardPopup {
   width: 70%;
 }
 
@@ -418,8 +420,10 @@ ul {
   display: block;
 }
 
-#attachmentImgPreview {
-  max-width: 95%;
+.attachmentImgPreview {
+  max-width: 75%;
+  margin: 0 auto;
+  display: block;
 }
 
 .selected {
@@ -432,17 +436,18 @@ ul {
   cursor: pointer;
 }
 
-.card:hover #glyphRemoveCard {
+.card:hover .glyphRemoveCard {
   visibility: visible;
 }
 
-#glyphRemoveCard {
+.glyphRemoveCard {
   position: relative;
   visibility: hidden;
-  margin-right: -12px;
+  margin-right: -13px;
+  margin-top: -7px;
 }
 
-#glyphRemoveCardChild {
+.glyphRemoveCardChild {
   background-clip: padding-box;
   background-origin: padding-box;
   border-radius: 3px;
@@ -453,27 +458,27 @@ ul {
   z-index: 50;
 }
 
-#glyphRemoveCardChild:hover {
+.glyphRemoveCardChild:hover {
   background: rgba(0, 0, 0, 0.1);
   padding: 5px;
 }
 
-#glyphRemoveList {
+.glyphRemoveList {
   margin-right: -15px;
   border-radius: 3px;
 }
 
-#glyphRemoveListChild {
+.glyphRemoveListChild {
   padding: 5px;
   margin-top: -3px;
 }
 
-#titleListDiv {
+.titleListDiv {
   display: flex;
   justify-content: space-between;
 }
 
-#glyphRemoveListChild:hover {
+.glyphRemoveListChild:hover {
   background: rgba(0, 0, 0, 0.1);
   padding: 5px;
   cursor: pointer;
@@ -481,18 +486,21 @@ ul {
 
 .listAttachment {
   text-align: center;
-  width: 100%;
-  padding-bottom: 25px;
-  font-size: 25px;
+  font-size: 17px;
+  height: 400px;
+  display: block;
+  margin-bottom: 20px;
 }
 
 .listAttachment img {
   max-width: 100%;
-  margin-top: 10px;
+  max-height: 366px;
+  margin-top: 17px;
 }
 
 .listAttachment .glyphicon {
   vertical-align: text-bottom;
+  width: 17px;
 }
 
 .deleteAttachmentSpan {
@@ -501,11 +509,11 @@ ul {
   color: #838c91;
   text-decoration: underline;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .deleteAttachmentSpan:hover {
   color: black;
-  cursor: pointer;
 }
 
 .itemDiv {
@@ -585,4 +593,81 @@ ul {
 
 .react-draggable, .cursor {
   cursor: move;
+}
+
+.dropbox-button, label.btn{
+  display: inline-block;
+  height: 100%;
+  font-family: "Lucida Grande", "Segoe UI", "Tahoma", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #636363;
+  text-decoration: none;
+  padding: 5px 5px 5px 5px;
+  border: 1px solid #ebebeb;
+  border-radius: 2px;
+  border-bottom-color: #d4d4d4;
+  background: #fcfcfc;
+  background: -moz-linear-gradient(top, #fcfcfc 0%, #f5f5f5 100%);
+  background: -webkit-linear-gradient(top, #fcfcfc 0%, #f5f5f5 100%);
+  background: linear-gradient(to bottom, #fcfcfc 0%, #f5f5f5 100%);
+}
+
+.dropin-btn-status{
+  display: inline-block;
+  width: 15px;
+  height: 18px;
+  vertical-align: bottom;
+  margin: 0 5px 0 2px;
+  background: transparent url(https://www.dropbox.com/static/images/widgets/dbx-saver-status.png) no-repeat;
+  position: relative;
+  top: 2px;
+}
+
+input[type="file"].fileSpace{
+  display: none;
+}
+
+.filesSelect{
+  display: flex;
+  justify-content: center;
+}
+
+.centered{
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.or{
+  margin: 5px;
+}
+
+.attachmentTitle{
+  word-wrap: break-word;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 17px;
+}
+
+.attachmentInfos{
+  height: 17px;
+}
+
+.avatarDiv {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.membersAssigned {
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.removeTeamSpan {
+  float: right;
+  margin-right: 15px;
 }

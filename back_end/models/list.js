@@ -19,7 +19,7 @@ const ListSchema = new Schema({
     type: Date,
     default: Date.now
   }
-});
+})
   
   
 module.exports = mongoose.model('List', ListSchema)

@@ -1,4 +1,4 @@
-import Auth from './components/Auth/Auth.js';
+import Auth from './components/Auth/Auth.js'
 
 const config = {
     socket:"http://localhost:8000/",

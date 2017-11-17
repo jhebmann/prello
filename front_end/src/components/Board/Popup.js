@@ -4,7 +4,6 @@ import SkyLight from 'react-skylight'
 import Attachment from './popups/Attachment'
 import Checklist from './popups/Checklist'
 import DueDate from './popups/DueDate'
-import Label from './popups/Label'
 import Member from './popups/Member'
 import MoveCard from './popups/MoveCard'
 import axios from 'axios'
@@ -13,7 +12,8 @@ import moment from 'moment'
 import Markdown from 'react-remarkable'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
-import {Avatar,Tooltip} from 'antd'
+import {Tooltip} from 'antd'
+import Avatar from 'react-avatar'
 
 class Popup extends React.Component{
     constructor(props){
@@ -25,10 +25,7 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
-            showChecklists: this.props.cardInfos.checklists.map(c => { return { 
-                showChecklist: false,
-                itemState: c.items.map(item => false)
-            }})
+            showChecklists: []
         }
 
         ////////////////////// Socket //////////////////////
@@ -38,7 +35,6 @@ class Popup extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickChecklistShow = this.onClickChecklistShow.bind(this)
         this.onClickItemInput = this.onClickItemInput.bind(this)
-        this.updateShows = this.updateShows.bind(this)
 
         ////////////////////// Card //////////////////////
         this.updateCard = this.updateCard.bind(this)
@@ -80,7 +76,15 @@ class Popup extends React.Component{
 
     
     componentWillReceiveProps(newProps) {
-        this.setState({attachments: newProps.attachments});
+        this.setState({attachments: newProps.attachments})
+    }
+
+    componentWillMount() {
+        const newShowChecklists = this.props.cardInfos.checklists.map(c => { return { 
+            showChecklist: false,
+            itemState: c.items.map(item => false)
+        }})
+        this.setState({showChecklists: newShowChecklists})
     }
 
     render(){
@@ -89,9 +93,9 @@ class Popup extends React.Component{
             overflow: 'auto'
         }
 
-        const labelPopup = {
+        /*const labelPopup = {
             overflow: 'auto'
-        }
+        }*/
 
         const checklistPopup = {
             height: '35%'
@@ -117,8 +121,8 @@ class Popup extends React.Component{
         ////////////////// Card description //////////////////
         let descriptionInput  = null
         if(!this.state.showDescriptionInput) {
-            descriptionInput = <div onClick={this.updateDescriptionInput} id="textDescription">
-                {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span id="editDescription">Edit the description</span>}
+            descriptionInput = <div onClick={this.updateDescriptionInput} className="textDescription">
+                {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span className="editDescription">Edit the description</span>}
             </div>
         } else{
             descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
@@ -175,7 +179,7 @@ class Popup extends React.Component{
                                                         <div className="itemTitleDiv"
                                                             onClick={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)}>
                                                             <span>{item.title}</span>
-                                                            <span onClick={(e) => {e.stopPropagation(); this.onClickDeleteItem(item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
+                                                            <span onClick={(e) => {this.handleItemDelete(e, item._id, checklist._id)}}><Glyphicon glyph='remove' className="glyphRemoveItem"/></span>
                                                         </div>
                                                     </div>
                                                 </div>)
@@ -214,12 +218,12 @@ class Popup extends React.Component{
         }
 
         const dueDateRender = 
-            <div id="dueDatePopupDiv"> 
-                <span className={dueDateClass.join("")+" dueDateColors"} id="dueDateCentered">
-                    <span id="checkboxNotDone" onClick={this.updateDoneDate}>
+            <div className="dueDatePopupDiv"> 
+                <span className={dueDateClass.join("")+" dueDateColors dueDateCentered"}>
+                    <span className="checkboxNotDone" onClick={this.updateDoneDate}>
                         {(this.state.cardInfos.doneDate) && <Glyphicon glyph='ok'/>}
                     </span>
-                    <span id="dateText" onClick={() => this.addDueDate.show()}>
+                    <span className="dateText" onClick={() => this.addDueDate.show()}>
                         {moment(this.state.cardInfos.dueDate).format("MMM DD - HH:mm").toString().replace("-", "at")}
                     </span>
                 </span>
@@ -230,40 +234,44 @@ class Popup extends React.Component{
             cardInputTitle = <h2 onClick={this.updateTitleInput}>{this.state.cardInfos.title}</h2>
         } else{
             cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
-            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" id="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
+            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" className="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
         }
 
         ////////////////// Attachments render //////////////////
         let attachmentsList = this.state.attachments.map((attachment, i) => 
-            <li className="listAttachment" key={i}>
+            <li className="listAttachment col-sm-6" key={i}>
                 <div className = "attachmentInfos">
                     <Glyphicon glyph="camera"/>
                     <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
                 </div>
-                <span className="deleteAttachmentSpan" attachmentId = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
-                <br />
-                <img src={"data:image/jpeg;base64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
+                <span className="deleteAttachmentSpan" attachmentid = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
+                <img src={"data:image/jpegbase64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
             </li>
         )
         ///////////////////////////////////////////////////
 
         return(
             <div className="popup">
-                <div id="divTitlePopup">
+                <div className="divTitlePopup">
                     {cardInputTitle}
                 </div>
                 {/*//////////////// Left Menu /////////////////*/}
                 <div className="popupLeft">
-                    <div className="inList"> In list <span id="spanTitlePopup">{this.state.listTitle}</span> </div>
-                    <div id="inlineElements" className="space">
+                    <div className="inList"> In list <span className="spanTitlePopup">{this.state.listTitle}</span> </div>
+                    <div className="inlineElements space">
                         <div className="members inline"> 
-                            <span className="spanTitle2"> Members </span> 
-                            {this.renderMembers(this.state.cardInfos.users)} <p/> <Button className='circularButton' onClick={() => this.addMember.show()}><Glyphicon glyph="plus"/></Button>
+                            <span className="spanTitle2"> Members </span>
+                            <div className="membersAssigned"> 
+                                {this.renderMembers(this.state.cardInfos.users)}
+                                <Button className='circularButton' onClick={() => this.addMember.show()}>
+                                    <Glyphicon glyph="plus"/>
+                                </Button>
+                            </div>
                         </div>
-                        <div className="labels inline"> 
+                        {/*<div className="labels inline"> 
                             <span className="spanTitle2">Labels </span> 
                             {this.state.cardInfos.labels} <Button className='circularButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="plus"/></Button>
-                        </div>
+                        </div>*/}
                         <div className="dueDate inline"> 
                             <span className="spanTitle2">Due date </span> 
                             {
@@ -300,7 +308,7 @@ class Popup extends React.Component{
                     <div className="popupAdd">
                         <h3> Add </h3>
                         <Button className='popupButton' onClick={() => this.addMember.show()}><Glyphicon glyph="user"/> Members</Button>
-                        <Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tags"/> Labels</Button>
+                        {/*<Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tags"/> Labels</Button>*/}
                         <Button className='popupButton' onClick={() => this.addChecklist.show()}><Glyphicon glyph="check"/> Checklists</Button>
                         <Button className='popupButton' onClick={() => this.addDueDate.show()}><Glyphicon glyph="time"/> Due date</Button>
                         <Button className='popupButton' onClick={() => this.addAttachment.show()}><Glyphicon glyph="paperclip"/> Attachment</Button>
@@ -316,9 +324,9 @@ class Popup extends React.Component{
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
                     <Member popup={this} card={this.state.card} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard} io={this.socket} cardInfos={this.state.cardInfos}/>
                 </SkyLight>
-                <SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
+                {/*<SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
                     <Label parentClose={this.handlePopupClose.bind(this)}/>
-                </SkyLight>
+                </SkyLight>*/}
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
                     <Checklist checklists={this.state.cardInfos.checklists} popup={this} card={this.state.card} io={this.socket} />
                 </SkyLight>
@@ -429,18 +437,17 @@ class Popup extends React.Component{
     }
 
     renderMembers(){
-         const users = this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
-        <div key = {index} >
-        <Tooltip title = {usr.local.mail}>
-           <Avatar size = "small" >{usr.local.nickname[0]}</Avatar>
-        </Tooltip>
-        {usr.local.nickname} 
-     </div>)
+        const users = 
+            this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
+                <div key = {index} className="avatarDiv">
+                    <Tooltip title = {usr.local.nickname} >
+                        <div>
+                            <Avatar name={usr.local.nickname} size={23} textSizeRatio={1.5} round/>
+                        </div>
+                    </Tooltip>
+                </div>
+            )
         return users
-    }
-
-    updateShows(checklistId, itemId){
-        console.log(this.state.showChecklists)
     }
 
     ////////////////////// Card //////////////////////
@@ -683,6 +690,11 @@ class Popup extends React.Component{
                 })
             }
         }
+    }
+
+    handleItemDelete(e, itemId, checklistId){
+        e.stopPropagation()
+        this.onClickDeleteItem(itemId, checklistId)
     }
 
     onClickDeleteItem(itemId, checklistId) {

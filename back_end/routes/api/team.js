@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
     Team.find().then(function(teams){
         res.status(200).send(teams)
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -20,7 +20,7 @@ router.get('/:id', function (req, res, next) {
     Team.findById(req.params.id).then(function(team){
         res.status(200).send(team)
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -55,10 +55,10 @@ router.get('/:id/users', function (req, res, next) {
         .then(function(users) {
             res.status(200).send(users)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -73,10 +73,10 @@ router.get('/:id/admins', function (req, res, next) {
         .then(function(users) {
             res.status(200).send(users)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -91,10 +91,10 @@ router.get('/:id/simpleUsers', function (req, res, next) {
         .then(function(users) {
             res.status(200).send(users)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err);
+        res.status(401).send(err)
     })
 })
 
@@ -128,7 +128,7 @@ router.delete('/:id', function (req, res, next) {
     const id = req.params.id
     Team.findOneAndRemove(
         {_id: id},
-        (err, res) => {
+        (err, team) => {
             if (err) res.status(401).send(err)
             else{
                 User.update(
@@ -228,7 +228,7 @@ router.put('/:id/toAdmin/:userId', function (req, res, next) {
         .then(function(team) {
             res.status(200).send(team)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
         res.status(401).send(err)
@@ -249,7 +249,7 @@ router.put('/:id/fromAdmin/:userId', function (req, res, next) {
         .then(function(team) {
             res.status(200).send(team)
         }).catch(function(err) {
-            res.status(401).send(err);
+            res.status(401).send(err)
         })
     }).catch(function(err) {
         res.status(401).send(err)

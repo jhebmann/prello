@@ -1,16 +1,16 @@
 import React from 'react'
-import './Form.css';
-import Auth from '../Auth.js';
+import './Form.css'
+import Auth from '../Auth.js'
 import { Redirect } from 'react-router-dom'
 import {ListGroupItem} from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../../config'
-const NotificationSystem = require('react-notification-system');
+const NotificationSystem = require('react-notification-system')
 
 class Login extends React.Component{
 
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             password: '', 
             nickname: '',
@@ -40,12 +40,13 @@ class Login extends React.Component{
             position: 'tc',
             autoDismiss: 3,
             onRemove: onRemove
-        });
+        })
     }
     
     componentWillMount = () => {
-        if (Auth.isUserAuthenticated())
+        if (Auth.isUserAuthenticated()){
             this.redirect()
+        }
     }
     
     componentDidMount = () => {
@@ -53,49 +54,50 @@ class Login extends React.Component{
     }
 
     handleSubmit(event) {
-        alert('nickname: ' + this.state.nickname + ' || pass: ' + this.state.password);
-        event.preventDefault();
+        alert('nickname: ' + this.state.nickname + ' || pass: ' + this.state.password)
+        event.preventDefault()
     }
 
     handleUserInput = (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
+        const name = e.target.name
+        const value = e.target.value
         this.setState({[name]: value},
-                        () => { this.validateField(name, value) });
+                        () => { this.validateField(name, value) })
     }
     
     validateField(fieldName, value) {
-        let fieldValidationErrors = this.state.formErrors;
-        let passwordValid = this.state.passwordValid;
-        let nicknameValid = this.state.nicknameValid;
+        let fieldValidationErrors = this.state.formErrors
+        let passwordValid = this.state.passwordValid
+        let nicknameValid = this.state.nicknameValid
     
         switch(fieldName) {
             case 'password':
-                passwordValid = value.length >= 1;
-                fieldValidationErrors.password = passwordValid ? '': ' is empty';
-                break;
+                passwordValid = value.length >= 1
+                fieldValidationErrors.password = passwordValid ? '': ' is empty'
+                break
             case 'nickname':
-                nicknameValid = value.length >= 1;
-                fieldValidationErrors.nickname = nicknameValid ? '': ' is empty';
-                break;
+                nicknameValid = value.length >= 1
+                fieldValidationErrors.nickname = nicknameValid ? '': ' is empty'
+                break
             default:
-                break;
+                break
         }
         this.setState({formErrors: fieldValidationErrors,
                         passwordValid: passwordValid,
                         nicknameValid: nicknameValid
-                        }, this.validateForm);
+                        }, this.validateForm)
     }
     
     validateForm() {
-            this.setState({formValid: this.state.passwordValid && this.state.nicknameValid});
+            this.setState({formValid: this.state.passwordValid && this.state.nicknameValid})
     }
     
     errorClass(error) {
-            return(error.length === 0 ? '' : 'has-error');
+            return(error.length === 0 ? '' : 'has-error')
     }
     
     redirect(){
+        console.log("youpi")
         this.setState({
             redirect: <Redirect to='/'/>
         })
@@ -131,20 +133,20 @@ class Login extends React.Component{
 
     processForm(event) {
         // prevent default action. in this case, action is the form submission event
-        event.preventDefault();
+        event.preventDefault()
         
         const userData = {
             nickname: this.state.nickname,
             password: this.state.password
         }
 
-        axios.post(url.socket + 'auth/login/', userData, url.config)
+        axios.post(url.socket + 'auth/login/', userData)
         .then((response) => {
             this.setState({
                 error: false,
                 errorMssge: null
             })
-            Auth.authenticateUser(response.data.token);
+            Auth.authenticateUser(response.data.token)
             Auth.setUserId(response.data.user.id)
             Auth.setNickname(response.data.user.nickname)
             this.addNotification('success', 'You successfully logged in. You will be redirected to the front page soon')
@@ -176,4 +178,4 @@ class Login extends React.Component{
         }
 }
 
-export default Login;
+export default Login

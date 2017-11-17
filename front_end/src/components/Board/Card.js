@@ -62,7 +62,7 @@ class Card extends React.Component{
         }
 
         const dueDateDiv = <div className="alignElements">{(this.state.cardInfos.dueDate) ? 
-            <span className={dueDateClass.join("")+" dueDateColors inlineElements"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
+            <span className={dueDateClass.join("")+" dueDateColors inlineElementsCard"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
         
         return(
             <div>
@@ -73,7 +73,7 @@ class Card extends React.Component{
                         {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
                             <div>{this.state.cardInfos.labels.length} labels</div>
                         }
-                        <div id="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' id="glyphRemoveCardChild"/></div>
+                        <div className="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' className="glyphRemoveCardChild"/></div>
                         <h4>{this.state.cardInfos.title}</h4>
                         {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) &&
                             <div>
@@ -114,7 +114,7 @@ class Card extends React.Component{
     loadAttachments(){
         if (this.state.cardInfos.attachments) {
             this.state.cardInfos.attachments.forEach((attachment) => {
-                axios.get(url.api + 'attachment/' + attachment._id)
+                axios.get(url.api + 'attachment/' + attachment._id, url.config)
                 .then((response) => {
                     this.setState(prevState=>({
                         attachments: prevState.attachments.concat({

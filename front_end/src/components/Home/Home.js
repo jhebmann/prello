@@ -1,9 +1,8 @@
 import React from 'react'
 import axios from 'axios'
-import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
-import Auth from '../Auth/Auth.js';
-import {Card,Tag,Button,Row,Col,Input} from 'antd'
+import Auth from '../Auth/Auth.js'
+import {Button, Col, Input, Row} from 'antd'
 import HomeUserBoard from './HomeUserBoard.js'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import './home.css' 
@@ -11,7 +10,7 @@ import './home.css'
 class Home extends React.Component{
     
   constructor(props){
-    super(props);    
+    super(props)    
     //Default State
     this.state={
       boards: [],
@@ -60,8 +59,8 @@ class Home extends React.Component{
             }
             <div id="homeDiv">
               <Row gutter={16}>
-              {this.renderBoards(this.state.boards)}
-            </Row>
+                {this.renderBoards(this.state.boards)}
+              </Row>
           </div>
        </div>
     )
@@ -104,7 +103,7 @@ onClickAddBoard(){
   }
 
   handleBoardTitleInputChange(e) {  
-    this.setState({titleNewBoard: e.target.value});
+    this.setState({titleNewBoard: e.target.value})
   }
 
 
@@ -113,7 +112,7 @@ onClickAddBoard(){
   deleteBoard(id){
     this.setState(prevState=>({
       boards: prevState.boards.filter((item) => item._id !== id)
-    }));
+    }))
   }
 
   renderBoards(list){
@@ -124,7 +123,7 @@ onClickAddBoard(){
           <HomeUserBoard board={board} deleteBoard={this.deleteBoard} socket={this.props.socket}/>                                                                                                                 
         </div>
     </Col>
-    );
+    )
     return boardItems
   }
 }

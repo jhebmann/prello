@@ -60,12 +60,12 @@ class List extends React.Component{
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
-        <Panel id="panelList" bsSize="small" className={('undefined' !== typeof this.state.parameters.state && this.props.id === this.state.parameters.state.listId) ? "selected list" : "list"}>
+        <Panel bsSize="small" className={('undefined' !== typeof this.state.parameters.state && this.props.id === this.state.parameters.state.listId) ? "selected list" : "list"}>
           <div className='listHead'>
-            <div id="titleListDiv">
+            <div className="titleListDiv">
               {headList}
-              <div id="glyphRemoveList" onClick={this.onClickDeleteList}>
-                <Glyphicon glyph='remove' id="glyphRemoveListChild"/>
+              <div className="glyphRemoveList" onClick={this.onClickDeleteList}>
+                <Glyphicon glyph='remove' className="glyphRemoveListChild"/>
               </div>
             </div>
           </div>

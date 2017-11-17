@@ -24,13 +24,18 @@ class Member extends React.Component{
 
     updateCard(card) {
         if (card._id ===this.state.card.state.cardInfos._id){
-            let newCardInfos = this.state.card.state.cardInfos
-            newCardInfos.users = card.users
-            this.state.card.setState({cardInfos: newCardInfos})
-            this.state.popup.setState({cardInfos: newCardInfos})
+            let newCardInfos = this.state.card
+            newCardInfos.state.cardInfos.users = card.users
+            this.state.card.setState({card: newCardInfos})
+            this.state.popup.setState({card: newCardInfos})
         }
     }
 
+    componentWillReceiveProps(nextProps){
+        let newCard=this.state.card
+        newCard.cardInfos=nextProps.cardInfos
+        this.setState({card: newCard})
+      }
 }
 
 export default Member
