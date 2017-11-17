@@ -26,7 +26,6 @@ class HomeUserBoard extends React.Component{
         this.handleTitleupdate = this.handleTitleupdate.bind(this)
         
         this.socket.on('updateBoardTitle', this.updateBoardTitle)
-        
     }
 
     render(){
@@ -58,13 +57,8 @@ class HomeUserBoard extends React.Component{
     }
 
     handleBoardTitle(){
-<<<<<<< HEAD
         let  headBoard = <h4>{this.state.board.title || 'No title'}</h4>
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())){
-=======
-        let  headBoard = <span>{this.state.board.title || 'No title'}</span>
-        if(this.state.board.admins.includes(Auth.getUserID())){
->>>>>>> 03246c4d4b3b2cf2569a3b5f9e4afd8c38cf1cec
             if(!this.state.showInput ) {
                 headBoard = <span  onClick={(e) => {this.handleTitleupdate(e)}}>{this.state.board.title || 'No title'}</span>
             } else{
