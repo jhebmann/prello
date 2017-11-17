@@ -4,7 +4,6 @@ import SkyLight from 'react-skylight'
 import Attachment from './popups/Attachment'
 import Checklist from './popups/Checklist'
 import DueDate from './popups/DueDate'
-import Label from './popups/Label'
 import Member from './popups/Member'
 import MoveCard from './popups/MoveCard'
 import axios from 'axios'
@@ -94,9 +93,9 @@ class Popup extends React.Component{
             overflow: 'auto'
         }
 
-        const labelPopup = {
+        /*const labelPopup = {
             overflow: 'auto'
-        }
+        }*/
 
         const checklistPopup = {
             height: '35%'

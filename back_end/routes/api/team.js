@@ -128,7 +128,7 @@ router.delete('/:id', function (req, res, next) {
     const id = req.params.id
     Team.findOneAndRemove(
         {_id: id},
-        (err, res) => {
+        (err, team) => {
             if (err) res.status(401).send(err)
             else{
                 User.update(

@@ -29,10 +29,18 @@ class Header extends React.Component{
         <Navbar.Collapse>
           <Navbar.Form pullLeft>
             <FormGroup>
-              <FormControl type="text" placeholder="Search" name="search" onChange={this.handleInputChange}/>
+              <FormControl type="text" placeholder="Search" name="search" onChange={this.handleInputChange}
+                onKeyPress=
+                  {(e) => {if(e.key==='Enter' && e.target.value.trim().length > 0) window.location = "/search/"+this.state.search}}
+                />
             </FormGroup>
             {' '}
-            <Button type="submit" onClick={() => window.location = "/search/"+this.state.search}>Search</Button>
+            <Button type="submit" 
+              onClick={() => window.location = "/search/"+this.state.search}
+              disabled={this.state.search.trim().length < 1}
+            >
+              Search
+            </Button>
           </Navbar.Form>
           <Nav pullRight>
           {Auth.isUserAuthenticated() ? 
