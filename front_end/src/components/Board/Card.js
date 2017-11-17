@@ -26,7 +26,7 @@ class Card extends React.Component{
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
-        
+
         this.loadAttachments()
     }
     /*
@@ -89,7 +89,7 @@ class Card extends React.Component{
                         }
                         {(numItems > 0) &&
                             <div>
-                                <div><Glyphicon glyph='check'/>{numDoneItems + "/" + numItems}</div>
+                                <div className={numItems === numDoneItems ? "allItemsCompleted" : ""}><Glyphicon glyph='check'/>{numDoneItems + "/" + numItems}</div>
                             </div>
                         }
                     </Thumbnail>
