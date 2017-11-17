@@ -123,7 +123,7 @@ class Cascade extends React.Component{
   addAdminBoard(){
     const addr=url.api+'board/'+this.props.boardId + '/toAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then(()=>{success('Admin added to the Board!')})
+    .then((response)=>{success('Admin added to the Board!');this.props.updateBoard(response.data)})
     .catch((error) => {
         alert('An error occured when adding admin to the Board'+error)
     })
@@ -132,7 +132,7 @@ class Cascade extends React.Component{
   revokeAdminBoard(){
     const addr=url.api+'board/'+this.props.boardId + '/fromAdmin/' + this.state.selected
     axios.put(addr, {}, url.config)
-    .then(()=>{success('Admin revoked from the Board!')})
+    .then((response)=>{success('Admin revoked from the Board!');this.props.updateBoard(response.data)})
     .catch((error) => {
         alert('An error occured when revoking admin from the Board'+error)
     })
