@@ -76,11 +76,18 @@ io.on('connection', (client) => {
     client.on('updateBoardTitle', (id, newTitle) => {
         client.broadcast.emit('updateBoardTitle', id, newTitle)
     })
+    
+    client.on('deleteBoard', (idBoard) => {
+        client.broadcast.emit('deleteBoard', idBoard)
+    })
+
+    // ----- Handle Teams ----- //
     client.on('newTeam', (team) => {
         client.broadcast.emit('addTeam', team)
     })
-    client.on('deleteBoard', (idBoard) => {
-        client.broadcast.emit('deleteBoard', idBoard)
+
+    client.on('deleteTeamServer', (teamId) => {
+        client.broadcast.emit('deleteTeamClient', teamId)
     })
     
     // ----- Handle lists ----- //

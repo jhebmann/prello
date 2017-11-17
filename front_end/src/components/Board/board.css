@@ -666,3 +666,8 @@ input[type="file"].fileSpace{
   display: inline-flex;
   overflow: hidden;
 }
+
+.removeTeamSpan {
+  float: right;
+  margin-right: 15px;
+}
