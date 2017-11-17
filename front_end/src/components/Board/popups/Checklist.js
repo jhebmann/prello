@@ -46,7 +46,7 @@ class Checklist extends React.Component{
         axios.post(url.api + 'checklist/card/' + this.props.card.state.cardInfos._id, {
             title: this.state.checklist.trim()
         }, url.config).then((response) => {
-            this.socket.emit('newChecklistServer', response.data)
+            this.socket.emit('newChecklistServer', response.data, this.state.card.state.cardInfos._id)
             this.addChecklist(response.data)
         }).catch((error) => {
             handleServerResponse(error, 'An error occured when adding the checklist')

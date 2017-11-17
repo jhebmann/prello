@@ -593,22 +593,24 @@ class Popup extends React.Component{
         })
     }
 
-    addChecklist(checklist){
+    addChecklist(checklist, cardId){
         let newCardInfos = this.state.cardInfos
-        newCardInfos.checklists.push(checklist)
-        const newShowChecklists = newCardInfos.checklists.map(c => { return { 
-            showChecklist: false,
-            itemState: c.items.map(item => false)
-        }})
-
-        this.setState({
-            cardInfos: newCardInfos,
-            showChecklists: newShowChecklists
-        })
-
-        this.state.card.setState({
-            cardInfos: newCardInfos
-        })
+        if (newCardInfos._id === cardId){
+            newCardInfos.checklists.push(checklist)
+            const newShowChecklists = newCardInfos.checklists.map(c => { return { 
+                showChecklist: false,
+                itemState: c.items.map(item => false)
+            }})
+    
+            this.setState({
+                cardInfos: newCardInfos,
+                showChecklists: newShowChecklists
+            })
+    
+            this.state.card.setState({
+                cardInfos: newCardInfos
+            })
+        }
     }
 
     updateTitleChecklist(newChecklist){
@@ -687,6 +689,9 @@ class Popup extends React.Component{
             if (-1 !== itemIndex) {
                 newCardInfos.checklists[checklistIndex].items[itemIndex] = newItem
                 this.setState({
+                    cardInfos: newCardInfos
+                })
+                this.state.card.setState({
                     cardInfos: newCardInfos
                 })
             }

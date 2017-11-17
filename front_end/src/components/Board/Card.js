@@ -26,7 +26,7 @@ class Card extends React.Component{
 
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
-
+        
         this.loadAttachments()
     }
     /*
@@ -65,6 +65,10 @@ class Card extends React.Component{
         const dueDateDiv = <div className="alignElements">{(this.state.cardInfos.dueDate) ? 
             <span className={dueDateClass.join("")+" dueDateColors inlineElementsCard"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
         
+        const items = this.state.cardInfos.checklists.map((checklist) => checklist.items).reduce((a, b) => a.concat(b), [])
+        const numItems = items.length
+        const numDoneItems = items.filter((item) => item.isDone).length
+
         return(
             <div>
                 <div>
@@ -81,6 +85,11 @@ class Card extends React.Component{
                                 {dueDateDiv}
                                 <div className="alignElements"><p> {(this.state.cardInfos.description) && <Glyphicon glyph='align-left'/>} </p></div>
                                 <div>{(this.state.cardInfos.comments && this.state.cardInfos.comments.length > 0) ? <div><Glyphicon glyph='comment'/>{this.state.cardInfos.comments.length}</div> : ''}</div>
+                            </div>
+                        }
+                        {(numItems > 0) &&
+                            <div>
+                                <div><Glyphicon glyph='check'/>{numDoneItems + "/" + numItems}</div>
                             </div>
                         }
                     </Thumbnail>

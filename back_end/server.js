@@ -123,8 +123,8 @@ io.on('connection', (client) => {
     })
 
     // ----- Handle checklist ----- //
-    client.on('newChecklistServer', (checklist) => {
-        client.broadcast.emit('newChecklistClient', checklist)
+    client.on('newChecklistServer', (checklist, cardId) => {
+        client.broadcast.emit('newChecklistClient', checklist, cardId)
     })
 
     client.on('updateChecklistTitleServer', (checklist) => {
