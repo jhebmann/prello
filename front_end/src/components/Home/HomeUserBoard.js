@@ -27,7 +27,6 @@ class HomeUserBoard extends React.Component{
         this.handleTitleupdate = this.handleTitleupdate.bind(this)
         
         this.socket.on('updateBoardTitle', this.updateBoardTitle)
-        
     }
 
     render(){

@@ -4,6 +4,7 @@ import axios from 'axios'
 import Card from './Card.js'
 import url from '../../config'
 import handleServerResponse from '../../response'
+import { confirmAlert } from 'react-confirm-alert'
 
 class List extends React.Component{
 
@@ -184,24 +185,44 @@ class List extends React.Component{
   }
 
   onClickDeleteCards() {
-    axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
-    .then((response) => {
-      this.deleteCards(this.props.id)
-      this.socket.emit('deleteAllCards', this.props.id)
-    })
-    .catch((error) => {
-      handleServerResponse(error, 'An error occured when deleting the cards')
-    })
+    confirmAlert({
+      title: 'Delete all cards in ' + this.props.title + '?',
+      message: 'All cards in this list will be removed and you won\'t be able to re-open it. There is no undo !',
+      confirmLabel: 'Delete',                           // Text button confirm
+      cancelLabel: 'Cancel',                             // Text button cancel
+      onConfirm: () => (
+        axios.delete(url.api + 'card/list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
+        .then((response) => {
+          this.deleteCards(this.props.id)
+          this.socket.emit('deleteAllCards', this.props.id)
+        })
+        .catch((error) => {
+          handleServerResponse(error, 'An error occured when deleting the cards')
+        })
+      )
+  })
   }
 
+
+
+  
+
   onClickDeleteList() {
-    axios.delete(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
-    .then((response) => {
-      this.socket.emit('deleteListServer', this.props.id)
-    })
-    .catch((error) => {
-      handleServerResponse(error, 'An error occured when deleting the list')
-    })
+    confirmAlert({
+      title: 'Delete' + this.props.title + '?',
+      message: 'This list will be removed and you won\'t be able to re-open it. There is no undo !',
+      confirmLabel: 'Delete',                           // Text button confirm
+      cancelLabel: 'Cancel',                             // Text button cancel
+      onConfirm: () => (
+        axios.delete(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard, url.config)
+        .then((response) => {
+          this.socket.emit('deleteListServer', this.props.id)
+        })
+        .catch((error) => {
+          handleServerResponse(error, 'An error occured when deleting the list')
+        })
+      )
+  })
   }
 
   deleteCards(idList) {
