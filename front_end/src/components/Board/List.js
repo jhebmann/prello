@@ -3,6 +3,7 @@ import {Button, FormControl, Glyphicon, Panel} from 'react-bootstrap'
 import axios from 'axios'
 import Card from './Card.js'
 import url from '../../config'
+import {Draggable, Droppable } from 'react-beautiful-dnd'
 
 class List extends React.Component{
 
@@ -15,7 +16,8 @@ class List extends React.Component{
       showInput: false,
       title: this.props.title,
       pos: this.props.pos, // always undefined for now
-      parameters: this.props.parameters
+      parameters: this.props.parameters,
+      dnd:false
     }
     
     this.socket = this.props.io
@@ -24,6 +26,7 @@ class List extends React.Component{
     this.onClickDeleteCards= this.onClickDeleteCards.bind(this)
     this.onClickUpdateList = this.onClickUpdateList.bind(this)
     this.onClickDeleteList = this.onClickDeleteList.bind(this)
+    this.switchDragDrop = this.switchDragDrop.bind(this)
 
     this.addCard = this.addCard.bind(this)
     this.deleteCards = this.deleteCards.bind(this)
@@ -85,12 +88,39 @@ class List extends React.Component{
   //Renders the Cards stored in the cards array   
   cardList(){
     const cardItems= this.state.cards.map((card, index) =>
-            <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
+    <Droppable droppableId={card._id} key={index} direction="vertical" type="card" isDropDisabled={this.state.dnd}>
+    {(provided, snapshot) => (
+        <div
+        ref={provided.innerRef}
+        >
+        <Draggable draggableId={card._id} key={index}type="card" isDragDisabled={this.state.dnd}>
+            {(provided, snapshot) => (
+                <div>
+                <div
+                    ref={provided.innerRef}
+                    style={provided.draggableStyle}
+                    {...provided.dragHandleProps}
+                >
+                <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
                 listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket} 
-                usersBoard={this.props.usersBoard} dropbox={this.props.dropbox}
+                usersBoard={this.props.usersBoard} dropbox={this.props.dropbox} switchDragDrop={this.switchDragDrop}
               />
+                </div>
+                {provided.placeholder}
+                </div>
+        )}
+        </Draggable>
+        {provided.placeholder}
+        </div>
+    )}
+    </Droppable>      
     )
     return cardItems
+  }
+
+  switchDragDrop(){
+    console.log("disable")
+    this.setState({dnd:!this.state.dnd})
   }
 
   getAllCards(cards, id){

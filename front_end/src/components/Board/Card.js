@@ -22,19 +22,30 @@ class Card extends React.Component{
         this.updateCard = this.updateCard.bind(this)
         this.loadAttachments = this.loadAttachments.bind(this)
         this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
-
+        this._executeBeforeModalOpen = this._executeBeforeModalOpen.bind(this)
+        this._executeBeforeModalClose = this._executeBeforeModalClose.bind(this)
+        
         //Event Listeners
         this.socket.on('updateCardClient', this.updateCard)
 
         this.loadAttachments()
     }
+
+    _executeBeforeModalOpen(){
+        this.props.switchDragDrop()
+    }
+    
+    _executeBeforeModalClose(){
+        this.props.switchDragDrop()
+    }
+
     /*
     componentDidMount(){
         if (this.state.cardInfos._id === this.state.parameters.cardToFocus){
             this.customDialog.show()
         }
     }
-*/
+    */
     render(){
 
         const bigPopup = {
@@ -85,10 +96,10 @@ class Card extends React.Component{
                     </Thumbnail>
                 </div>
                
-                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
+                <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref} beforeOpen={this._executeBeforeModalOpen} beforeClose={this._executeBeforeModalClose}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
-                            dropbox={this.props.dropbox}
+                            dropbox={this.props.dropbox} 
                     />
                 </SkyLight>
             </div>

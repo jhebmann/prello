@@ -8,19 +8,7 @@ import axios from 'axios'
 import url from '../../config'
 import {Modal, Spin} from 'antd'
 import Auth from '../Auth/Auth.js'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import styled from 'styled-components'
-
-const Wrapper = styled.div`
-display: flex;
-flex-direction: column;
-`;
-
-const Container = styled.div`
-margin: 8px;
-display: flex;
-flex-direction: column;
-`;
+import {DragDropContext} from 'react-beautiful-dnd'
 
 class Board extends React.Component{
     
@@ -129,13 +117,11 @@ class Board extends React.Component{
 
     render(){
         return(
+            <DragDropContext  onDragEnd={()=>null} >            
             <div className='board'>
                 {
                     this.state.pageLoaded ?( 
-                        <DragDropContext
-                            onDragStart={this.onDragStart}
-                            onDragEnd={this.onDragEnd}
-                        >
+                        
                             <div className="boardContainer">
                                     {this.renderOptions()}
                                 <div className="listContainer">
@@ -152,7 +138,7 @@ class Board extends React.Component{
                                     </div>   
                                 </div>
                             </div>
-                        </DragDropContext>
+                        
                     ):
                     (
                         <div className="spinn">
@@ -161,6 +147,8 @@ class Board extends React.Component{
                     ) 
                 }
             </div>
+            </DragDropContext>
+
         )
     }
 
@@ -203,36 +191,9 @@ class Board extends React.Component{
     }
 
     cardList(lists){
-        const listItems=
-            <Droppable
-                droppableId={this.props.id}
-                type="COLUMN"
-                direction="horizontal"
-                ignoreContainerClipping={Boolean(false)}
-            >
-                {(provided) => (
-                    <Container innerRef={provided.innerRef}>
-                        {lists.map((list, index)=>
-                            <Draggable draggableId={list._id} type="COLUMN" key={list._id}>
-                                {(provided, snapshot) => (
-                                <Wrapper>
-                                    <Container
-                                        innerRef={provided.innerRef}
-                                        style={provided.draggableStyle}
-                                    >
-                                        <List key={list._id} parameters = {this.state.parameters} cards={list.cards}
-                                            id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} 
-                                            idBoard={this.props.id} dropbox={this.props.dropbox}
-                                        />
-                                    </Container>
-                                    {provided.placeholder}
-                                </Wrapper>
-                                )}
-                            </Draggable>
-                        )}
-                    </Container>
-                )}
-            </Droppable>
+        const listItems= lists.map((list, index)=>
+                        <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox}/>
+    )
         return listItems
     }
 
