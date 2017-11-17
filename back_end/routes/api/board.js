@@ -75,19 +75,15 @@ router.get('/:id', function (req, res, next) {
             teams.forEach((team) => {
                 allUsers = allUsers.concat(team.users)
             })
-            console.log("gfyerfgey")
             if (allUsers.filter((e) => e.equals(req.userId)).length > 0){
                 res.status(200).send(board)
             } else {
-                console.log("hefeuifeio")
                 res.status(403).send()
             }
         }).catch(function(err) {
-            console.log(err)
             res.status(404).send(err)
         })
     }).catch(function(err) {
-        console.log("hoho")
         res.status(404).send(err)
     })
 })

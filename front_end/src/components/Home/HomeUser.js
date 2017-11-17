@@ -71,7 +71,6 @@ class HomeUser extends React.Component{
     }
 
     userTeams(teams){
-      console.log(teams)
       return teams.filter(team=>team.users.includes(Auth.getUserID())).sort((a, b) => a.name > b.name)
     }
 

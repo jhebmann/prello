@@ -83,8 +83,6 @@ router.get('/search/:text/user/:userId', function(req, res) {
 
           finalResult.cards = idsAndTitles
 
-          console.log(idsAndTitles)
-
           if (cards.length !== 0) {
             const allComments = cards.map((card) => card.comments).reduce((a, b) => a.concat(b), [])
             let idsAndContents = []

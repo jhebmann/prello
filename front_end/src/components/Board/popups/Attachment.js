@@ -122,7 +122,7 @@ class Attachment extends React.Component{
             reader.readAsDataURL(file)
         })
         .catch(function (error) {
-            console.log(error)
+            handleServerResponse(error, 'An error occured when adding the attachment')
         })
     }
 
