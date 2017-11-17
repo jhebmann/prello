@@ -35,7 +35,7 @@ class HomeAdminTab extends React.Component{
         let teams = this.props.home.state.teams
 
         const i = teams.indexOf(this.state.team)
-        if(i != -1) {
+        if(i !== -1) {
             teams.splice(i, 1)
         }
 
