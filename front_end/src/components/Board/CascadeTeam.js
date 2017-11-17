@@ -38,8 +38,7 @@ class CascadeTeam extends React.Component{
                 placeholder="Select team name "
                 optionFilterProp="children"
                 onChange={this.handleChange}
-                notFoundContent="Team not found"
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                notFoundContent="Team not found">
                {teamOptions} 
             </Select>
             <Button className='addTeamButton' onClick={this.onClick} disabled={this.state.selected===null}>

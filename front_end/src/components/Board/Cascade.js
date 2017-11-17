@@ -40,8 +40,7 @@ class Cascade extends React.Component{
                 placeholder="Select nickname"
                 optionFilterProp="children"
                 onChange={this.handleChange}
-                notFoundContent="User not found"
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                notFoundContent="User not found">
                {memberOptions} 
             </Select>
             <Button type="success" disabled={this.state.selected===null} className='addTeamButton' onClick={this.onClick}>{this.props.task || "Add Member"}</Button>

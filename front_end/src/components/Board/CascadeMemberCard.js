@@ -42,8 +42,7 @@ class CascadeMemberCard extends React.Component{
                 value={this.state.selected}
                 onChange={this.handleChange}
                 notFoundContent="Member not found"
-                allowClear="true"
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                allowClear="true">
                {memberOptions} 
             </Select>
             <Button className='addTeamButton' onClick={this.onClick} disabled={this.state.selected===null}>

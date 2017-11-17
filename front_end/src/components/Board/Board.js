@@ -169,8 +169,8 @@ class Board extends React.Component{
                     footer={null} >
                     <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false} updateAllTeams={this.updateAllTeams}/>
                     <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true} updateAllTeams={this.updateAllTeams}/>
-                    <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
-                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>            
+                    <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Board Admin" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
+                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Board Admin" boardId={this.state.board._id} updateBoard={this.updateBoard}/>            
                 </Modal>
             </div>
             )
