@@ -75,7 +75,7 @@ router.get('/:id', function (req, res, next) {
             teams.forEach((team) => {
                 allUsers = allUsers.concat(team.users)
             })
-            if (allUsers.filter((e) => e.equals(req.userId)).length > 0){
+            if (allUsers.filter((e) => e.equals(req.userId)).length > 0 || board.isPublic){
                 res.status(200).send(board)
             } else {
                 res.status(403).send()
