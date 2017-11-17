@@ -73,51 +73,17 @@ class Board extends React.Component{
        }
 
     onDragEnd = (result) => {
-        console.log(result.source)
+        console.log(result)
         console.log(result.destination)
+        //const cardIndex=this.state.board[result.source.index].findIndex(c=>c._id===result.source.
+
         return;
-        /*publishOnDragEnd(result);
-        // $ExpectError - body wont be null
-        document.body.classList.remove(isDraggingClassName);
-    
-        // dropped nowhere
-        if (!result.destination) {
-          return;
-        }
-    
-        const source = result.source;
-        const destination = result.destination;
-    
-        // reordering column
-        if (result.type === 'COLUMN') {
-          const ordered = reorder(
-            this.state.ordered,
-            source.index,
-            destination.index
-          );
-    
-          this.setState({
-            ordered,
-          });
-    
-          return;
-        }
-    
-        const data = reorderQuoteMap({
-          quoteMap: this.state.columns,
-          source,
-          destination,
-        });
-    
-        this.setState({
-          columns: data.quoteMap,
-          autoFocusQuoteId: data.autoFocusQuoteId,
-        });*/
+        
     }
 
     render(){
         return(
-            <DragDropContext  onDragEnd={()=>null} >            
+            <DragDropContext  onDragEnd={this.onDragEnd} >            
             <div className='board'>
                 {
                     this.state.pageLoaded ?( 

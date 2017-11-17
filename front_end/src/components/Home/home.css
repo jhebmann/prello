@@ -68,7 +68,6 @@
     flex-direction: column;
 }
 .listContainer{
-    display: flex;
     margin: .5%;
 }
 .buttonsList{

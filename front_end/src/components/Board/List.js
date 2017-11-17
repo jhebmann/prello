@@ -88,12 +88,12 @@ class List extends React.Component{
   //Renders the Cards stored in the cards array   
   cardList(){
     const cardItems= this.state.cards.map((card, index) =>
-    <Droppable droppableId={card._id} key={index} direction="vertical" type="card" isDropDisabled={this.state.dnd}>
+    <Droppable droppableId={card._id} listId={this.props.id} key={index} direction="vertical" type="card" isDropDisabled={this.state.dnd}>
     {(provided, snapshot) => (
         <div
         ref={provided.innerRef}
         >
-        <Draggable draggableId={card._id} key={index}type="card" isDragDisabled={this.state.dnd}>
+        <Draggable draggableId={card._id} listId={this.props.id} key={index}type="card" isDragDisabled={this.state.dnd}>
             {(provided, snapshot) => (
                 <div>
                 <div
@@ -119,7 +119,6 @@ class List extends React.Component{
   }
 
   switchDragDrop(){
-    console.log("disable")
     this.setState({dnd:!this.state.dnd})
   }
 

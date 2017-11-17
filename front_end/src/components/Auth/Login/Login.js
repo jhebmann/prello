@@ -97,7 +97,6 @@ class Login extends React.Component{
     }
     
     redirect(){
-        console.log("youpi")
         this.setState({
             redirect: <Redirect to='/'/>
         })

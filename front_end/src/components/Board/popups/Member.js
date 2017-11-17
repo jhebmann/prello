@@ -13,7 +13,6 @@ class Member extends React.Component{
     }
 
     render(){
-        console.log(this.state.card)
         return(
             <div className="member">
                 <hr className="skylightHr"/>
