@@ -245,7 +245,7 @@ class Popup extends React.Component{
                     <span className = "attachmentTitle">{attachment.title ? attachment.title : "No title"}</span>
                 </div>
                 <span className="deleteAttachmentSpan" attachmentid = {attachment._id} onClick={this.onClickDeleteAttachment}>Delete..</span>
-                <img src={"data:image/jpegbase64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
+                <img src={"data:image/jpeg;base64," + attachment.image} alt={attachment.title ? attachment.title : "Undefined"}/>
             </li>
         )
         ///////////////////////////////////////////////////
