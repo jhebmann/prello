@@ -64,6 +64,12 @@ class CascadeMemberCard extends React.Component{
         alert('An error occured when updating the Card'+error)
     })
   }
+
+  componentWillReceiveProps(nextProps){
+    let newMembers=this.state.members
+    newMembers=nextProps.members
+    this.setState({members:newMembers})
+  }
 }
 
 export default CascadeMemberCard
