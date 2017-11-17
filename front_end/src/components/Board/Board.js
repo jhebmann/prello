@@ -8,6 +8,19 @@ import axios from 'axios'
 import url from '../../config'
 import {Modal, Spin} from 'antd'
 import Auth from '../Auth/Auth.js'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import styled from 'styled-components'
+
+const Wrapper = styled.div`
+display: flex;
+flex-direction: column;
+`;
+
+const Container = styled.div`
+margin: 8px;
+display: flex;
+flex-direction: column;
+`;
 
 class Board extends React.Component{
     
@@ -34,6 +47,7 @@ class Board extends React.Component{
         this.setModalVisible=this.setModalVisible.bind(this)
         this.updateAllTeams=this.updateAllTeams.bind(this)
         this.updateBoard=this.updateBoard.bind(this)
+        this.onDragEnd = this.onDragEnd.bind(this)
         this.socket.on('addList', this.createList)
         this.socket.on('deleteListClient', this.deleteList)
     }
@@ -70,11 +84,58 @@ class Board extends React.Component{
          })
        }
 
+    onDragEnd = (result) => {
+        console.log(result.source)
+        console.log(result.destination)
+        return;
+        /*publishOnDragEnd(result);
+        // $ExpectError - body wont be null
+        document.body.classList.remove(isDraggingClassName);
+    
+        // dropped nowhere
+        if (!result.destination) {
+          return;
+        }
+    
+        const source = result.source;
+        const destination = result.destination;
+    
+        // reordering column
+        if (result.type === 'COLUMN') {
+          const ordered = reorder(
+            this.state.ordered,
+            source.index,
+            destination.index
+          );
+    
+          this.setState({
+            ordered,
+          });
+    
+          return;
+        }
+    
+        const data = reorderQuoteMap({
+          quoteMap: this.state.columns,
+          source,
+          destination,
+        });
+    
+        this.setState({
+          columns: data.quoteMap,
+          autoFocusQuoteId: data.autoFocusQuoteId,
+        });*/
+    }
+
     render(){
         return(
             <div className='board'>
                 {
                     this.state.pageLoaded ?( 
+                        <DragDropContext
+                            onDragStart={this.onDragStart}
+                            onDragEnd={this.onDragEnd}
+                        >
                             <div className="boardContainer">
                                     {this.renderOptions()}
                                 <div className="listContainer">
@@ -90,7 +151,8 @@ class Board extends React.Component{
                                         </div>
                                     </div>   
                                 </div>
-                        </div>
+                            </div>
+                        </DragDropContext>
                     ):
                     (
                         <div className="spinn">
@@ -141,9 +203,36 @@ class Board extends React.Component{
     }
 
     cardList(lists){
-        const listItems= lists.map((list, index)=>
-            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox}/>
-        )
+        const listItems=
+            <Droppable
+                droppableId={this.props.id}
+                type="COLUMN"
+                direction="horizontal"
+                ignoreContainerClipping={Boolean(false)}
+            >
+                {(provided) => (
+                    <Container innerRef={provided.innerRef}>
+                        {lists.map((list, index)=>
+                            <Draggable draggableId={list._id} type="COLUMN" key={list._id}>
+                                {(provided, snapshot) => (
+                                <Wrapper>
+                                    <Container
+                                        innerRef={provided.innerRef}
+                                        style={provided.draggableStyle}
+                                    >
+                                        <List key={list._id} parameters = {this.state.parameters} cards={list.cards}
+                                            id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} 
+                                            idBoard={this.props.id} dropbox={this.props.dropbox}
+                                        />
+                                    </Container>
+                                    {provided.placeholder}
+                                </Wrapper>
+                                )}
+                            </Draggable>
+                        )}
+                    </Container>
+                )}
+            </Droppable>
         return listItems
     }
 
