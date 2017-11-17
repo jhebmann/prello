@@ -31,15 +31,18 @@ class CascadeMemberCard extends React.Component{
 
     render(){
         const memberOptions=this.state.members.map(member => <Option key={member._id} ><Avatar icon="user" size='small'/>{member.local.nickname}</Option>)
+
         return (
-            <div >
+            <div>
               <Select
                 showSearch
                 style={{ width: 200 }}
                 placeholder="Select member name "
                 optionFilterProp="children"
+                value={this.state.selected}
                 onChange={this.handleChange}
                 notFoundContent="Member not found"
+                allowClear="true"
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
                {memberOptions} 
             </Select>
@@ -57,6 +60,7 @@ class CascadeMemberCard extends React.Component{
     axios.put(url.api + 'card/'+this.state.card._id, {
         user:this.state.selected,remove:this.props.remove}, url.config)
     .then((response)=>{
+        this.setState({selected:null})
         this.props.callback(response.data)
         this.socket.emit('updateCardServer', response.data)
         success('Card updated!')

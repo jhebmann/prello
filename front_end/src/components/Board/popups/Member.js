@@ -13,11 +13,14 @@ class Member extends React.Component{
     }
 
     render(){
+        const membersToAdd = this.props.usersBoard.filter(usr=>!this.state.card.state.cardInfos.users.includes(usr._id))
+        const membersToRemove = this.props.usersBoard.filter(usr=>this.state.card.state.cardInfos.users.includes(usr._id))
+
         return(
             <div className="member">
                 <hr className="skylightHr"/>
-                <CascadeMemberCard members={this.props.usersBoard.filter(usr=>!this.state.card.state.cardInfos.users.includes(usr._id))} usersBoard={this.props.usersBoard} remove={false} card={this.state.card.state.cardInfos} callback={this.updateCard} io={this.socket}/>
-                <CascadeMemberCard members={this.props.usersBoard.filter(usr=>this.state.card.state.cardInfos.users.includes(usr._id))} remove={true} card={this.state.card.state.cardInfos} callback={this.updateCard} io={this.socket}/>
+                <CascadeMemberCard members={membersToAdd} usersBoard={this.props.usersBoard} remove={false} card={this.state.card.state.cardInfos} callback={this.updateCard} io={this.socket}/>
+                <CascadeMemberCard members={membersToRemove} remove={true} card={this.state.card.state.cardInfos} callback={this.updateCard} io={this.socket}/>
             </div>
         )
     }

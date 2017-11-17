@@ -32,6 +32,18 @@ class HomeAdminTab extends React.Component{
     }
 
     updateTeams(updatedTeam){
+        let teams = this.props.home.state.teams
+
+        const i = teams.indexOf(this.state.team)
+        if(i != -1) {
+            teams.splice(i, 1)
+        }
+
+        teams.push(updatedTeam)
+
+        teams.sort((a, b) => a.name > b.name)
+
+        this.props.home.setState({teams: teams})
         this.setState({team:updatedTeam})
       }
 

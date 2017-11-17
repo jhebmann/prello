@@ -34,6 +34,7 @@ class CascadeTeam extends React.Component{
               <Select
                 showSearch
                 style={{ width: 200 }}
+                value={this.state.selected}
                 placeholder="Select team name "
                 optionFilterProp="children"
                 onChange={this.handleChange}
@@ -55,7 +56,11 @@ class CascadeTeam extends React.Component{
     onClick(){
         axios.put(url.api + 'team/'+this.state.selected, {
             board:this.state.boardId,remove:this.props.remove}, url.config)
-        .then((response)=>{success('Board updated!');this.props.updateAllTeams(response.data)})
+        .then((response)=>{
+            this.setState({selected:null})
+            this.props.updateAllTeams(response.data)
+            success('Board updated!')
+        })
         .catch((error) => {
             alert('An error occured when updating the board'+error)
         })

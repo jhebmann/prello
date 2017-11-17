@@ -49,10 +49,13 @@ class HomeUser extends React.Component{
             window.location = "/"
           }
           else {
-            const instance= this
             axios.all([this.loadTeams(), this.loadUsers()])
-            .then(axios.spread(function (res1, res2) {
-              instance.setState({pageLoaded:true,teams:instance.userTeams(res1.data),allTeams:res1.data,users:res2.data})
+            .then(axios.spread((res1, res2) => {
+              this.setState({
+                pageLoaded:true,
+                teams:this.userTeams(res1.data),
+                allTeams:res1.data,users:res2.data
+              })
             }))
           }
         }
@@ -68,7 +71,8 @@ class HomeUser extends React.Component{
     }
 
     userTeams(teams){
-      return teams.filter(team=>team.users.includes(Auth.getUserID()))
+      console.log(teams)
+      return teams.filter(team=>team.users.includes(Auth.getUserID())).sort((a, b) => a.name > b.name)
     }
 
     loadUsers(){
@@ -232,7 +236,7 @@ class HomeUser extends React.Component{
       if(team.admins.includes(Auth.getUserID()))
         return (
           <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="3">  
-            <HomeAdminTab team={team} users={this.state.users} />
+            <HomeAdminTab home={this} team={team} users={this.state.users} />
           </TabPane>
           )
       return
