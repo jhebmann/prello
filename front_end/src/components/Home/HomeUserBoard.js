@@ -5,6 +5,7 @@ import axios from 'axios'
 import url from '../../config'
 import { confirmAlert } from 'react-confirm-alert'
 import './home.css' 
+import handleServerResponse from '../../response'
 
 class HomeUserBoard extends React.Component{
 
@@ -58,13 +59,8 @@ class HomeUserBoard extends React.Component{
     }
 
     handleBoardTitle(){
-<<<<<<< HEAD
         let  headBoard = <h4>{this.state.board.title || 'No title'}</h4>
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())){
-=======
-        let  headBoard = <span>{this.state.board.title || 'No title'}</span>
-        if(this.state.board.admins.includes(Auth.getUserID())){
->>>>>>> 03246c4d4b3b2cf2569a3b5f9e4afd8c38cf1cec
             if(!this.state.showInput ) {
                 headBoard = <span  onClick={(e) => {this.handleTitleupdate(e)}}>{this.state.board.title || 'No title'}</span>
             } else{
@@ -98,7 +94,7 @@ class HomeUserBoard extends React.Component{
             this.socket.emit('updateBoardTitle', response.data._id, response.data.title)
           })
           .catch((error) => {
-            alert('An error occured when updating the board title'+error)
+            handleServerResponse(error, 'An error occured when updating the board title')
           })
           
     }
@@ -128,7 +124,7 @@ class HomeUserBoard extends React.Component{
                 this.props.deleteBoard(id)
               })
               .catch((error) => {
-                alert('An error occured when deleting the board'+error)
+                handleServerResponse(error, 'An error occured when deleting the board')
               })
             )
         })

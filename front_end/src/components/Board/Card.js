@@ -7,6 +7,7 @@ import axios from 'axios'
 import { confirmAlert } from 'react-confirm-alert'
 import url from '../../config'
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import handleServerResponse from '../../response'
 
 class Card extends React.Component{
     constructor(props){
@@ -126,7 +127,7 @@ class Card extends React.Component{
                         }).sort((a, b) => a.datePost < b.datePost)
                       }))
                 }).catch((error) => {
-                    alert('An error occured when adding the attachment')
+                    handleServerResponse(error, 'An error occured when adding the attachment')
                 })
             })
         }
@@ -145,7 +146,7 @@ class Card extends React.Component{
                     this.socket.emit('deleteCardServer', this.state.cardInfos._id)
                 })
                 .catch((error) => {
-                    alert('An error occured when deleting the card')
+                    handleServerResponse(error, 'An error occured when deleting the card')
                 })
             )
         })

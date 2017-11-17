@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
     Board.find().then(function(boards){
         res.status(200).send(boards)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -24,7 +24,7 @@ router.get('/user', function (req, res, next) {
     ).then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -33,12 +33,12 @@ router.get('/team/:teamId', function (req, res, next) {
     Team.findOne(
         {_id: req.params.teamId},
         (err, team) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(404).send(err)
             else{
                 Board.find(
                     {_id:{$in: team.boards}},
                     (err, boards) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(404).send(err)
                         else res.status(200).send(boards)
                     }
                 )
@@ -54,16 +54,41 @@ router.get('/public', function (req, res, next) {
     ).then(function(board){
         res.status(200).send(board)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
 router.get('/:id', function (req, res, next) {
     // Get the board having the id given in parameter
-    Board.findById(req.params.id).then(function(board){
-        res.status(200).send(board)
+    const id = req.params.id
+
+    Board.findOne(
+        {_id: id}
+    )
+    .then(function(board){
+        const boardTeams = board.teams
+        Team.find(
+            {_id: {$in: boardTeams}}
+        )
+        .then(function(teams){
+            let allUsers = []
+            teams.forEach((team) => {
+                allUsers = allUsers.concat(team.users)
+            })
+            console.log("gfyerfgey")
+            if (allUsers.filter((e) => e.equals(req.userId)).length > 0){
+                res.status(200).send(board)
+            } else {
+                console.log("hefeuifeio")
+                res.status(403).send()
+            }
+        }).catch(function(err) {
+            console.log(err)
+            res.status(404).send(err)
+        })
     }).catch(function(err) {
-        res.status(401).send(err)
+        console.log("hoho")
+        res.status(404).send(err)
     })
 })
 
@@ -72,7 +97,7 @@ router.get('/:id/lists', function (req, res, next) {
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board.lists)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -81,7 +106,7 @@ router.get('/:id/labels', function (req, res, next) {
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board.labels)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -90,7 +115,7 @@ router.get('/:id/admins', function (req, res, next) {
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board.admins)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -102,13 +127,13 @@ router.get('/:id/users', function (req, res, next) {
     Board.findOne(
         {_id: id},
         (err, board) => {
-            if (err || board === null) res.status(401).send("Couldn't find the board of id " + id)
+            if (err || board === null) res.status(404).send("Couldn't find the board of id " + id)
             else{
                 const boardTeams = board.teams
                 Team.find(
                     {_id: {$in: boardTeams}},
                     (err, teams) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(404).send(err)
                         else if (teams.length === 0) res.status(200).send([])
                         else{
                             teams.forEach((team) => {
@@ -133,7 +158,7 @@ router.post('/', function (req, res, next) {
     newBoard.save(
         {},
         (err, insertedBoard) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(409).send(err)
             else {
                 console.log("Board of id " + insertedBoard._id + " Added")
                 res.status(200).send(insertedBoard)
@@ -153,13 +178,13 @@ router.post('/team/:teamId', function (req, res, next) {
     newBoard.save(
         {},
         (err, insertedBoard) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(409).send(err)
             else {
                 Team.findOneAndUpdate(
                     {_id: req.params.teamId},
                     {$push: {boards: insertedBoard._id}},
                     (err) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(404).send(err)
                         else {
                             console.log("Board of id " + insertedBoard._id + " Added")
                             res.status(200).send(insertedBoard)
@@ -179,12 +204,12 @@ router.put('/:id', function (req, res, next) {
             _id : id,
         },
         (err, board) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(404).send(err)
             else{
                 if ('undefined' !== typeof req.body.title) board.title = req.body.title
                 if ('undefined' !== typeof req.body.isPublic) board.isPublic = req.body.isPublic
                 board.save((err, board) => {
-                    if (err) res.status(401).send(err)
+                    if (err) res.status(409).send(err)
                     else {
                         console.log("The board of id " + id + " has been successfully updated")
                         res.status(200).send(board)
@@ -209,11 +234,11 @@ router.put('/:id/toAdmin/:userId', function (req, res, next) {
         .then(function(board) {
             res.status(200).send(board)
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(409).send(err)
         })
     }).catch(function(err) {
         console.log(err)
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -231,10 +256,10 @@ router.put('/:id/fromAdmin/:userId', function (req, res, next) {
         .then(function(board) {
             res.status(200).send(board)
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(409).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -245,28 +270,28 @@ router.delete('/:id', function (req, res, next) {
         {_id: id},
         (err, board) => {
             if (board === null)
-                res.status(401).send("No board of id " + req.params.id + " could be found")
-            else if(err) res.status(401).send(err)
+                res.status(404).send("No board of id " + req.params.id + " could be found")
+            else if(err) res.status(404).send(err)
             else {
                 Team.update(
                     {},
                     {$pull: {boards: id}},
                     {multi: true},
                     (err) => {
-                        if(err) res.status(401).send(err)
+                        if(err) res.status(409).send(err)
                         else{
                             const allLists = board.lists
                             const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b), []) : []
                             models.cards.remove(
                                 {_id: {$in: allCards}},
                                 (err) => {
-                                    if (err) res.status(401).send("Couldn't delete the cards of the board with id " + board._id)
+                                    if (err) res.status(409).send("Couldn't delete the cards of the board with id " + board._id)
                                     Board.remove(
                                         {_id: board._id}
                                     ).then(function() {
                                         res.status(200).send("The board of id " + id + " was successfully destroyed")
                                     }).catch(function(err) {
-                                        res.status(401).send(err)
+                                        res.status(409).send(err)
                                     })
                                 }
                             )
@@ -283,14 +308,14 @@ router.delete('/', function (req, res, next) {
     Board.find(
         {},
         (err, boards) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(404).send(err)
             else{
                 Team.update(
                     {},
                     {$set: {boards: []}},
                     {multi: true},
                     (err) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(409).send(err)
                         else{
                             const allLists = boards.length !== 0 ? boards.map(b => b.lists).reduce((a, b) => a.concat(b)) : []
                             const allCards = allLists.length !== 0 ? allLists.map((l) => l.cards).reduce((a, b) => a.concat(b)) : []
@@ -303,7 +328,7 @@ router.delete('/', function (req, res, next) {
                                     ).then(function() {
                                         res.status(200).send("All boards were successfully destroyed")
                                     }).catch(function(err) {
-                                        res.status(401).send(err)
+                                        res.status(409).send(err)
                                     })
                                 }
                             )

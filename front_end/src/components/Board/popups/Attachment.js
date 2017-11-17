@@ -5,6 +5,7 @@ import url from '../../../config'
 import Auth from '../../Auth/Auth.js'
 import DropboxChooser from 'react-dropbox-chooser'
 import { Spin } from 'antd'
+import handleServerResponse from '../../../response'
 const Dropbox = require('dropbox')
 
 class Attachment extends React.Component{
@@ -77,7 +78,7 @@ class Attachment extends React.Component{
                                     success={file => this.printItem(file)}
                                     multiselect={false}
                                     extensions={['.png', '.jpg', '.jpeg', '.gif']} >
-                                    <a className="dropbox-button" target="_blank"><span className="dropin-btn-status"></span>Choose from Dropbox</a>        
+                                    <a className="dropbox-button"><span className="dropin-btn-status"></span>Choose from Dropbox</a>        
                                 </DropboxChooser>
                             </div>
                             }
@@ -195,8 +196,7 @@ class Attachment extends React.Component{
             this.socket.emit('newAttachmentServer', newAttachment)
             this.addAttachment(newAttachment)
         }).catch((error) => {
-            console.log(error)
-            alert('An error occured when adding the attachment')
+            handleServerResponse(error, 'An error occured when adding the attachment')
         })
     }
 

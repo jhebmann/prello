@@ -16,8 +16,8 @@ router.get('/:id/board/:boardId', function (req, res, next) {
         },
         {"labels.$": 1, _id: 0},
         (err, board) => {
-            if (err) res.status(401).send(err)
-            else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId + " or the label of id " + id)
+            if (err) res.status(404).send(err)
+            else if (board === null) res.status(404).send("Couldn't find the board of id " + boardId + " or the label of id " + id)
             else res.status(200).send(board.labels[0])
         }
     )
@@ -30,8 +30,8 @@ router.post('/board/:boardId', function (req, res, next) {
     Board.findById(
         boardId,
         function(err, board){
-            if (err) res.status(401).send(err)
-            else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId)
+            if (err) res.status(404).send(err)
+            else if (board === null) res.status(404).send("Couldn't find the board of id " + boardId)
             else {
                 let newLabel = new Label()
                 newLabel.title = req.body.title,
@@ -41,7 +41,7 @@ router.post('/board/:boardId', function (req, res, next) {
                 .then(function(board){
                     res.status(200).send(board.labels[board.labels.length - 1])
                 }).catch(function(err) {
-                    res.status(401).send(err)
+                    res.status(409).send(err)
                 })
             }
         }
@@ -59,8 +59,8 @@ router.put('/:id/board/:boardId', function (req, res, next) {
             labels: {$elemMatch: {_id: id}}
         },
         (err, board) => {
-            if (err) res.status(401).send(err)
-            else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId + " or the label of id " + id)            
+            if (err) res.status(404).send(err)
+            else if (board === null) res.status(404).send("Couldn't find the board of id " + boardId + " or the label of id " + id)            
             else{
                 if ('undefined' !== typeof req.body.color) board.labels.id(id).color = req.body.color
                 if ('undefined' !== typeof req.body.title) board.labels.id(id).title = req.body.title
@@ -68,7 +68,7 @@ router.put('/:id/board/:boardId', function (req, res, next) {
                 .then(function(board){
                     res.status(200).send(board.labels.id(id))
                 }).catch(function(err) {
-                    res.status(401).send(err)
+                    res.status(409).send(err)
                 })
             }
         }
@@ -86,8 +86,8 @@ router.delete('/:id/board/:boardId', function (req, res, next) {
         {_id: boardId, "labels._id": id},
         {"labels.$": 1, _id: 0},
         (err, board) => {
-            if (err) res.status(401).send(err)
-            else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId)            
+            if (err) res.status(404).send(err)
+            else if (board === null) res.status(404).send("Couldn't find the board of id " + boardId)            
             else {
                 const label = board.labels[0]
                 Board.findOneAndUpdate(
@@ -101,7 +101,7 @@ router.delete('/:id/board/:boardId', function (req, res, next) {
                                 {$pull: {labels: id}},
                                 {multi: true},
                                 (err) => {
-                                    if (err) res.status(401).send(err)
+                                    if (err) res.status(409).send(err)
                                     else res.status(200).send("Successfully deleted the label of id " + id)
                                 }
                             )
@@ -120,14 +120,14 @@ router.delete('/', function (req, res, next) {
         {$set: {"labels": []}},
         {multi: true},
         (err) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(409).send(err)
             else {
                 Card.update(
                     {},
                     {$set: {labels: []}},
                     {multi: true},
                     (err) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(409).send(err)
                         else res.status(200).send("Successfully deleted all labels")
                     }
                 )

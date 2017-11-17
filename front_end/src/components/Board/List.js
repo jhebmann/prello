@@ -3,6 +3,7 @@ import {Button, FormControl, Glyphicon, Panel} from 'react-bootstrap'
 import axios from 'axios'
 import Card from './Card.js'
 import url from '../../config'
+import handleServerResponse from '../../response'
 
 class List extends React.Component{
 
@@ -47,7 +48,7 @@ class List extends React.Component{
       this.getAllCards(response.data, this.props.id)
     })
     .catch((error) => {
-      alert('An error occured when getting the cards')
+      handleServerResponse(error, 'An error occured when getting the cards')
     })
   }
 
@@ -143,7 +144,7 @@ class List extends React.Component{
           this.updateListTitle(response.data._id, response.data.title)
         })
         .catch((error) => {
-          alert('An error occured when updating the list')
+          handleServerResponse(error, 'An error occured when updating the list')
         })
       }
       else {
@@ -155,7 +156,7 @@ class List extends React.Component{
           this.updateListTitle(response.data._id, response.data.title)
         })
         .catch((error) => {
-          alert('An error occured when updating the list')
+          handleServerResponse(error, 'An error occured when updating the list')
         })
       }
     }
@@ -178,7 +179,7 @@ class List extends React.Component{
       this.setState({titleNewCard : ""})
     })
     .catch((error) => {
-      alert('An error occured when adding the card')
+      handleServerResponse(error, 'An error occured when adding the card')
     })
   }
 
@@ -189,7 +190,7 @@ class List extends React.Component{
       this.socket.emit('deleteAllCards', this.props.id)
     })
     .catch((error) => {
-      alert('An error occured when deleting the list')
+      handleServerResponse(error, 'An error occured when deleting the cards')
     })
   }
 
@@ -199,7 +200,7 @@ class List extends React.Component{
       this.socket.emit('deleteListServer', this.props.id)
     })
     .catch((error) => {
-      alert('An error occured when deleting the list')
+      handleServerResponse(error, 'An error occured when deleting the list')
     })
   }
 

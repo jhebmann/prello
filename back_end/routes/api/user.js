@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
     User.find({}, {"local.password": 0, "ldap.password": 0}).then(function(users){
         res.status(200).send(users)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -21,7 +21,7 @@ router.get('/:id', function (req, res, next) {
     User.findById(req.params.id, {"local.password": 0, "ldap.password": 0}).then(function(user){
         res.status(200).send(user)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -32,13 +32,13 @@ router.get('/:id/teams', function (req, res, next) {
     User.findOne(
         {_id: id},
         (err, user) => {
-            if (err) res.status(401).send(err)
-            else if (user === null) res.status(401).send("Couldn't find the user of id " + id)
+            if (err) res.status(404).send(err)
+            else if (user === null) res.status(404).send("Couldn't find the user of id " + id)
             else {
                 Team.find(
                     {_id: {$in: user.teams}},
                     (err, teams) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(404).send(err)
                         else res.status(200).send(teams)
                     }
                 )
@@ -64,7 +64,7 @@ router.post('/', function (req, res, next) {
     }).then(function(user) {
         res.status(200).send(user)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(409).send(err)
     })
 })
 
@@ -77,12 +77,12 @@ router.put('/:id', function (req, res, next) {
         },
         {"local.password": 0, "ldap.password": 0},
         (err, user) => {
-            if (err) res.status(401).send(err)
-            else if (user === null) res.status(401).send("Couldn't find the user of id " + id)
+            if (err) res.status(404).send(err)
+            else if (user === null) res.status(404).send("Couldn't find the user of id " + id)
             else{
                 if ('undefined' !== typeof req.body.local && 'undefined' !== typeof req.body.local.password) user.local.password = req.body.local.password
                 user.save((err, user) => {
-                    if (err) res.status(401).send(err)
+                    if (err) res.status(409).send(err)
                     else {
                         console.log("The user of id " + id + " has been successfully updated")
                         res.status(200).send(user)
@@ -110,16 +110,16 @@ router.put('/:id/team/add/:teamId', function(req, res, next){
                 .then(function() {
                     res.status(200).send(team)
                 }).catch(function(err) {
-                    res.status(401).send(err)
+                    res.status(409).send(err)
                 })
             }).catch(function(err) {
-                res.status(401).send(err)
+                res.status(409).send(err)
             })
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(404).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -141,16 +141,16 @@ router.put('/:id/team/remove/:teamId', function(req, res, next){
                 .then(function() {
                     res.status(200).send(team)
                 }).catch(function(err) {
-                    res.status(401).send(err)
+                    res.status(409).send(err)
                 })
             }).catch(function(err) {
-                res.status(401).send(err)
+                res.status(409).send(err)
             })
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(404).send(err)
         })
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 

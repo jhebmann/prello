@@ -4,6 +4,7 @@ import Auth from '../Auth/Auth.js'
 import axios from 'axios'
 import url from '../../config'
 import 'antd/dist/antd.css'
+import handleServerResponse from '../../response'
 
 const Option = Select.Option
 const success = (mssge) => {
@@ -80,7 +81,7 @@ class Cascade extends React.Component{
         this.props.onChange(response.data)
     })
     .catch((error) => {
-        alert('An error occured when adding the user to the team '+error)
+        handleServerResponse(error, 'An error occured when adding the user to the team')
     })
   }
 
@@ -92,7 +93,7 @@ class Cascade extends React.Component{
         this.props.onChange(response.data)
     })
     .catch((error) => {
-        alert('An error occured when removing the user from the team '+error)
+        handleServerResponse(error, 'An error occured when removing the user from the team')
     })
   }
 
@@ -104,7 +105,7 @@ class Cascade extends React.Component{
         this.props.onChange(response.data)
     })
     .catch((error) => {
-        alert('An error occured when revoking admin from the team')
+        handleServerResponse(error, 'An error occured when revoking admin from the team')
     })
   }
 
@@ -116,7 +117,7 @@ class Cascade extends React.Component{
         this.props.onChange(response.data)
     })
     .catch((error) => {
-        alert('An error occured when adding admin to the team')
+        handleServerResponse(error, 'An error occured when adding admin to the team')
     })
   }
 
@@ -125,7 +126,7 @@ class Cascade extends React.Component{
     axios.put(addr, {}, url.config)
     .then((response)=>{success('Admin added to the Board!');this.props.updateBoard(response.data)})
     .catch((error) => {
-        alert('An error occured when adding admin to the Board'+error)
+        handleServerResponse(error, 'An error occured when adding admin to the board')
     })
   }
 
@@ -134,7 +135,7 @@ class Cascade extends React.Component{
     axios.put(addr, {}, url.config)
     .then((response)=>{success('Admin revoked from the Board!');this.props.updateBoard(response.data)})
     .catch((error) => {
-        alert('An error occured when revoking admin from the Board'+error)
+        handleServerResponse(error, 'An error occured when revoking admin from the Board')
     })
   }
 

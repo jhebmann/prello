@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, FormControl } from 'react-bootstrap'
 import axios from 'axios'
 import url from '../../../config'
+import handleServerResponse from '../../../response'
 
 
 class Checklist extends React.Component{
@@ -48,7 +49,7 @@ class Checklist extends React.Component{
             this.socket.emit('newChecklistServer', response.data)
             this.addChecklist(response.data)
         }).catch((error) => {
-            alert('An error occured when adding the checklist')
+            handleServerResponse(error, 'An error occured when adding the checklist')
         })
     }
 

@@ -8,6 +8,7 @@ import axios from 'axios'
 import url from '../../config'
 import {Modal, Spin} from 'antd'
 import Auth from '../Auth/Auth.js'
+import handleServerResponse from '../../response'
 
 class Board extends React.Component{
     
@@ -52,21 +53,21 @@ class Board extends React.Component{
     loadTeams(){
         return axios.get(url.api + 'team', url.config)
         .catch((error) => {
-          alert('An error occured when getting the teams!\nHint: check that the server is running')
+            handleServerResponse(error, 'An error occured when getting the teams')
         })
       }
 
     loadBoard(){
         return axios.get(url.api + 'board/' + this.props.id , url.config)
         .catch((error) => {
-          alert('An error occured when getting the Board!\nHint: check that the server is running')
+            handleServerResponse(error, 'An error occured when getting the board')
         })
     }
 
     loadUsers(){
         return axios.get(url.api + 'user/', url.config)
          .catch((error) => {
-           alert('An error occured when getting all the users!\nHint: check that the server is running'+error)
+            handleServerResponse(error, 'An error occured when getting all the users')
          })
        }
 
@@ -128,7 +129,7 @@ class Board extends React.Component{
             this.createList(response.data, this.props.id)
         })
         .catch((error) => {
-            alert('An error occured when adding the lists'+error)
+            handleServerResponse(error, 'An error occured when adding the lists')
         })
         this.setState({titleNewList: ""})
     }

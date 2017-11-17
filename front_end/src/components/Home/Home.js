@@ -6,6 +6,7 @@ import {Button, Col, Input, Row} from 'antd'
 import HomeUserBoard from './HomeUserBoard.js'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import './home.css' 
+import handleServerResponse from '../../response'
 
 class Home extends React.Component{
     
@@ -39,7 +40,7 @@ class Home extends React.Component{
       this.setState({boards:response.data})
     })
     .catch((error) => {
-      alert('An error occured when getting the boards!\nHint: check that the server is running')
+      handleServerResponse(error, 'An error occured when getting the boards!')
     })
   }
 
@@ -81,7 +82,7 @@ onClickAddBoard(){
       this.setState({titleNewBoard: ""})
     })
     .catch((error) => {
-      alert('An error occured when adding the board')
+      handleServerResponse(error, 'An error occured when adding the board')
     })
   }
 

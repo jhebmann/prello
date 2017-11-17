@@ -14,6 +14,7 @@ import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import {Tooltip} from 'antd'
 import Avatar from 'react-avatar'
+import handleServerResponse from '../../response'
 
 class Popup extends React.Component{
     constructor(props){
@@ -398,7 +399,7 @@ class Popup extends React.Component{
                     this.socket.emit('updateChecklistTitleServer', response.data)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the checklist title')
+                    handleServerResponse(error, 'An error occured when updating the checklist title')
                 })
             }
             else {
@@ -407,7 +408,7 @@ class Popup extends React.Component{
                     this.socket.emit('updateChecklistTitleServer', response.data)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the list')
+                    handleServerResponse(error, 'An error occured when updating the list')
                 })
             }
         }
@@ -427,7 +428,7 @@ class Popup extends React.Component{
                     this.socket.emit('updateItemServer', response.data, checklistId)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the checklist title')
+                    handleServerResponse(error, 'An error occured when updating the checklist title')
                 })
             }
         }
@@ -473,7 +474,7 @@ class Popup extends React.Component{
                     this.setState({cardInfos: newCardInfos})
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the card title')
+                    handleServerResponse(error, 'An error occured when updating the card title')
                 })
             }
             else{
@@ -484,7 +485,7 @@ class Popup extends React.Component{
                     this.updateCard(response.data)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the card title')
+                    handleServerResponse(error, 'An error occured when updating the card title')
                 })
             }
         }
@@ -500,7 +501,7 @@ class Popup extends React.Component{
                 this.updateCard(response.data)
             })
             .catch((error) => {
-                alert('An error occured when the card description')
+                handleServerResponse(error, 'An error occured when the card description')
             })
         }
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
@@ -518,7 +519,7 @@ class Popup extends React.Component{
             this.updateCard(response.data)
         })
         .catch((error) => {
-            alert('An error occured when updating the done date')
+            handleServerResponse(error, 'An error occured when updating the done date')
         })
     }
 
@@ -534,7 +535,7 @@ class Popup extends React.Component{
                     this.socket.emit('deleteCardServer', this.state.cardInfos._id)
                 })
                 .catch((error) => {
-                    alert('An error occured when deleting the card')
+                    handleServerResponse(error, 'An error occured when deleting the card')
                 })
             )
         })
@@ -549,7 +550,7 @@ class Popup extends React.Component{
             this.deleteAttachment(attachmentId)
         })
         .catch((error) => {
-            alert('An error occured when deleting the attachment')
+            handleServerResponse(error, 'An error occured when deleting the attachment')
         })
     }
     
@@ -588,7 +589,7 @@ class Popup extends React.Component{
             this.deleteChecklist(checklistId)
         })
         .catch((error) => {
-            alert('An error occured when deleting the checklist')
+            handleServerResponse(error, 'An error occured when deleting the checklist')
         })
     }
 
@@ -640,7 +641,7 @@ class Popup extends React.Component{
             this.addItem(response.data, checklistId)
         })
         .catch((error) => {
-            alert('An error occured when deleting the checklist')
+            handleServerResponse(error, 'An error occured when deleting the checklist')
         })
     }
 
@@ -672,7 +673,7 @@ class Popup extends React.Component{
                     this.socket.emit('updateItemServer', response.data, checklist._id)
                 })
                 .catch((error) => {
-                    alert('An error occured when updating the checklist title')
+                    handleServerResponse(error, 'An error occured when updating the checklist title')
                 })
             }
         }
@@ -706,7 +707,7 @@ class Popup extends React.Component{
                 this.socket.emit('deleteItemServer', itemId, checklistId)
             })
             .catch((error) => {
-                alert('An error occured when updating the checklist title')
+                handleServerResponse(error, 'An error occured when updating the checklist title')
             })
         }
     }

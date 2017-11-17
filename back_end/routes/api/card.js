@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
     Card.find().then(function(cards){
         res.status(200).send(cards)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -20,7 +20,7 @@ router.get('/:id', function (req, res, next) {
     Card.findById(req.params.id).then(function(card){
         res.status(200).send(card)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -31,14 +31,14 @@ router.get('/:id/labels', function (req, res, next) {
     Card.findOne(
         {_id: req.params.id},
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + req.params.id)
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + req.params.id)
             else {
                 Board.findOne(
                     {"lists.cards._id": id},
                     (err, board) => {
-                        if (err) res.status(401).send(err)
-                        else if (board === null) res.status(401).send("Couldn't find the board containing the card of id " + req.params.id)
+                        if (err) res.status(404).send(err)
+                        else if (board === null) res.status(404).send("Couldn't find the board containing the card of id " + req.params.id)
                         else {
                             let allLabels = []
                             board.labels.forEach(function(label){
@@ -64,8 +64,8 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
     Board.findOne(
         {_id: boardId, "lists._id": listId},
         (err, board) => {
-            if (err) res.status(401).send(err)
-            else if (board === null) res.status(401).send("Couldn't find the board of id " + boardId + " or the list of id " + listId)
+            if (err) res.status(404).send(err)
+            else if (board === null) res.status(404).send("Couldn't find the board of id " + boardId + " or the list of id " + listId)
             else{
                 board.lists.id(listId).cards.forEach((card) => {
                     if (card.pos > maxPos)
@@ -77,22 +77,24 @@ router.post('/board/:boardId/list/:listId', function (req, res, next) {
         const newCard = new Card()
         newCard.title = ('undefined' !== typeof req.body.title) ? req.body.title : ""
 
-        newCard.save().then(function(){
+        newCard.save()
+        .then(function(){
             const newCardRef = {
                 _id: newCard._id,
                 pos: maxPos + 1
             }
             board.lists.id(listId).cards.push(newCardRef)
-            board.save().then(function(board){
+            board.save()
+            .then(function(board){
                 res.status(200).send(newCard)
             }).catch(function(err) {
-                res.status(401).send(err)
+                res.status(409).send(err)
             })
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(409).send(err)
         })
     }).catch(function(err){
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -105,8 +107,8 @@ router.put('/:id', function (req, res, next) {
             _id : id,
         },
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + id)
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + id)
             else{
                 if ('undefined' !== typeof req.body.title) card.title = req.body.title
                 if ('undefined' !== typeof req.body.description) card.description = req.body.description
@@ -118,7 +120,7 @@ router.put('/:id', function (req, res, next) {
                         else card.users.addToSet(req.body.user)
                     }
                 card.save((err, card) => {
-                    if (err) res.status(401).send(err)
+                    if (err) res.status(409).send(err)
                     else {
                         console.log("The card of id " + id + " has been successfully updated")
                         res.status(200).send(card)
@@ -141,7 +143,7 @@ router.put('/:id/label/add/:labelId', function (req, res, next) {
     ).then(function(card) {
         res.status(200).send(card)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(409).send(err)
     })
 })
 
@@ -157,7 +159,7 @@ router.put('/:id/label/remove/:labelId', function (req, res, next) {
     ).then(function(card) {
         res.status(200).send(card)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(409).send(err)
     })
 })
 
@@ -171,7 +173,7 @@ router.put('/:id/user/add/:userId', function (req, res, next) {
     ).then(function(card) {
         res.status(200).send(card)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(409).send(err)
     })
 })
 
@@ -185,7 +187,7 @@ router.put('/:id/user/remove/:userId', function (req, res, next) {
     ).then(function(card) {
         res.status(200).send(card)
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(409).send(err)
     })
 })
 
@@ -201,8 +203,8 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
         {_id: boardId, "lists._id": oldlistId},
         {$pull: {"lists.$.cards": {_id: id, pos: oldPos}}},
         (err, result) =>{
-            if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + oldlistId)
-            else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + oldlistId)
+            if (err) res.status(409).send("Couldn't delete the card of id " + id + " from the list of id " + oldlistId)
+            else if (result.nModified === 0) res.status(404).send("There is no card of id " + id + " in the list of id " + oldlistId)
             else{
                 Board.findById(boardId, function(err, data){
                     data.lists.id(oldlistId).cards.forEach((card) => {
@@ -217,8 +219,8 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
                                 {_id: boardId, "lists._id": oldlistId},
                                 {$push: {"lists.$.cards": {_id: id, pos: oldPos}}},
                                 (err) =>{
-                                    if (err) res.status(401).send("Couldn't change the positions of the cards and couldn't revert the deletion of the card")
-                                    else res.status(401).send("Couldn't change the positions of the cards but could revert the deletion of the card")
+                                    if (err) res.status(409).send("Couldn't change the positions of the cards and couldn't revert the deletion of the card")
+                                    else res.status(409).send("Couldn't change the positions of the cards but could revert the deletion of the card")
                                 }
                             )
                         }
@@ -229,7 +231,7 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
                                 {$push: {"lists.$.cards": {_id: id, pos: newPos}}},
                                 {new: true},
                                 (err, result) =>{
-                                    if (err) res.status(401).send("Couldn't create the card of id " + id + " on the list of id " + newlistId)
+                                    if (err) res.status(409).send("Couldn't create the card of id " + id + " on the list of id " + newlistId)
                                     else {
                                         Board.findById(boardId, function(err, data){
                                             data.lists.id(newlistId).cards.forEach((card) => {
@@ -244,8 +246,8 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
                                                         {_id: boardId, "lists._id": newlistId},
                                                         {$pull: {"lists.$.cards": {_id: id, pos: newPos}}},
                                                         (err) =>{
-                                                            if (err) res.status(401).send("Couldn't change the positions of the cards and couldn't revert the addition of the card")
-                                                            else res.status(401).send("Couldn't change the positions of the cards but could revert the addition of the card")
+                                                            if (err) res.status(409).send("Couldn't change the positions of the cards and couldn't revert the addition of the card")
+                                                            else res.status(409).send("Couldn't change the positions of the cards but could revert the addition of the card")
                                                         }
                                                     )
                                                 }
@@ -290,23 +292,23 @@ router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
                         res.status(200).send("The card of id " + id + " was successfully destroyed")
                     }).catch(function(err) {
                         console.log(err)
-                        res.status(401).send(err)
+                        res.status(409).send(err)
                     })
                 }).catch(function(err) {
                     console.log(err)
-                    res.status(401).send(err)
+                    res.status(409).send(err)
                 })
             }).catch(function(err) {
                 console.log(err)
-                res.status(401).send(err)
+                res.status(404).send(err)
             })
         }).catch(function(err) {
             console.log(err)
-            res.status(401).send(err)
+            res.status(409).send(err)
         })
     }).catch(function(err) {
         console.log(err)
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -320,8 +322,8 @@ router.delete('/list/:listId/board/:boardId', function (req, res, next) {
     Board.findOne(
         {_id: boardId, "lists._id": listId},
         (err, board) => {
-            if (err) res.status(401).send(err)
-            else if (board === null) res.status(401).send("Couldn't find list of id " + listId + " or the board of id " + boardId)
+            if (err) res.status(404).send(err)
+            else if (board === null) res.status(404).send("Couldn't find list of id " + listId + " or the board of id " + boardId)
             else {
                 const cardsIds = board.lists.id(listId).cards
                 board.lists.id(listId).cards = []
@@ -342,17 +344,17 @@ router.delete('/list/:listId/board/:boardId', function (req, res, next) {
                                 .then(function() {
                                     res.status(200).send("Successfully destroyed all cards from list " + listId + " in board " + boardId)
                                 }).catch(function(err) {
-                                    res.status(401).send(err)
+                                    res.status(409).send(err)
                                 })
                             }).catch(function(err) {
-                                res.status(401).send(err)
+                                res.status(409).send(err)
                             })
                         }
                     }).catch(function(err) {
-                        res.status(401).send(err)
+                        res.status(404).send(err)
                     })
                 }).catch(function(err) {
-                    res.status(401).send(err)
+                    res.status(409).send(err)
                 })
             }
         }

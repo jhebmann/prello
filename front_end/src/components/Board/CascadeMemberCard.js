@@ -3,6 +3,7 @@ import {Select,Avatar,Button,message} from 'antd'
 import axios from 'axios'
 import url from '../../config'
 import '../Home/home.css'
+import handleServerResponse from '../../response'
 
 const Option = Select.Option
 const success = (mssge) => {
@@ -61,7 +62,7 @@ class CascadeMemberCard extends React.Component{
         success('Card updated!')
         })
     .catch((error) => {
-        alert('An error occured when updating the Card'+error)
+        handleServerResponse(error, 'An error occured when updating the Card')
     })
   }
 

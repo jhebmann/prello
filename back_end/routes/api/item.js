@@ -13,8 +13,8 @@ router.get('/:id/checklist/:checklistId/card/:cardId', function (req, res, next)
         {_id: cardId, "checklists._id": checklistId, "checklists.items._id": id},
         {"checklists.items.$": 1, _id: 0},
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + ", the checklist of id " + checklistId + " or the item of id " + id)
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + cardId + ", the checklist of id " + checklistId + " or the item of id " + id)
             else res.status(200).send(card.checklists[0].items.id(id))
         }
     )
@@ -34,7 +34,7 @@ router.post('/checklist/:checklistId/card/:cardId', function (req, res, next) {
         {_id: req.params.cardId, "checklists._id": req.params.checklistId},
         {$push: {"checklists.$.items": newItem}},
         (err) => {
-            if (err) res.status(401).send(err)
+            if (err) res.status(409).send(err)
             else res.status(200).send(newItem)
         }
     )
@@ -49,14 +49,14 @@ router.put('/:id/checklist/:checklistId/card/:cardId', function (req, res, next)
     Card.findOne(
         {_id: req.params.cardId, "checklists._id": req.params.checklistId, "checklists.items._id": req.params.id},
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + ", the checklist of id " + checklistId + " or the item of id " + id)            
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + cardId + ", the checklist of id " + checklistId + " or the item of id " + id)            
             else {
                 if ('undefined' !== typeof req.body.title) card.checklists.id(checklistId).items.id(id).title = req.body.title
                 if ('undefined' !== typeof req.body.isDone) card.checklists.id(checklistId).items.id(id).isDone = req.body.isDone
                 card.save(
                     (err, card) => {
-                        if (err) res.status(401).send(err)
+                        if (err) res.status(409).send(err)
                         else{
                             console.log("The item of id " + id + "has been successfully updated")
                             res.status(200).send(card.checklists.id(checklistId).items.id(id))
@@ -77,15 +77,15 @@ router.delete('/:id/checklist/:checklistId/card/:cardId', function (req, res, ne
     Card.findOne(
         {_id: req.params.cardId, "checklists._id": req.params.checklistId, "checklists.items._id": req.params.id},
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + ", the checklist of id " + checklistId + " or the item of id " + id)            
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + cardId + ", the checklist of id " + checklistId + " or the item of id " + id)            
             else {
                 card.checklists.id(checklistId).items.pull(card.checklists.id(checklistId).items.id(id))
                 card.save()
                 .then(function(card){
                     res.status(200).send("Successfully destroyed")
                 }).catch(function(err){
-                    res.status(401).send("Couldn't delete the list of id " + id)
+                    res.status(409).send("Couldn't delete the list of id " + id)
                 })
             }
         }

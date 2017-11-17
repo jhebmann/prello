@@ -5,6 +5,7 @@ import url from '../../config'
 import Auth from '../Auth/Auth.js'
 import {Button, Card, Col, Collapse, Icon, Row, Tag} from 'antd'
 import { Redirect } from 'react-router-dom'
+import handleServerResponse from '../../response'
 const Panel = Collapse.Panel
 
 class Search extends React.Component{
@@ -43,19 +44,22 @@ class Search extends React.Component{
     loadTeams(){
         return axios.get(url.api + 'user/' + Auth.getUserID() + '/teams', url.config)
         .catch((error) => {
-        alert('An error occured when getting the teams!\nHint: check that the server is running')
+            handleServerResponse(error, 'An error occured when getting the teams')
         })
     }
 
     loadUsers(){
         return axios.get(url.api + 'user/', url.config)
         .catch((error) => {
-        alert('An error occured when getting all the users!\nHint: check that the server is running'+error)
+            handleServerResponse(error, 'An error occured when getting all the users')
         })
     }
 
     render () {
         return (
+            (this.state.teams.length === 0 && this.state.boards.length === 0 && this.state.lists.length === 0 && this.state.cards.length === 0) ?
+            <h2 style={{"text-align": "center"}}>No result found for the text {this.state.text}</h2>
+            :
             <div className="container">
                 {this.state.redirect}
                 {this.renderTeams()}
@@ -71,7 +75,7 @@ class Search extends React.Component{
         .then((response) => {
             this.setState({teams: response.data.teams, boards: response.data.boards, lists: response.data.lists, cards: response.data.cards, comments: response.data.comments, attachments: response.data.attachments, checklists: response.data.checklists, items: response.data.items, pageLoaded: true})
         }).catch((error) => {
-            alert('An error occured when searching for the text ' + this.state.text)
+            handleServerResponse(error, 'An error occured when searching for the text ' + this.state.text)
         })
     }
     

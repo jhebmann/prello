@@ -4,6 +4,7 @@ import DateTime from 'react-datetime'
 import axios from 'axios'
 import url from '../../../config'
 import moment from 'moment'
+import handleServerResponse from '../../../response'
 
 import './reactDateTime.css'
 
@@ -60,7 +61,7 @@ class DueDate extends React.Component{
             this.updateCard(response.data)
         })
         .catch((error) => {
-            alert('An error occured when updating the list')
+            handleServerResponse(error, 'An error occured when updating the list')
         })
     }
 

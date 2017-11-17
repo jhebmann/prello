@@ -15,7 +15,7 @@ router.get('/:id/card/:cardId', function (req, res, next) {
     ).then(function(card){
         res.status(200).send(card.comments[0])
     }).catch(function(err) {
-        res.status(401).send(err)
+        res.status(404).send(err)
     })
 })
 
@@ -28,14 +28,14 @@ router.get('/:id/card/:cardId/user', function (req, res, next) {
         {_id: cardId, "comments._id": id},
         {"comments.$": 1},
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + " or the comment of id " + id)            
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + cardId + " or the comment of id " + id)            
             else {
                 User.findOne(
                     {_id: card.comments[0].postedBy},
                     (err, user) => {
-                        if (err) res.status(401).send(err)
-                        else if (user === null) res.status(401).send("Couldn't find the user of id " + card.comments[0].postedBy)            
+                        if (err) res.status(404).send(err)
+                        else if (user === null) res.status(404).send("Couldn't find the user of id " + card.comments[0].postedBy)            
                         else res.status(200).send(user)
                     }
                 )
@@ -59,7 +59,7 @@ router.post('/card/:cardId', function (req, res, next) {
         .then(function(card){
             res.status(200).send(card.comments[card.comments.length - 1])
         }).catch(function(err) {
-            res.status(401).send(err)
+            res.status(409).send(err)
         })
     })
 })
@@ -75,15 +75,15 @@ router.put('/:id/card/:cardId', function (req, res, next) {
             comments: {$elemMatch: {_id: id}}
         },
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === null) res.status(401).send("Couldn't find the card of id " + cardId + " or the comment of id " + id)   
+            if (err) res.status(404).send(err)
+            else if (card === null) res.status(404).send("Couldn't find the card of id " + cardId + " or the comment of id " + id)   
             else{
                 if ('undefined' !== typeof req.body.content){
                     card.comments.id(id).content = req.body.content
                     card.comments.id(id).lastModifiedAt = Date.now()
                 }
                 card.save((err) => {
-                    if (err) res.status(401).send(err)
+                    if (err) res.status(409).send(err)
                     else {
                         console.log("The comment of id " + id + " has been successfully updated")
                         res.status(200).send(card.comments.id(id))
@@ -102,15 +102,15 @@ router.delete('/:id/card/:cardId', function (req, res, next) {
     Card.findOne(
         {_id: cardId, "comments._id": id},
         (err, card) => {
-            if (err) res.status(401).send(err)
-            else if (card === undefined || card === null) res.status(401).send("There is no card of id " + cardId + " or comment of id " + id)
+            if (err) res.status(404).send(err)
+            else if (card === undefined || card === null) res.status(404).send("There is no card of id " + cardId + " or comment of id " + id)
             else {
                 card.comments.pull(card.comments.id(id))
                 card.save()
                 .then(function(card){
                     res.status(200).send("Successfully destroyed")
                 }).catch(function(err){
-                    res.status(401).send("Couldn't delete the comment of id " + id)
+                    res.status(409).send("Couldn't delete the comment of id " + id)
                 })
             }
         }

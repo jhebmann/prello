@@ -27,6 +27,10 @@ class Header extends React.Component{
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
+          <Nav pullRight>
+          {Auth.isUserAuthenticated() ? 
+          (
+            <Nav >
           <Navbar.Form pullLeft>
             <FormGroup>
               <FormControl type="text" placeholder="Search" name="search" onChange={this.handleInputChange}
@@ -42,15 +46,9 @@ class Header extends React.Component{
               Search
             </Button>
           </Navbar.Form>
-          <Nav pullRight>
-          {Auth.isUserAuthenticated() ? 
-          (
-            <Nav pullRight>
-            <LinkContainer to="/profile">
               <NavItem>
                 {Auth.getNickname()}
               </NavItem>
-            </LinkContainer>
             <LinkContainer to="/login" onClick={Auth.deauthenticateUser}>
               <NavItem>
                 Log Out

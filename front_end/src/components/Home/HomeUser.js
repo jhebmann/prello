@@ -8,6 +8,7 @@ import './home.css'
 import HomeAdminTab from './HomeAdminTab.js'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
+import handleServerResponse from '../../response'
 
 const Panel = Collapse.Panel
 const TabPane = Tabs.TabPane
@@ -62,7 +63,7 @@ class HomeUser extends React.Component{
     loadTeams(){
       return axios.get(url.api + 'team', url.config)
       .catch((error) => {
-        alert('An error occured when getting the teams!\nHint: check that the server is running')
+        handleServerResponse(error, 'An error occured when getting the teams!')
       })
     }
 
@@ -73,7 +74,7 @@ class HomeUser extends React.Component{
     loadUsers(){
      return axios.get(url.api + 'user/', url.config)
       .catch((error) => {
-        alert('An error occured when getting all the users!\nHint: check that the server is running'+error)
+        handleServerResponse(error, 'An error occured when getting all the users')
       })
     }
 
@@ -88,7 +89,7 @@ class HomeUser extends React.Component{
         this.setState({textInput: ""})
       })
       .catch((error) => {
-        alert('An error occured when adding the board')
+        handleServerResponse(error, 'An error occured when adding the board')
       })
     }
 
@@ -105,7 +106,7 @@ class HomeUser extends React.Component{
             this.deleteTeam(team._id)
           })
           .catch((error) => {
-            alert('An error occured when deleting the team')
+            handleServerResponse(error, 'An error occured when deleting the team')
           })
         )
       })
@@ -134,7 +135,7 @@ class HomeUser extends React.Component{
           this.setState({textInput: ""})
         })
         .catch((error) => {
-          alert('An error occured when adding the board')
+          handleServerResponse(error, 'An error occured when adding the board')
         })
       }
 
