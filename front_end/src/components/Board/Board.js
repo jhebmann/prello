@@ -11,10 +11,10 @@ import Auth from '../Auth/Auth.js'
 import handleServerResponse from '../../response'
 
 class Board extends React.Component{
-    
+
     constructor(props){
         super(props)
-        
+
         this.state={
             board: null,
             allTeams: [],
@@ -25,7 +25,7 @@ class Board extends React.Component{
             usersBoard:null,
             modalVisible:false
         }
-        
+
         this.socket = this.props.io
         this.getAllLists = this.getAllLists.bind(this)
         this.onClickAddList = this.onClickAddList.bind(this)
@@ -39,14 +39,13 @@ class Board extends React.Component{
         this.socket.on('deleteListClient', this.deleteList)
     }
 
-    componentDidMount() {
-        const instance= this
+    componentWillMount() {
         axios.all([this.loadBoard(), this.loadTeams(),this.loadUsers()])
-        .then(axios.spread(function (res1, res2,res3) {
-          instance.getAllLists(res1.data.lists)
-          const usersBoardArr=res2.data.filter(team=>team.boards.includes(res1.data._id)).map((team)=>{return team.users})
-          let usersBoard2=res3.data.filter(usr=>(Array.from(new Set([].concat.apply([],usersBoardArr)))).includes(usr._id))
-          instance.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true})  
+        .then(axios.spread((res1, res2,res3) => {
+            this.getAllLists(res1.data.lists)
+            const usersBoardArr=res2.data.filter(team=>team.boards.includes(res1.data._id)).map((team)=>{return team.users})
+            let usersBoard2=res3.data.filter(usr=>(Array.from(new Set([].concat.apply([],usersBoardArr)))).includes(usr._id))
+            this.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true})
         }))
     }
 
@@ -75,7 +74,7 @@ class Board extends React.Component{
         return(
             <div className='board'>
                 {
-                    this.state.pageLoaded ?( 
+                    this.state.pageLoaded ?(
                             <div className="boardContainer">
                                     {this.renderOptions()}
                                 <div className="listContainer">
@@ -89,7 +88,7 @@ class Board extends React.Component{
                                             </Button>
                                             {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" className='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
                                         </div>
-                                    </div>   
+                                    </div>
                                 </div>
                         </div>
                     ):
@@ -97,7 +96,7 @@ class Board extends React.Component{
                         <div className="spinn">
                             <Spin size='large' />
                         </div>
-                    ) 
+                    )
                 }
             </div>
         )
@@ -107,7 +106,7 @@ class Board extends React.Component{
         if (e.key === 'Enter') {
             if (this.state.titleNewList) {
                 this.onClickAddList()
-            } 
+            }
         }
     }
 
@@ -143,7 +142,7 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox}/>
+            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox} labelsBoard={this.state.board.labels}/>
         )
         return listItems
     }
@@ -170,7 +169,7 @@ class Board extends React.Component{
                     <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false} updateAllTeams={this.updateAllTeams}/>
                     <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true} updateAllTeams={this.updateAllTeams}/>
                     <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Board Admin" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
-                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Board Admin" boardId={this.state.board._id} updateBoard={this.updateBoard}/>            
+                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Board Admin" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
                 </Modal>
             </div>
             )

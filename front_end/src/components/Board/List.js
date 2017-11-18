@@ -19,7 +19,7 @@ class List extends React.Component{
       pos: this.props.pos, // always undefined for now
       parameters: this.props.parameters
     }
-    
+
     this.socket = this.props.io
 
     this.onClickAddCard = this.onClickAddCard.bind(this)
@@ -40,7 +40,7 @@ class List extends React.Component{
     this.socket.on('addCard', this.addCard)
     this.socket.on('deleteCards', this.deleteCards)
     this.socket.on('deleteCardClient', this.deleteCard)
-  
+
   }
 
   componentDidMount() {
@@ -58,7 +58,7 @@ class List extends React.Component{
       if(!this.state.showInput) {
         headList = <h4 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'No title'}</h4>
       } else{
-        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} 
+        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList}
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
@@ -74,7 +74,7 @@ class List extends React.Component{
           <div className="listBody">
                     {this.cardList()}
             <p>
-              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
+              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard"
                             value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.trim().length < 1}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteCards} disabled={this.state.cards.length < 1}>Delete Cards</Button>
@@ -82,14 +82,14 @@ class List extends React.Component{
           </div>
         </Panel>
       )
-  } 
+  }
 
-  //Renders the Cards stored in the cards array   
+  //Renders the Cards stored in the cards array
   cardList(){
     const cardItems= this.state.cards.map((card, index) =>
             <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
-                listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket} 
-                usersBoard={this.props.usersBoard} dropbox={this.props.dropbox}
+                listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}
+                usersBoard={this.props.usersBoard} dropbox={this.props.dropbox} labelsBoard={this.props.labelsBoard}
               />
     )
     return cardItems
@@ -205,7 +205,7 @@ class List extends React.Component{
 
 
 
-  
+
 
   onClickDeleteList() {
     confirmAlert({

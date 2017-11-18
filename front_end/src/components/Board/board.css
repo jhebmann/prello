@@ -684,3 +684,10 @@ input[type="file"].fileSpace{
   padding: 1px 5px;
   width: fit-content;
 }
+
+.labelPreview{
+  float: left;
+  height: 8px;
+  margin: 0 3px 3px 0;
+  width: 30%;
+}

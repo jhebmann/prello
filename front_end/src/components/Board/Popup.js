@@ -5,6 +5,7 @@ import Attachment from './popups/Attachment'
 import Checklist from './popups/Checklist'
 import DueDate from './popups/DueDate'
 import Member from './popups/Member'
+import Label from './popups/Label'
 import MoveCard from './popups/MoveCard'
 import axios from 'axios'
 import url from '../../config'
@@ -43,7 +44,7 @@ class Popup extends React.Component{
         this.updateTitleInput = this.updateTitleInput.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
         this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
-        
+
         //////////////////// Attachments ////////////////////
         this.updateAttachments =this.updateAttachments.bind(this)
         this.onClickDeleteAttachment = this.onClickDeleteAttachment.bind(this)
@@ -75,13 +76,13 @@ class Popup extends React.Component{
         this.socket.on('deleteItemClient', this.deleteItem)
     }
 
-    
+
     componentWillReceiveProps(newProps) {
         this.setState({attachments: newProps.attachments})
     }
 
     componentWillMount() {
-        const newShowChecklists = this.props.cardInfos.checklists.map(c => { return { 
+        const newShowChecklists = this.props.cardInfos.checklists.map(c => { return {
             showChecklist: false,
             itemState: c.items.map(item => false)
         }})
@@ -89,14 +90,14 @@ class Popup extends React.Component{
     }
 
     render(){
-        ////////////////// Popups style //////////////////   
+        ////////////////// Popups style //////////////////
         const memberPopup = {
             overflow: 'auto'
         }
 
-        /*const labelPopup = {
+        const labelPopup = {
             overflow: 'auto'
-        }*/
+        }
 
         const checklistPopup = {
             height: '35%'
@@ -126,24 +127,24 @@ class Popup extends React.Component{
                 {(this.state.cardInfos.description.trim().length > 0) ? <Markdown source={this.state.cardInfos.description} /> : <span className="editDescription">Edit the description</span>}
             </div>
         } else{
-            descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text" 
-            name="description" value={this.state.cardInfos.description} placeholder="Add a more detailed description..." className="inputPopup"/>                
+            descriptionInput = <FormControl componentClass="textarea" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateDescriptionInput} type="text"
+            name="description" value={this.state.cardInfos.description} placeholder="Add a more detailed description..." className="inputPopup"/>
         }
 
         ////////////////// Checklist render //////////////////
         const checklists = this.state.cardInfos.checklists
         const checklistsLi = checklists.map((checklist, i) =>
             <li className="listChecklist" key={i}>
-                {(!this.state.showChecklists[i].showChecklist) ? 
+                {(!this.state.showChecklists[i].showChecklist) ?
                 (<div className="checklistTitleDiv">
                     <div className="editChecklistDiv">
                         <Glyphicon glyph="check"/>
-                        <div className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</div>   
+                        <div className="checklistTitleSpan" onClick={this.onClickChecklistShow} index={i}>{checklist.title}</div>
                     </div>
                     <span className="deleteChecklistSpan" checklistid = {checklist._id} onClick={this.onClickDeleteChecklist}>Delete..</span>
                 </div>) :
                 (<div className="inputCheklistUpdate" onBlur={this.onClickChecklistShow} >
-                    <FormControl componentClass="input" name="checklistTitle" autoFocus="true" type="text" 
+                    <FormControl componentClass="input" name="checklistTitle" autoFocus="true" type="text"
                         index={i} value={checklist.title} onChange={this.handleInputChange}
                     />
                 </div>)}
@@ -152,7 +153,7 @@ class Popup extends React.Component{
                         <span className="percentageLabel">
                             {Math.round(100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length)}%
                         </span>
-                        <ProgressBar className="checklistProgressBar" striped 
+                        <ProgressBar className="checklistProgressBar" striped
                             now = {100.0 * checklist.items.filter(item => {return item.isDone}).length / checklist.items.length} bsStyle="info"
                         />
                     </div>
@@ -167,12 +168,12 @@ class Popup extends React.Component{
                                         {
                                             (this.state.showChecklists[i].itemState[j]) ?
                                                 (<div className="inputItemUpdate" onBlur={() => this.onClickItemInput(item.title, i, j, checklist._id, item._id)} >
-                                                    <FormControl componentClass="input" name="itemTitle" autoFocus="true" type="text" 
+                                                    <FormControl componentClass="input" name="itemTitle" autoFocus="true" type="text"
                                                         checklistindex={i} itemindex={j} value={item.title} onChange={this.handleInputChange}
                                                     />
                                                 </div>)
                                             :
-                                                (<div className="itemDiv"> 
+                                                (<div className="itemDiv">
                                                     <div className={(item.isDone) ? "item done" : "item notDone"}>
                                                         <span className={(item.isDone) ? "checkboxItemDone" : "checkboxItemNotDone"} onClick={() => {this.OnclickUpdateItemIsDone(item, checklist)}}>
                                                             {(item.isDone) && <Glyphicon glyph='ok' className="myGlyphOk"/>}
@@ -185,7 +186,7 @@ class Popup extends React.Component{
                                                     </div>
                                                 </div>)
                                         }
-                                    </li> 
+                                    </li>
                                 )
                             }
                         </ul>
@@ -204,7 +205,7 @@ class Popup extends React.Component{
         const now = moment()
         const dueDate = new Date(this.state.cardInfos.dueDate)
         const today = new Date()
-        
+
         if (this.state.cardInfos.doneDate) {
             dueDateClass.push("Done")
         }
@@ -218,8 +219,8 @@ class Popup extends React.Component{
             dueDateClass.push("Standard")
         }
 
-        const dueDateRender = 
-            <div className="dueDatePopupDiv"> 
+        const dueDateRender =
+            <div className="dueDatePopupDiv">
                 <span className={dueDateClass.join("")+" dueDateColors dueDateCentered"}>
                     <span className="checkboxNotDone" onClick={this.updateDoneDate}>
                         {(this.state.cardInfos.doneDate) && <Glyphicon glyph='ok'/>}
@@ -234,12 +235,12 @@ class Popup extends React.Component{
         if(!this.state.showCardTitle) {
             cardInputTitle = <h2 onClick={this.updateTitleInput}>{this.state.cardInfos.title}</h2>
         } else{
-            cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text" 
-            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" className="titleCardPopup" onKeyPress={this.handleKeyPress}/>                
+            cardInputTitle = <FormControl componentClass="input" autoFocus="true" onChange={this.handleInputChange} onBlur={this.updateTitleInput} type="text"
+            name="cardTitle" value={this.state.cardInfos.title} placeholder="Title" className="titleCardPopup" onKeyPress={this.handleKeyPress}/>
         }
 
         ////////////////// Attachments render //////////////////
-        let attachmentsList = this.state.attachments.map((attachment, i) => 
+        let attachmentsList = this.state.attachments.map((attachment, i) =>
             <li className="listAttachment col-sm-6" key={i}>
                 <div className = "attachmentInfos">
                     <Glyphicon glyph="camera"/>
@@ -260,24 +261,24 @@ class Popup extends React.Component{
                 <div className="popupLeft">
                     <div className="inList"> In list <span className="spanTitlePopup">{this.state.listTitle}</span> </div>
                     <div className="inlineElements space">
-                        <div className="members inline"> 
+                        <div className="members inline">
                             <span className="spanTitle2"> Members </span>
-                            <div className="membersAssigned"> 
+                            <div className="membersAssigned">
                                 {this.renderMembers(this.state.cardInfos.users)}
                                 <Button className='circularButton' onClick={() => this.addMember.show()}>
                                     <Glyphicon glyph="plus"/>
                                 </Button>
                             </div>
                         </div>
-                        {/*<div className="labels inline"> 
-                            <span className="spanTitle2">Labels </span> 
+                        <div className="labels inline">
+                            <span className="spanTitle2">Labels </span>
                             {this.state.cardInfos.labels} <Button className='circularButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="plus"/></Button>
-                        </div>*/}
-                        <div className="dueDate inline"> 
-                            <span className="spanTitle2">Due date </span> 
+                        </div>
+                        <div className="dueDate inline">
+                            <span className="spanTitle2">Due date </span>
                             {
-                                (this.state.cardInfos.dueDate) ? 
-                                dueDateRender : 
+                                (this.state.cardInfos.dueDate) ?
+                                dueDateRender :
                                 <Button className='circularButton' onClick={() => this.addDueDate.show()}>
                                 <Glyphicon glyph="plus"/></Button>
                             }
@@ -289,14 +290,14 @@ class Popup extends React.Component{
                         </div>
                     </div>
                     { (this.state.cardInfos.checklists && this.state.cardInfos.checklists.length > 0) &&
-                        <div className="checklists space"> <span className="spanTitle checklistsSpan"><Glyphicon glyph="list-alt"/>Checklists </span> 
+                        <div className="checklists space"> <span className="spanTitle checklistsSpan"><Glyphicon glyph="list-alt"/>Checklists </span>
                             <ul>
                                 {checklistsLi}
                             </ul>
                         </div>
                     }
                     { (this.state.attachments && this.state.attachments.length > 0) &&
-                        <div className="attachments space"> <span className="spanTitle attachmentsSpan"><Glyphicon glyph="paperclip"/>Attachments</span> 
+                        <div className="attachments space"> <span className="spanTitle attachmentsSpan"><Glyphicon glyph="paperclip"/>Attachments</span>
                             <ul>
                                 {attachmentsList}
                             </ul>
@@ -309,7 +310,7 @@ class Popup extends React.Component{
                     <div className="popupAdd">
                         <h3> Add </h3>
                         <Button className='popupButton' onClick={() => this.addMember.show()}><Glyphicon glyph="user"/> Members</Button>
-                        {/*<Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tags"/> Labels</Button>*/}
+                        <Button className='popupButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="tags"/> Labels</Button>
                         <Button className='popupButton' onClick={() => this.addChecklist.show()}><Glyphicon glyph="check"/> Checklists</Button>
                         <Button className='popupButton' onClick={() => this.addDueDate.show()}><Glyphicon glyph="time"/> Due date</Button>
                         <Button className='popupButton' onClick={() => this.addAttachment.show()}><Glyphicon glyph="paperclip"/> Attachment</Button>
@@ -325,9 +326,9 @@ class Popup extends React.Component{
                 <SkyLight dialogStyles={memberPopup} hideOnOverlayClicked ref={ref => this.addMember = ref} title='Add Member'>
                     <Member popup={this} card={this.state.card} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard} io={this.socket} cardInfos={this.state.cardInfos}/>
                 </SkyLight>
-                {/*<SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
+                {<SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
                     <Label parentClose={this.handlePopupClose.bind(this)}/>
-                </SkyLight>*/}
+                </SkyLight>}
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
                     <Checklist checklists={this.state.cardInfos.checklists} popup={this} card={this.state.card} io={this.socket} />
                 </SkyLight>
@@ -438,7 +439,7 @@ class Popup extends React.Component{
     }
 
     renderMembers(){
-        const users = 
+        const users =
             this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
                 <div key = {index} className="avatarDiv">
                     <Tooltip title = {usr.local.nickname} >
@@ -506,7 +507,7 @@ class Popup extends React.Component{
         }
         this.setState({showDescriptionInput: !this.state.showDescriptionInput})
     }
-    
+
     updateDoneDate() {
         let newDoneDate = null
         if (!this.state.cardInfos.doneDate) {
@@ -540,7 +541,7 @@ class Popup extends React.Component{
             )
         })
     }
-    
+
     ////////////////////// Attachments //////////////////////
     onClickDeleteAttachment(e) {
         const attachmentId = e.target.attributes.attachmentId.value
@@ -553,7 +554,7 @@ class Popup extends React.Component{
             handleServerResponse(error, 'An error occured when deleting the attachment')
         })
     }
-    
+
     updateAttachments(attachment){
         let newAttachments = this.state.attachments
         newAttachments.unshift(attachment)
@@ -561,7 +562,7 @@ class Popup extends React.Component{
             attachments: newAttachments
         })
     }
-    
+
     updateTitleAttachment(attachment){
         let newAttachments = this.state.attachments
         newAttachments[newAttachments.map((el) => el._id).indexOf(attachment._id)] = attachment
@@ -597,16 +598,16 @@ class Popup extends React.Component{
         let newCardInfos = this.state.cardInfos
         if (newCardInfos._id === cardId){
             newCardInfos.checklists.push(checklist)
-            const newShowChecklists = newCardInfos.checklists.map(c => { return { 
+            const newShowChecklists = newCardInfos.checklists.map(c => { return {
                 showChecklist: false,
                 itemState: c.items.map(item => false)
             }})
-    
+
             this.setState({
                 cardInfos: newCardInfos,
                 showChecklists: newShowChecklists
             })
-    
+
             this.state.card.setState({
                 cardInfos: newCardInfos
             })

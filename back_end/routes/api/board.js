@@ -1,6 +1,7 @@
 const models = require('../../models')
 const Board = models.boards
 const Team = models.teams
+const Label = models.labels
 const router = require('express').Router()
 const ObjectId = require('mongodb').ObjectID
 
@@ -149,7 +150,29 @@ router.post('/', function (req, res, next) {
     const newBoard = new Board({
         title: ('undefined' !== typeof req.body.title && req.body.title !== null) ? req.body.title : '',
         admins: req.body.admins,
-        isPublic: req.body.isPublic
+        isPublic: req.body.isPublic,
+        labels: [
+            new Label({
+                title: "Very high priority",
+                color: "darkred"
+            }),
+            new Label({
+                title: "High priority",
+                color: "red"
+            }),
+            new Label({
+                title: "Average priority",
+                color: "orange"
+            }),
+            new Label({
+                title: "Low priority",
+                color: "yellow"
+            }),
+            new Label({
+                title: "Very low priority",
+                color: "green"
+            })
+        ]
     })
     newBoard.save(
         {},
@@ -169,7 +192,29 @@ router.post('/team/:teamId', function (req, res, next) {
         title: req.body.title,
         admins: req.body.admins,
         isPublic: req.body.isPublic,
-        teams: [req.params.teamId]
+        teams: [req.params.teamId],
+        labels: [
+            new Label({
+                title: "Very high priority",
+                color: "darkred"
+            }),
+            new Label({
+                title: "High priority",
+                color: "red"
+            }),
+            new Label({
+                title: "Average priority",
+                color: "orange"
+            }),
+            new Label({
+                title: "Low priority",
+                color: "yellow"
+            }),
+            new Label({
+                title: "Very low priority",
+                color: "green"
+            })
+        ]
     })
     newBoard.save(
         {},
@@ -192,7 +237,7 @@ router.post('/team/:teamId', function (req, res, next) {
     )
 })
 
-router.put('/:id', function (req, res, next) {  
+router.put('/:id', function (req, res, next) {
     // Update the board having the id given in parameter
     const id = req.params.id
     Board.findOne(
@@ -209,7 +254,7 @@ router.put('/:id', function (req, res, next) {
                     else {
                         console.log("The board of id " + id + " has been successfully updated")
                         res.status(200).send(board)
-                    }                
+                    }
                 })
             }
         }

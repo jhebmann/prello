@@ -5,13 +5,13 @@ import Auth from '../Auth/Auth.js'
 import {Button, Col, Input, Row} from 'antd'
 import HomeUserBoard from './HomeUserBoard.js'
 import 'react-confirm-alert/src/react-confirm-alert.css'
-import './home.css' 
+import './home.css'
 import handleServerResponse from '../../response'
 
 class Home extends React.Component{
-    
+
   constructor(props){
-    super(props)    
+    super(props)
     //Default State
     this.state={
       boards: [],
@@ -20,7 +20,7 @@ class Home extends React.Component{
       allTeams:this.props.allTeams
     }
     this.socket = this.props.socket
-   
+
     //Event Listeners
     this.renderBoards = this.renderBoards.bind(this)
     this.onClickAddBoard = this.onClickAddBoard.bind(this)
@@ -30,7 +30,7 @@ class Home extends React.Component{
     this.socket.on('deleteBoard', this.deleteBoard)
     this.handleBoardTitleInputChange = this.handleBoardTitleInputChange.bind(this)
   }
-  
+
   componentWillMount() {
     let route ='team/' + this.state.teamId + '/boards'
     if(this.props.public)
@@ -66,7 +66,7 @@ class Home extends React.Component{
        </div>
     )
 }
-  
+
 onClickAddBoard(){
     let route='board'
     if(!this.props.public)
@@ -103,12 +103,12 @@ onClickAddBoard(){
       }))
   }
 
-  handleBoardTitleInputChange(e) {  
+  handleBoardTitleInputChange(e) {
     this.setState({titleNewBoard: e.target.value})
   }
 
 
-  
+
 
   deleteBoard(id){
     this.setState(prevState=>({
@@ -121,7 +121,7 @@ onClickAddBoard(){
     const boardItems = boards.map((board, index)=>
     <Col span={5} key={index}>
         <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
-          <HomeUserBoard board={board} deleteBoard={this.deleteBoard} socket={this.props.socket}/>                                                                                                                 
+          <HomeUserBoard board={board} deleteBoard={this.deleteBoard} socket={this.props.socket}/>
         </div>
     </Col>
     )

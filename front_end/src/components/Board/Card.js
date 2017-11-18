@@ -16,6 +16,7 @@ class Card extends React.Component{
             cardInfos: this.props.cardInfos,
             listTitle: this.props.listTitle,
             attachments: [],
+            labelsBoard: this.props.labelsBoard,
             parameters: this.props.parameters
         }
 
@@ -47,11 +48,11 @@ class Card extends React.Component{
             backgroundColor: '#EDEFF0',
             top:"70px"
         }
-        
+
         let dueDateClass = ["dueDateType"]
         const dueDate = new Date(this.state.cardInfos.dueDate)
         const today = new Date()
-        
+
         if (this.state.cardInfos.doneDate) {
             dueDateClass.push("Done")
         }
@@ -62,12 +63,22 @@ class Card extends React.Component{
             dueDateClass.push("Warning")
         }
 
-        const dueDateDiv = <div className="alignElements">{(this.state.cardInfos.dueDate) ? 
+        const dueDateDiv = <div className="alignElements">{(this.state.cardInfos.dueDate) ?
             <span className={dueDateClass.join("")+" dueDateColors inlineElementsCard"}><Glyphicon glyph='time' className='myGlyph'/> {moment(this.state.cardInfos.dueDate).format('DD MMM')}</span> : ''}</div>
-        
+
         const items = this.state.cardInfos.checklists.map((checklist) => checklist.items).reduce((a, b) => a.concat(b), [])
         const numItems = items.length
         const numDoneItems = items.filter((item) => item.isDone).length
+
+        let labels = []
+
+        this.state.cardInfos.labels.forEach((label) => {
+            let index = this.state.labelsBoard.map((l) => l._id).indexOf(label)
+            if (index !== -1){
+                const lab = this.state.labelsBoard[index]
+                labels.push(<div className="labelPreview" style={{"background-color": lab.color}}></div>)
+            }
+        })
 
         return(
             <div>
@@ -75,9 +86,8 @@ class Card extends React.Component{
                     <Thumbnail onClick={() => this.customDialog.show()}
                         className={('undefined' !== typeof this.state.parameters && this.state.cardInfos._id === this.state.parameters.cardId) ? "selected card" : "card"}
                     >
-                        {(this.state.cardInfos.labels && this.state.cardInfos.labels.length > 0) && 
-                            <div>{this.state.cardInfos.labels.length} labels</div>
-                        }
+                        {labels}
+                        <br/>
                         <div className="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' className="glyphRemoveCardChild"/></div>
                         <h4>{this.state.cardInfos.title}</h4>
                         {(this.state.cardInfos.description || this.state.cardInfos.comments.length > 0 || this.state.cardInfos.dueDate) &&
@@ -94,11 +104,11 @@ class Card extends React.Component{
                         }
                     </Thumbnail>
                 </div>
-               
+
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
-                            dropbox={this.props.dropbox}
+                            dropbox={this.props.dropbox} labelsBoard={this.state.labelsBoard}
                     />
                 </SkyLight>
             </div>
