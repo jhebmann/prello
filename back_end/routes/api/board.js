@@ -60,11 +60,23 @@ router.get('/public', function (req, res, next) {
 
 router.get('/:id', function (req, res, next) {
     // Get the board having the id given in parameter
-    Board.findById(req.params.id).then(function(board){
-        res.status(200).send(board)
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    const id=ObjectId(req.params.id)
+    Board.aggregate([
+        { "$match": { "_id": id } },
+        {
+          $lookup:
+            {
+            from:"cards",
+            localField:"lists.cards._id",
+            foreignField:"_id",
+            as:"cardsInfo"
+            }
+            }], (err, board) => {
+                if (err || board === null) res.status(401).send("Couldn't find the board of id " + id)
+                else{ 
+                    res.status(200).send(board[0])
+                }
+      });
 })
 
 router.get('/:id/lists', function (req, res, next) {
@@ -84,16 +96,26 @@ router.get('/:id/labels', function (req, res, next) {
         res.status(401).send(err)
     })
 })
-
+/*
 router.get('/:id/admins', function (req, res, next) {
     // Get all admins of the board having the id given in parameter
-    Board.findById(req.params.id).then(function(board){
-        res.status(200).send(board.admins)
-    }).catch(function(err) {
-        res.status(401).send(err)
-    })
+    Board.aggregate([
+        {
+          $lookup:
+            {
+            from:"cards",
+            localField:"lists.cards._id",
+            foreignField:"_id",
+            as:"lists.cards"
+            }
+            }], (err, board) => {
+                if (err || board === null) res.status(401).send("Couldn't find the board of id " + id)
+                else{ 
+                    res.status(200).send(board)
+                }
+      });
 })
-
+*/
 router.get('/:id/users', function (req, res, next) {
     // Get all users of the board having the id given in parameter
     const id = req.params.id

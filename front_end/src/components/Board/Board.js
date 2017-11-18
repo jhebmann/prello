@@ -23,7 +23,8 @@ class Board extends React.Component{
             parameters: this.props.parentProps.location,
             pageLoaded: false,
             usersBoard:null,
-            modalVisible:false
+            modalVisible:false,
+            cardsInfo:[]
         }
         
         this.socket = this.props.io
@@ -47,7 +48,8 @@ class Board extends React.Component{
           instance.getAllLists(res1.data.lists)
           const usersBoardArr=res2.data.filter(team=>team.boards.includes(res1.data._id)).map((team)=>{return team.users})
           let usersBoard2=res3.data.filter(usr=>(Array.from(new Set([].concat.apply([],usersBoardArr)))).includes(usr._id))
-          instance.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true})  
+          instance.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true,cardsInfo:res1.data.cardsInfo})  
+          console.log(instance.state.cardsInfo)
         }))
     }
 
@@ -73,21 +75,36 @@ class Board extends React.Component{
        }
 
     onDragEnd = (result) => {
-        console.log(result)
-        console.log(result.destination)
+        return;/*
+        if(!result.destination) return
+        //console.log(result)
+        //console.log(result.destination)
         //const cardIndex=this.state.board[result.source.index].findIndex(c=>c._id===result.source.
-
-        return;
-        
+        const sourceListIndex=this.state.board.lists.findIndex(l=>l._id===result.source.droppableId)
+        const destinationListIndex=this.state.board.lists.findIndex(l=>l._id===result.destination.droppableId)
+        let newBoard=this.state.board
+        //console.log(newBoard)
+        newBoard.lists[destinationListIndex].cards.splice(
+            result.destination.index,
+            0,
+            this.state.board.lists[sourceListIndex].cards[result.source.index]
+        )
+       // console.log("")
+        newBoard.lists[sourceListIndex].cards.splice(result.source.index, 1)
+        console.log("Good one " ,newBoard)
+        this.matchCardInfos()
+        this.setState({board: newBoard})
+       // console.log("state",this.state.board)        */
     }
 
     render(){
         return(
-            <DragDropContext  onDragEnd={this.onDragEnd} >            
+                        
             <div className='board'>
                 {
                     this.state.pageLoaded ?( 
                         
+                        <DragDropContext  onDragEnd={this.onDragEnd} >
                             <div className="boardContainer">
                                     {this.renderOptions()}
                                 <div className="listContainer">
@@ -104,7 +121,7 @@ class Board extends React.Component{
                                     </div>   
                                 </div>
                             </div>
-                        
+                            </DragDropContext> 
                     ):
                     (
                         <div className="spinn">
@@ -113,7 +130,7 @@ class Board extends React.Component{
                     ) 
                 }
             </div>
-            </DragDropContext>
+            
 
         )
     }
@@ -133,6 +150,7 @@ class Board extends React.Component{
     getAllLists(data){
         data.sort(function(a, b){ return a.pos - b.pos})
         this.setState({board:{lists: data}})
+        
     }
 
     onClickAddList(){
@@ -157,6 +175,7 @@ class Board extends React.Component{
     }
 
     cardList(lists){
+        console.log("render")
         const listItems= lists.map((list, index)=>
                         <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox}/>
     )
