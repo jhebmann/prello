@@ -80,6 +80,13 @@
     margin: .5%;
 }
 
+.ant-card-head-title>div{
+    height: 100%;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
 @media screen and (max-width: 760px){
     .ant-card-body{
         display:none;
