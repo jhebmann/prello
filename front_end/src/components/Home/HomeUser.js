@@ -171,7 +171,7 @@ class HomeUser extends React.Component{
     }
 
     renderTeams(teams){
-      const teamItems = teams.map((team)=>
+      const teamItems = teams.sort((a, b) => a.name > b.name || (a.name === b.name && a._id > b._id)).map((team)=>
         <div key = {team._id} className='teamContainer'>
           <Collapse defaultActiveKey={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? [''+team._id] : []}
           className={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? "selected" : ""}>
