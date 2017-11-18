@@ -115,7 +115,7 @@ router.put('/:id', function (req, res, next) {
                 if ('undefined' !== typeof req.body.dueDate) card.dueDate = req.body.dueDate
                 if ('undefined' !== typeof req.body.doneDate) card.doneDate = req.body.doneDate
                 if ('undefined' !== typeof req.body.isArchived) card.isArchived = req.body.isArchived
-                if ('undefined' !== typeof req.body.user){ 
+                if ('undefined' !== typeof req.body.user){
                         if(req.body.remove) card.users.pull(req.body.user)
                         else card.users.addToSet(req.body.user)
                     }
@@ -124,7 +124,7 @@ router.put('/:id', function (req, res, next) {
                     else {
                         console.log("The card of id " + id + " has been successfully updated")
                         res.status(200).send(card)
-                    }                
+                    }
                 })
             }
         }
@@ -135,7 +135,7 @@ router.put('/:id/label/add/:labelId', function (req, res, next) {
     // Update the card having the id given in parameter to add a label
     const id = req.params.id
     const labelId = req.params.labelId
-    
+
     Card.findOneAndUpdate(
         {_id: id},
         {$addToSet: {labels: labelId}},
@@ -151,7 +151,7 @@ router.put('/:id/label/remove/:labelId', function (req, res, next) {
     // Update the card having the id given in parameter to remove a label
     const id = req.params.id
     const labelId = req.params.labelId
-    
+
     Card.findOneAndUpdate(
         {_id: id},
         {$pull: {labels: labelId}},
@@ -262,7 +262,7 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
                         }
                     })
                 })
-            }            
+            }
         }
     )
 })

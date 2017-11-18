@@ -27,6 +27,7 @@ class Popup extends React.Component{
             attachments: this.props.attachments,
             showDescriptionInput: false,
             showCardTitle: false,
+            labels: this.props.labels,
             showChecklists: []
         }
 
@@ -79,6 +80,7 @@ class Popup extends React.Component{
 
     componentWillReceiveProps(newProps) {
         this.setState({attachments: newProps.attachments})
+        this.setState({labels: newProps.labels})
     }
 
     componentWillMount() {
@@ -270,10 +272,10 @@ class Popup extends React.Component{
                                 </Button>
                             </div>
                         </div>
-                        <div className="labels inline">
+                        {/*<div className="labels inline">
                             <span className="spanTitle2">Labels </span>
                             {this.state.cardInfos.labels} <Button className='circularButton' onClick={() => this.addLabel.show()}><Glyphicon glyph="plus"/></Button>
-                        </div>
+                        </div>*/}
                         <div className="dueDate inline">
                             <span className="spanTitle2">Due date </span>
                             {
@@ -327,7 +329,7 @@ class Popup extends React.Component{
                     <Member popup={this} card={this.state.card} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard} io={this.socket} cardInfos={this.state.cardInfos}/>
                 </SkyLight>
                 {<SkyLight dialogStyles={labelPopup} hideOnOverlayClicked ref={ref => this.addLabel = ref} title='Add Label'>
-                    <Label parentClose={this.handlePopupClose.bind(this)}/>
+                    <Label popup={this} card={this.state.card} labels={this.state.labels} labelsBoard={this.props.labelsBoard} io={this.socket} parentClose={this.handlePopupClose.bind(this)}/>
                 </SkyLight>}
                 <SkyLight dialogStyles={checklistPopup} hideOnOverlayClicked ref={ref => this.addChecklist = ref} title='Add Checklist'>
                     <Checklist checklists={this.state.cardInfos.checklists} popup={this} card={this.state.card} io={this.socket} />
@@ -461,6 +463,7 @@ class Popup extends React.Component{
             newCardInfos.description = card.description
             newCardInfos.doneDate = card.doneDate
             newCardInfos.users = card.users
+            newCardInfos.labels = card.labels
             this.state.card.setState({cardInfos: newCardInfos})
         }
     }

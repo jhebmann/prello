@@ -691,3 +691,18 @@ input[type="file"].fileSpace{
   margin: 0 3px 3px 0;
   width: 30%;
 }
+
+.labelShow {
+  color: white;
+  font-size: 14px;
+  border-radius: 20px;
+  width: 50%;
+  margin: 5px auto;
+  padding: 5px;
+  cursor: pointer;
+  opacity: 0.3;
+}
+
+.selectedLabel.labelShow{
+  opacity: 1;
+}

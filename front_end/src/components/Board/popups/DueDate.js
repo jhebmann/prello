@@ -22,7 +22,7 @@ class DueDate extends React.Component{
         this.onClickDeleteDueDate = this.onClickDeleteDueDate.bind(this)
         this.updateCard = this.updateCard.bind(this)
     }
-    
+
     render(){
         const timeCons = {minutes: {step: 30}}
         const yesterday = DateTime.moment().subtract( 1, 'day' )
@@ -71,14 +71,12 @@ class DueDate extends React.Component{
     }
 
     updateCard(card) {
-        if (card._id === this.props.card.state.cardInfos._id){
             let newCardInfos = this.state.card.state.cardInfos
             newCardInfos.dueDate = this.state.dueDate
             newCardInfos.doneDate = this.state.doneDate
             this.state.card.setState({cardInfos: newCardInfos})
             this.state.popup.setState({cardInfos: newCardInfos})
             this.props.parentClose("dueDate")
-        }
     }
 }
 

@@ -16,7 +16,6 @@ class Card extends React.Component{
             cardInfos: this.props.cardInfos,
             listTitle: this.props.listTitle,
             attachments: [],
-            labelsBoard: this.props.labelsBoard,
             parameters: this.props.parameters
         }
 
@@ -26,7 +25,7 @@ class Card extends React.Component{
         this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
 
         //Event Listeners
-        this.socket.on('updateCardClient', this.updateCard)
+        //this.socket.on('updateCardClient', this.updateCard)
 
         this.loadAttachments()
     }
@@ -38,7 +37,6 @@ class Card extends React.Component{
     }
 */
     render(){
-
         const bigPopup = {
             width: '60%',
             height: '85%',
@@ -70,13 +68,15 @@ class Card extends React.Component{
         const numItems = items.length
         const numDoneItems = items.filter((item) => item.isDone).length
 
+        let labelsPreview = []
         let labels = []
 
         this.state.cardInfos.labels.forEach((label) => {
-            let index = this.state.labelsBoard.map((l) => l._id).indexOf(label)
+            let index = this.props.labelsBoard.map((l) => l._id).indexOf(label)
             if (index !== -1){
-                const lab = this.state.labelsBoard[index]
-                labels.push(<div className="labelPreview" style={{"background-color": lab.color}}></div>)
+                const lab = this.props.labelsBoard[index]
+                labelsPreview.push(<div key={label} className="labelPreview" style={{"backgroundColor": lab.color}}></div>)
+                labels.push(lab)
             }
         })
 
@@ -86,7 +86,7 @@ class Card extends React.Component{
                     <Thumbnail onClick={() => this.customDialog.show()}
                         className={('undefined' !== typeof this.state.parameters.state && this.state.cardInfos._id === this.state.parameters.state.cardId) ? "selected card" : "card"}
                     >
-                        {labels}
+                        {labelsPreview}
                         <br/>
                         <div className="glyphRemoveCard" onClick={this.onClickDeleteCard}><Glyphicon glyph='remove' className="glyphRemoveCardChild"/></div>
                         <h4>{this.state.cardInfos.title}</h4>
@@ -108,7 +108,7 @@ class Card extends React.Component{
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
                     <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
-                            dbx={this.props.dbx} labelsBoard={this.state.labelsBoard}
+                            dbx={this.props.dbx} labelsBoard={this.props.labelsBoard} labels={labels}
                     />
                 </SkyLight>
             </div>
@@ -118,11 +118,7 @@ class Card extends React.Component{
     updateCard(card){
         if (card._id === this.state.cardInfos._id){
             this.setState({
-                "cardInfos.title": card.title,
-                "cardInfos.description": card.description,
-                "cardInfos.dueDate": card.dueDate,
-                "cardInfos.doneDate": card.doneDate,
-                "cardInfos.isArchived": card.isArchived
+                cardInfos: card
             })
         }
     }
