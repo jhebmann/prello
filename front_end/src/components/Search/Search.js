@@ -25,14 +25,14 @@ class Search extends React.Component{
             pageLoaded: false,
             redirect: null
         }
-        
+
         this.getResults = this.getResults.bind(this)
-        
+
         this.socket = SocketIOClient(url.socket)
         this.renderAllBoards = this.renderAllBoards.bind(this)
         this.renderTeams = this.renderTeams.bind(this)
     }
-    
+
     componentWillMount() {
         if(Auth.isUserAuthenticated()){
             this.getResults()
@@ -58,7 +58,7 @@ class Search extends React.Component{
     render () {
         return (
             (this.state.teams.length === 0 && this.state.boards.length === 0 && this.state.lists.length === 0 && this.state.cards.length === 0) ?
-            <h2 style={{"text-align": "center"}}>No result found for the text {this.state.text}</h2>
+            <h2 style={{"textAlign": "center"}}>No result found for the text {this.state.text}</h2>
             :
             <div className="container">
                 {this.state.redirect}
@@ -78,7 +78,7 @@ class Search extends React.Component{
             handleServerResponse(error, 'An error occured when searching for the text ' + this.state.text)
         })
     }
-    
+
     renderTeams(){
         const teams = this.state.teams
         const teamItems = teams.map((team, index)=>
@@ -92,11 +92,11 @@ class Search extends React.Component{
     }
 
     renderAllBoards(){
-        if (this.state.boards.length === 0) return 
+        if (this.state.boards.length === 0) return
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
-                    <Panel header={<h3><Icon type="team" />Boards</h3>} key="1"> 
+                    <Panel header={<h3><Icon type="team" />Boards</h3>} key="1">
                         <div>
                             <Row gutter={16}>
                                 {this.renderBoards()}
@@ -104,7 +104,7 @@ class Search extends React.Component{
                         </div>
                     </Panel>
                 </Collapse>
-            </div> 
+            </div>
         )
     }
 
@@ -129,11 +129,11 @@ class Search extends React.Component{
     }
 
     renderAllLists(){
-        if (this.state.lists.length === 0) return 
+        if (this.state.lists.length === 0) return
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
-                    <Panel header={<h3><Icon type="team" />Lists</h3>} key="1"> 
+                    <Panel header={<h3><Icon type="team" />Lists</h3>} key="1">
                         <div>
                             <div className="homeDiv">
                                 <Row gutter={16}>
@@ -143,10 +143,10 @@ class Search extends React.Component{
                         </div>
                     </Panel>
                 </Collapse>
-            </div> 
+            </div>
         )
     }
-    
+
     renderLists(){
         const lists = this.state.lists
         const listItems = lists.map((list, index)=>
@@ -160,13 +160,13 @@ class Search extends React.Component{
         return listItems
         //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
     }
-    
+
     renderAllCards(){
-        if (this.state.cards.length === 0) return 
+        if (this.state.cards.length === 0) return
         return (
             <div className='teamContainer' >
                 <Collapse bordered={false} defaultActiveKey={['1']}>
-                    <Panel header={<h3><Icon type="team" />Cards</h3>} key="1"> 
+                    <Panel header={<h3><Icon type="team" />Cards</h3>} key="1">
                         <div>
                             <div className="homeDiv">
                                 <Row gutter={16}>
@@ -176,13 +176,13 @@ class Search extends React.Component{
                         </div>
                     </Panel>
                 </Collapse>
-            </div> 
+            </div>
         )
     }
-    
+
     renderCards(){
         const cards = this.state.cards
-        const listItems = cards.map((card, index)=>
+        const cardItems = cards.map((card, index)=>
             <Col span={5}>
                 <div className="clickable" onClick={() => this.setState({redirect: <Redirect to = {{pathname: '/board/' + card.boardId, state: {cardId: card._id}}} />})}>
                     <Card title={card.title || "No title"}>
@@ -191,8 +191,7 @@ class Search extends React.Component{
                 </div>
             </Col>
         )
-        return listItems
-        //this.props.history.push({pathname: '/board/' + list.boardId, parameters: {listId: list._id}})
+        return cardItems
     }
 }
 

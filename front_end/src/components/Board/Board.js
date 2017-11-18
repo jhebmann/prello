@@ -142,7 +142,7 @@ class Board extends React.Component{
 
     cardList(lists){
         const listItems= lists.map((list, index)=>
-            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox} labelsBoard={this.state.board.labels}/>
+            <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dbx={this.props.dbx} labelsBoard={this.state.board.labels}/>
         )
         return listItems
     }

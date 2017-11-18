@@ -18,7 +18,7 @@ class Attachment extends React.Component{
             cardId: this.props.card.state.cardInfos._id,
             file: null,
             imagePreviewUrl: '',
-            dropbox: this.props.dropbox,
+            dbx: this.props.dbx,
             isLoading: false
         }
 
@@ -33,18 +33,12 @@ class Attachment extends React.Component{
     componentDidMount = () => {
         this.dropboxBegin()
     }
-    
+
     componentWillReceiveProps(nextProps){
-        this.setState({dropbox: nextProps.dropbox})
+        this.setState({dbx: nextProps.dbx})
     }
 
     render(){
-        let filesList = []
-        this.state.dropbox.files.forEach((file, i) =>{
-            filesList.push(<li key = {i}>{file.name}</li>)
-        })
-
-
         let imagePreview = null
         if (this.state.imagePreviewUrl) {
             imagePreview = <img className="attachmentImgPreview" src={this.state.imagePreviewUrl} alt={this.state.title}/>
@@ -73,12 +67,12 @@ class Attachment extends React.Component{
                             </div>
                             :
                             <div id={"authed-section" + this.state.cardId}>
-                                <DropboxChooser 
+                                <DropboxChooser
                                     appKey={'owvw24g2oefq2gs'}
                                     success={file => this.printItem(file)}
                                     multiselect={false}
                                     extensions={['.png', '.jpg', '.jpeg', '.gif']} >
-                                    <a className="dropbox-button"><span className="dropin-btn-status"></span>Choose from Dropbox</a>        
+                                    <a className="dropbox-button"><span className="dropin-btn-status"></span>Choose from Dropbox</a>
                                 </DropboxChooser>
                             </div>
                             }
@@ -90,7 +84,7 @@ class Attachment extends React.Component{
             </div>
         )
     }
-    
+
     // Render a list of items to #files
     renderItems = (items) => {
         this.setState({files: items})
@@ -106,7 +100,7 @@ class Attachment extends React.Component{
         })
 
         const item = items[0]
-        this.state.dropbox.dbx.sharingGetSharedLinkFile({url: item.link})
+        this.state.dbx.sharingGetSharedLinkFile({url: item.link})
         .then((response) => {
             const blob = response.fileBlob
             const file = new File([blob], item.name)
@@ -138,13 +132,13 @@ class Attachment extends React.Component{
 
 
 
-    
+
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             if ('undefined' === typeof this.state.file) this.onClickAddAttachment()
         }
     }
-    
+
     handleInputChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value,
@@ -156,10 +150,10 @@ class Attachment extends React.Component{
 
     handleNewFile = (e) => {
         this.setState({isLoading: true})
-        
+
         const reader = new FileReader()
         const file = e.target.files[0]
-    
+
         reader.onloadend = (upload) => {
           this.setState({
             file: file,
@@ -167,10 +161,10 @@ class Attachment extends React.Component{
             imagePreviewUrl: reader.result
           })
         }
-    
+
         reader.readAsDataURL(file)
     }
-    
+
     onClickAddAttachment() {
 
         const dateNow = Date.now()
