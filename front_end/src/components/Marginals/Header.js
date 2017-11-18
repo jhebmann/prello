@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button,FormGroup,FormControl, Nav, Navbar, NavItem} from 'react-bootstrap'
+import { Button,FormGroup,FormControl, Nav, Navbar, NavItem, Image} from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 import Auth from '../Auth/Auth.js'
 
@@ -21,9 +21,13 @@ class Header extends React.Component{
     const guestNavbar = (
       <Navbar className="navbar-fixed-top" responsive='true' collapseable='true'>
         <Navbar.Header>
+          <LinkContainer to="/" className="logo">
+            <Image src="/favicon.ico" alt=""/>
+          </LinkContainer>
           <Navbar.Brand>
             <a href="/"> Prello </a>
           </Navbar.Brand>
+          <Image />
           <Navbar.Toggle />
         </Navbar.Header>
           {Auth.isUserAuthenticated() ?

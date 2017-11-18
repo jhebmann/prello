@@ -440,8 +440,8 @@ class Popup extends React.Component{
 
     renderMembers(){
         const users =
-            this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr,index)=>
-                <div key = {index} className="avatarDiv">
+            this.props.usersBoard.filter(usr=>this.state.cardInfos.users.includes(usr._id)).map((usr)=>
+                <div key = {usr._id} className="avatarDiv">
                     <Tooltip title = {usr.local.nickname} >
                         <div>
                             <Avatar name={usr.local.nickname} size={23} textSizeRatio={1.5} round/>

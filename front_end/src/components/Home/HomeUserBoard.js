@@ -1,10 +1,10 @@
 import React from 'react'
 import Auth from '../Auth/Auth.js'
-import {Card,Tag,Button} from 'antd'
+import {Card,Button} from 'antd'
 import axios from 'axios'
 import url from '../../config'
 import { confirmAlert } from 'react-confirm-alert'
-import './home.css' 
+import './home.css'
 import handleServerResponse from '../../response'
 
 class HomeUserBoard extends React.Component{
@@ -18,14 +18,14 @@ class HomeUserBoard extends React.Component{
         }
         this.socket = this.props.socket
         //Event Listeners
-        
+
         this.handleInputChange = this.handleInputChange.bind(this)
         this.onClickUpdateTitle = this.onClickUpdateTitle.bind(this)
         this.updateBoardTitle = this.updateBoardTitle.bind(this)
         this.onClickDeleteBoard = this.onClickDeleteBoard.bind(this)
         this.handleBoardDelete = this.handleBoardDelete.bind(this)
         this.handleTitleupdate = this.handleTitleupdate.bind(this)
-        
+
         this.socket.on('updateBoardTitle', this.updateBoardTitle)
     }
 
@@ -34,11 +34,9 @@ class HomeUserBoard extends React.Component{
         if(this.state.board.admins && this.state.board.admins.includes(Auth.getUserID()))
           deleteBttn=
           <Button type="danger"  icon="delete" size="small" onClick={(e) => {this.handleBoardDelete(e)}}>Delete
-          </Button> 
+          </Button>
           return (
             <Card title={<div>{this.handleBoardTitle()}</div>} extra={deleteBttn}>
-            <Tag color="red">Tag</Tag>
-                <p>Description</p>
                 {(this.state.board.isPublic) ?(
                   <p>Public Board</p>):(
                   <p>Private Board</p>)
@@ -63,19 +61,19 @@ class HomeUserBoard extends React.Component{
             if(!this.state.showInput ) {
                 headBoard = <span  onClick={(e) => {this.handleTitleupdate(e)}}>{this.state.board.title || 'No title'}</span>
             } else{
-                headBoard = <input className='inputBoardTitle' onClick={(e) => {e.stopPropagation()}} autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateTitle} 
+                headBoard = <input className='inputBoardTitle' onClick={(e) => {e.stopPropagation()}} autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateTitle}
                                 type="text" name="title" value={this.state.titleNewBoard} onKeyPress={this.handleKeyPress}/>
             }
         }
         return headBoard
     }
-    
+
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             this.onClickUpdateTitle()
         }
       }
-      
+
     onClickUpdateTitle(){
         let newBoard=this.state.board
         if(this.state.titleNewBoard!==''){
@@ -95,7 +93,7 @@ class HomeUserBoard extends React.Component{
           .catch((error) => {
             handleServerResponse(error, 'An error occured when updating the board title')
           })
-          
+
     }
 
     updateBoardTitle(id, title){
@@ -128,6 +126,6 @@ class HomeUserBoard extends React.Component{
             )
         })
     }
-    
+
 }
 export default HomeUserBoard

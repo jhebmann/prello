@@ -3,9 +3,10 @@ import SocketIOClient from 'socket.io-client'
 import axios from 'axios'
 import url from '../../config'
 import Auth from '../Auth/Auth.js'
-import {Button, Card, Col, Collapse, Icon, Row, Tag} from 'antd'
+import {Button, Card, Col, Collapse, Icon, Row} from 'antd'
 import { Redirect } from 'react-router-dom'
 import handleServerResponse from '../../response'
+import HomeUserBoard from '../Home/HomeUserBoard'
 const Panel = Collapse.Panel
 
 class Search extends React.Component{
@@ -81,10 +82,10 @@ class Search extends React.Component{
 
     renderTeams(){
         const teams = this.state.teams
-        const teamItems = teams.map((team, index)=>
-            <div key = {index} className='teamContainer' onClick = {() => this.setState({redirect: <Redirect to = {{pathname: '/', state: team._id}} />})}>
+        const teamItems = teams.map((team)=>
+            <div key = {team._id} className='teamContainer' onClick = {() => this.setState({redirect: <Redirect to = {{pathname: '/', state: team._id}} />})}>
                 <Collapse bordered={true}>
-                    <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={index}></Panel>
+                    <Panel header={<h3><Icon type="team" />{team.name}</h3>} key={team._id}></Panel>
                 </Collapse>
             </div>
         )
@@ -110,18 +111,10 @@ class Search extends React.Component{
 
     renderBoards(){
         const boards = this.state.boards
-        const boardItems = boards.map((board, index)=>
-        <Col span={5}>
+        const boardItems = boards.map((board)=>
+        <Col span={5} key={board._id} className="boardPreview">
             <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
-              <Card title={board.title || 'No title'} extra={<Button type="danger"  icon="delete" size="small" onClick={(e) => {e.stopPropagation()
-                                                                                                                                this.onClickDeleteBoard(board._id)}}>Delete</Button>} >
-                <Tag color="red">Tag</Tag>
-                <p>Description</p>
-                {(board.isPublic) ?(
-                  <p>Public Board</p>):(
-                  <p>Private Board</p>)
-                }
-              </Card>
+              <HomeUserBoard board={board} deleteBoard={this.deleteBoard} socket={SocketIOClient(url.socket)}/>
             </div>
         </Col>
         )
@@ -149,8 +142,8 @@ class Search extends React.Component{
 
     renderLists(){
         const lists = this.state.lists
-        const listItems = lists.map((list, index)=>
-            <Col span={5}>
+        const listItems = lists.map((list)=>
+            <Col span={5} key={list._id}>
                 <div className="clickable" onClick={() => this.setState({redirect: <Redirect to = {{pathname: '/board/' + list.boardId, state: {listId: list._id}}} />})}>
                     <Card title={list.title || "No title"}>
                     </Card>
@@ -182,8 +175,8 @@ class Search extends React.Component{
 
     renderCards(){
         const cards = this.state.cards
-        const cardItems = cards.map((card, index)=>
-            <Col span={5}>
+        const cardItems = cards.map((card)=>
+            <Col span={5} key={card._id}>
                 <div className="clickable" onClick={() => this.setState({redirect: <Redirect to = {{pathname: '/board/' + card.boardId, state: {cardId: card._id}}} />})}>
                     <Card title={card.title || "No title"}>
                         <p>{card.description}</p>

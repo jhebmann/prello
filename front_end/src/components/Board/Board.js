@@ -141,7 +141,7 @@ class Board extends React.Component{
     }
 
     cardList(lists){
-        const listItems= lists.map((list, index)=>
+        const listItems= lists.map((list)=>
             <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dbx={this.props.dbx} labelsBoard={this.state.board.labels}/>
         )
         return listItems

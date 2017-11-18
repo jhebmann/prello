@@ -48,7 +48,7 @@ router.get('/search/:text/user/:userId', function(req, res) {
         let listIdsAndTitles = []
         boards.forEach((board) => {
           if (board.title.includes(text))
-            idsAndTitles.push({_id: board._id, title: board.title, isPublic: board.isPublic})
+            idsAndTitles.push({_id: board._id, title: board.title, isPublic: board.isPublic, admins: board.admins})
           board.lists.forEach((list) => {
             if (list.title.includes(text))
               listIdsAndTitles.push({boardId: board._id, title: list.title, _id: list._id})
@@ -92,7 +92,7 @@ router.get('/search/:text/user/:userId', function(req, res) {
               }
             })
             finalResult.comments = idsAndContents
-            
+
             const allAttachments = cards.map((card) => card.attachments).reduce((a, b) => a.concat(b), [])
             idsAndTitles = []
             allAttachments.forEach((attachment) => {

@@ -118,8 +118,8 @@ onClickAddBoard(){
 
   renderBoards(list){
     const boards = this.state.boards
-    const boardItems = boards.map((board, index)=>
-    <Col span={5} key={index}>
+    const boardItems = boards.map((board)=>
+    <Col span={5} key={board._id} className="boardPreview">
         <div className="clickable" onClick={() => window.location = "/board/"+board._id}>
           <HomeUserBoard board={board} deleteBoard={this.deleteBoard} socket={this.props.socket}/>
         </div>

@@ -86,7 +86,7 @@ class List extends React.Component{
 
   //Renders the Cards stored in the cards array
   cardList(){
-    const cardItems= this.state.cards.map((card, index) =>
+    const cardItems= this.state.cards.map((card) =>
             <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
                 listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}
                 usersBoard={this.props.usersBoard} dbx={this.props.dbx} labelsBoard={this.props.labelsBoard}
@@ -209,7 +209,7 @@ class List extends React.Component{
 
   onClickDeleteList() {
     confirmAlert({
-      title: 'Delete' + this.props.title + '?',
+      title: 'Delete the list ' + this.props.title + '?',
       message: 'This list will be removed and you won\'t be able to re-open it. There is no undo !',
       confirmLabel: 'Delete',                           // Text button confirm
       cancelLabel: 'Cancel',                             // Text button cancel

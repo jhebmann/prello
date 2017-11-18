@@ -7,10 +7,22 @@ html{
     height: 100%;
 }
 
-.rootDiv { 
+.rootDiv {
     padding-top: 1.5%;
 }
 
 .clickable {
     cursor: pointer;
+}
+
+.logo{
+    cursor: pointer;
+    height: 40px;
+    position: absolute;
+    top: 25px;
+    transform: translateY(-50%);
+}
+
+.boardPreview{
+    padding-bottom: 16px
 }

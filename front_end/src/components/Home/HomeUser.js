@@ -14,7 +14,7 @@ const Panel = Collapse.Panel
 const TabPane = Tabs.TabPane
 
 class HomeUser extends React.Component{
-    
+
   constructor(props){
     super(props)
     //Default State
@@ -38,7 +38,7 @@ class HomeUser extends React.Component{
     this.renderPublicBoards = this.renderPublicBoards.bind(this)
     this.handleTeamInputChange = this.handleTeamInputChange.bind(this)
     this.userTeams = this.userTeams.bind(this)
-    
+
     this.socket.on("addTeam", this.addTeam)
     this.socket.on("deleteTeamServer", this.deleteTeam)
     }
@@ -142,7 +142,7 @@ class HomeUser extends React.Component{
         })
       }
 
-    handleTeamInputChange(e) {  
+    handleTeamInputChange(e) {
       this.setState({textInput: e.target.value})
     }
 
@@ -150,7 +150,7 @@ class HomeUser extends React.Component{
         return(
           <div id="mainPage">
             {this.state.pageLoaded ? (
-              <div> 
+              <div>
                 <div id="teamsForm" className="teamInput">
                   <Input type="text" onChange={this.handleTeamInputChange} placeholder="Add a team.." name="team"
                       value={this.state.textInput} onKeyPress={this.handleKeyPress}/>
@@ -166,16 +166,16 @@ class HomeUser extends React.Component{
                 </div>
               </div>):
             (<div className="spinn"><Spin size='large' /></div>) }
-          </div> 
+          </div>
         )
     }
 
     renderTeams(teams){
-      const teamItems = teams.map((team, index)=>
-        <div key = {index} className='teamContainer'>
-          <Collapse defaultActiveKey={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? [''+index] : []}
+      const teamItems = teams.map((team)=>
+        <div key = {team._id} className='teamContainer'>
+          <Collapse defaultActiveKey={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? [''+team._id] : []}
           className={('undefined' !== typeof this.state.parameters && team._id === this.state.parameters) ? "selected" : ""}>
-          <Panel key={index}
+          <Panel key={team._id}
           header=
             {
               <h3>
@@ -185,10 +185,10 @@ class HomeUser extends React.Component{
               </h3>
             }
           >
-            
+
             <Tabs defaultActiveKey="1">
               <TabPane tab={<span><Icon type="solution" />Boards</span>} key="1">
-                <Home key={index} teamId={team._id} public={false} socket={this.socket} allTeams={this.state.allTeams}/>
+                <Home key={team._id} teamId={team._id} public={false} socket={this.socket} allTeams={this.state.allTeams}/>
               </TabPane>
                 {this.renderTeamMembersTab(team)}
                 {this.renderAdminTab(team)}
@@ -204,22 +204,22 @@ class HomeUser extends React.Component{
         return (
           <div className='teamContainer' >
             <Collapse bordered={false} defaultActiveKey={['1']}>
-            <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1"> 
-            <Home public={true} socket={this.socket}/>
-            </Panel>
+              <Panel header={<h3><Icon type="team" />Public Boards</h3>} key="1">
+                <Home public={true} socket={this.socket}/>
+              </Panel>
             </Collapse>
-          </div> 
+          </div>
         )
     }
 
     renderTeamMembersTab(team){
       const teamMembers=this.state.users.filter(usr => team.users.includes(usr._id))
-      const teamMemberItems = teamMembers.map((member, index)=>
-        <div className="teamMember" key={index}>
+      const teamMemberItems = teamMembers.map((member)=>
+        <div className="teamMember" key={member._id}>
            <Tooltip title={member.local.nickname}>
               <Avatar size="medium" >{member.local.nickname[0]}</Avatar>
            </Tooltip>
-           {member.local.nickname} 
+           {member.local.nickname}
         </div>
         )
       return(
@@ -234,7 +234,7 @@ class HomeUser extends React.Component{
     renderAdminTab(team){
       if(team.admins.includes(Auth.getUserID()))
         return (
-          <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="3">  
+          <TabPane tab={<span><Icon type="tool" />Team Options</span>} key="3">
             <HomeAdminTab home={this} team={team} users={this.state.users} />
           </TabPane>
           )
