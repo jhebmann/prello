@@ -443,8 +443,8 @@ ul {
 .glyphRemoveCard {
   position: relative;
   visibility: hidden;
-  margin-right: -13px;
-  margin-top: -7px;
+  margin-right: -11px;
+  margin-top: -24px;
 }
 
 .glyphRemoveCardChild {
@@ -705,4 +705,8 @@ input[type="file"].fileSpace{
 
 .selectedLabel.labelShow{
   opacity: 1;
+}
+
+#prelloHeaderTitle {
+  margin-left: 45px;
 }

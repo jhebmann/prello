@@ -21,13 +21,14 @@ class Header extends React.Component{
     const guestNavbar = (
       <Navbar className="navbar-fixed-top" responsive='true' collapseable='true'>
         <Navbar.Header>
-          <LinkContainer to="/" className="logo">
-            <Image src="/favicon.ico" alt=""/>
-          </LinkContainer>
           <Navbar.Brand>
-            <a href="/"> Prello </a>
+            <a href="/">
+              <LinkContainer to="/" className="logo">
+                <Image src="/favicon.ico" alt="Prello mascot"/>
+              </LinkContainer> 
+              <span id="prelloHeaderTitle">Prello</span>
+            </a>
           </Navbar.Brand>
-          <Image />
           <Navbar.Toggle />
         </Navbar.Header>
           {Auth.isUserAuthenticated() ?
