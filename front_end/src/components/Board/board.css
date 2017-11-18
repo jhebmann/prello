@@ -434,6 +434,7 @@ ul {
   overflow-y: auto;
   height: 100%;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .card:hover .glyphRemoveCard {
