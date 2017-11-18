@@ -21,7 +21,6 @@ class Attachment extends React.Component{
             dbx: this.props.dbx,
             isLoading: false
         }
-
         this.socket = this.props.io
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleNewFile = this.handleNewFile.bind(this)
@@ -124,7 +123,7 @@ class Attachment extends React.Component{
         if (!Auth.isUserAuthenticatedWithDropbox()) {
             // Set the login anchors href using dbx.getAuthenticationUrl()
             const dbx = new Dropbox({ clientId: "owvw24g2oefq2gs" })
-            const authUrl = dbx.getAuthenticationUrl('http://localhost:3000/dropboxAuth', window.location.pathname + '|' + this.state.card.state.cardInfos._id)
+            const authUrl = dbx.getAuthenticationUrl(window.location.origin + '/dropboxAuth', window.location.pathname + '|' + this.state.card.state.cardInfos._id)
             document.getElementById('authlink' + this.state.cardId).href = authUrl
         }
     }

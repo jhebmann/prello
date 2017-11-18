@@ -12,7 +12,7 @@ class Header extends React.Component{
 
     this.handleInputChange = this.handleInputChange.bind(this)
   }
-  
+
   handleInputChange = (e) => {
       this.setState({[e.target.name]: e.target.value})
   }
@@ -26,49 +26,51 @@ class Header extends React.Component{
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
-        <Navbar.Collapse>
-          <Nav pullRight>
-          {Auth.isUserAuthenticated() ? 
+          {Auth.isUserAuthenticated() ?
           (
-            <Nav >
-          <Navbar.Form pullLeft>
-            <FormGroup>
-              <FormControl type="text" placeholder="Search" name="search" onChange={this.handleInputChange}
-                onKeyPress=
-                  {(e) => {if(e.key==='Enter' && e.target.value.trim().length > 0) window.location = "/search/"+this.state.search}}
-                />
-            </FormGroup>
-            {' '}
-            <Button type="submit" 
-              onClick={() => window.location = "/search/"+this.state.search}
-              disabled={this.state.search.trim().length < 1}
-            >
-              Search
-            </Button>
-          </Navbar.Form>
-              <NavItem>
-                {Auth.getNickname()}
-              </NavItem>
-            <LinkContainer to="/login" onClick={Auth.deauthenticateUser}>
-              <NavItem>
-                Log Out
-              </NavItem>
-            </LinkContainer>
-            </Nav>
+            <Navbar.Collapse>
+              <Nav pullRight>
+                <NavItem>
+                  {Auth.getNickname()}
+                </NavItem>
+                <LinkContainer to="/login" onClick={Auth.deauthenticateUser}>
+                  <NavItem>
+                    Log Out
+                  </NavItem>
+                </LinkContainer>
+              </Nav>
+              <Navbar.Form pullRight>
+                <FormGroup>
+                  <FormControl type="text" placeholder="Search" name="search" onChange={this.handleInputChange}
+                    onKeyPress=
+                      {(e) => {if(e.key==='Enter' && e.target.value.trim().length > 0) window.location = "/search/"+this.state.search}}
+                    />
+                </FormGroup>
+                <Button type="submit"
+                  onClick={() => window.location = "/search/"+this.state.search}
+                  disabled={this.state.search.trim().length < 1}>
+                  Search
+                </Button>
+              </Navbar.Form>
+            </Navbar.Collapse>
           ):
-            (<Nav pullRight>
-            <LinkContainer to="/login">
-              <NavItem>
-                Login
-              </NavItem>
-            </LinkContainer>
-            <LinkContainer to="/register">
-              <NavItem>
-                Register
-              </NavItem>
-            </LinkContainer></Nav>) }
-          </Nav>
+            (
+              <Navbar.Collapse>
+              <Nav pullRight>
+                <LinkContainer to="/login">
+                  <NavItem>
+                    Login
+                  </NavItem>
+                </LinkContainer>
+                <LinkContainer to="/register">
+                  <NavItem>
+                    Register
+                  </NavItem>
+                </LinkContainer>
+              </Nav>
         </Navbar.Collapse>
+          )
+          }
       </Navbar>
     )
 
