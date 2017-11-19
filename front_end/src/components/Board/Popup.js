@@ -255,7 +255,7 @@ class Popup extends React.Component{
         ///////////////////////////////////////////////////
 
         return(
-            <div className="popup" onMouseDown={e => e.stopPropagation()}>
+            <div className="popup" onMouseDown={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
                 <div className="divTitlePopup">
                     {cardInputTitle}
                 </div>
