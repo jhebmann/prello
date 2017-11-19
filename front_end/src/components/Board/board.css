@@ -672,3 +672,7 @@ input[type="file"].fileSpace{
   float: right;
   margin-right: 15px;
 }
+
+.listBody>div {
+  min-height: 20px;
+}

@@ -113,7 +113,7 @@ router.put('/:id', function (req, res, next) {
                 if ('undefined' !== typeof req.body.dueDate) card.dueDate = req.body.dueDate
                 if ('undefined' !== typeof req.body.doneDate) card.doneDate = req.body.doneDate
                 if ('undefined' !== typeof req.body.isArchived) card.isArchived = req.body.isArchived
-                if ('undefined' !== typeof req.body.user){ 
+                if ('undefined' !== typeof req.body.user){
                         if(req.body.remove) card.users.pull(req.body.user)
                         else card.users.addToSet(req.body.user)
                     }
@@ -122,7 +122,7 @@ router.put('/:id', function (req, res, next) {
                     else {
                         console.log("The card of id " + id + " has been successfully updated")
                         res.status(200).send(card)
-                    }                
+                    }
                 })
             }
         }
@@ -133,7 +133,7 @@ router.put('/:id/label/add/:labelId', function (req, res, next) {
     // Update the card having the id given in parameter to add a label
     const id = req.params.id
     const labelId = req.params.labelId
-    
+
     Card.findOneAndUpdate(
         {_id: id},
         {$addToSet: {labels: labelId}},
@@ -149,7 +149,7 @@ router.put('/:id/label/remove/:labelId', function (req, res, next) {
     // Update the card having the id given in parameter to remove a label
     const id = req.params.id
     const labelId = req.params.labelId
-    
+
     Card.findOneAndUpdate(
         {_id: id},
         {$pull: {labels: labelId}},
@@ -202,7 +202,7 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
         {$pull: {"lists.$.cards": {_id: id, pos: oldPos}}},
         (err, result) =>{
             if (err) res.status(401).send("Couldn't delete the card of id " + id + " from the list of id " + oldlistId)
-            else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + oldlistId)
+            else if (result.nModified === 0) res.status(401).send("There is no card of id " + id + " in the list of id " + oldlistId + " or it's not at the pos " + oldPos)
             else{
                 Board.findById(boardId, function(err, data){
                     data.lists.id(oldlistId).cards.forEach((card) => {
@@ -260,7 +260,7 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
                         }
                     })
                 })
-            }            
+            }
         }
     )
 })
@@ -270,12 +270,22 @@ router.put('/:id/oldList/:oldlistId/newList/:newlistId/board/:boardId', function
  */
 router.delete('/:id/list/:listId/board/:boardId', function (req, res, next) {
     const id = req.params.id
+    const listId = req.params.listId
+    const boardId = req.params.boardId
 
     Board.findOne(
-        {_id: req.params.boardId}
+        {_id: boardId}
     )
     .then(function(board) {
-        board.lists.id(req.params.listId).cards.pull(board.lists.id(req.params.listId).cards.id(id))
+        const cardToRemove = board.lists.id(listId).cards.id(id)
+
+        board.lists.id(listId).cards.pull(cardToRemove)
+
+        board.lists.id(listId).cards.forEach((card) => {
+            if (card.pos > cardToRemove.pos){
+                card.pos--
+            }
+        })
         board.save()
         .then(function() {
             Card.findById(id)

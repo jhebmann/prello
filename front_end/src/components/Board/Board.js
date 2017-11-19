@@ -11,10 +11,10 @@ import Auth from '../Auth/Auth.js'
 import {DragDropContext} from 'react-beautiful-dnd'
 
 class Board extends React.Component{
-    
+
     constructor(props){
         super(props)
-        
+
         this.state={
             board: null,
             allTeams: [],
@@ -26,7 +26,7 @@ class Board extends React.Component{
             modalVisible:false,
             cardsInfo:[]
         }
-        
+
         this.socket = this.props.io
         this.getAllLists = this.getAllLists.bind(this)
         this.onClickAddList = this.onClickAddList.bind(this)
@@ -37,8 +37,15 @@ class Board extends React.Component{
         this.updateAllTeams=this.updateAllTeams.bind(this)
         this.updateBoard=this.updateBoard.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
+        this.addCard = this.addCard.bind(this)
+        this.deleteCards = this.deleteCards.bind(this)
+        this.deleteCard = this.deleteCard.bind(this)
+        this.socket.on('deleteCards', this.deleteCards)
+        this.socket.on('deleteCardClient', this.deleteCard)
+        this.socket.on('addCard', this.addCard)
         this.socket.on('addList', this.createList)
         this.socket.on('deleteListClient', this.deleteList)
+        this.socket.on('updateBoardClient', this.updateBoard)
     }
 
     componentDidMount() {
@@ -48,8 +55,7 @@ class Board extends React.Component{
           instance.getAllLists(res1.data.lists)
           const usersBoardArr=res2.data.filter(team=>team.boards.includes(res1.data._id)).map((team)=>{return team.users})
           let usersBoard2=res3.data.filter(usr=>(Array.from(new Set([].concat.apply([],usersBoardArr)))).includes(usr._id))
-          instance.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true,cardsInfo:res1.data.cardsInfo})  
-          console.log(instance.state.cardsInfo)
+          instance.setState({usersBoard:usersBoard2,board:res1.data,users:res3.data,allTeams:res2.data,pageLoaded:true,cardsInfo:res1.data.cardsInfo})
         }))
     }
 
@@ -75,35 +81,47 @@ class Board extends React.Component{
        }
 
     onDragEnd = (result) => {
-        return;/*
         if(!result.destination) return
-        //console.log(result)
-        //console.log(result.destination)
-        //const cardIndex=this.state.board[result.source.index].findIndex(c=>c._id===result.source.
         const sourceListIndex=this.state.board.lists.findIndex(l=>l._id===result.source.droppableId)
         const destinationListIndex=this.state.board.lists.findIndex(l=>l._id===result.destination.droppableId)
         let newBoard=this.state.board
-        //console.log(newBoard)
-        newBoard.lists[destinationListIndex].cards.splice(
-            result.destination.index,
-            0,
-            this.state.board.lists[sourceListIndex].cards[result.source.index]
-        )
-       // console.log("")
-        newBoard.lists[sourceListIndex].cards.splice(result.source.index, 1)
-        console.log("Good one " ,newBoard)
-        this.matchCardInfos()
+        if (sourceListIndex !== destinationListIndex)
+        {
+            newBoard.lists[destinationListIndex].cards.splice(
+                result.destination.index,
+                0,
+                this.state.board.lists[sourceListIndex].cards[result.source.index]
+            )
+            newBoard.lists[sourceListIndex].cards.splice(result.source.index, 1)
+        } else {
+            newBoard.lists[sourceListIndex].cards.splice(result.destination.index, 0, newBoard.lists[sourceListIndex].cards.splice(result.source.index, 1)[0])
+        }
+        newBoard.lists[sourceListIndex].cards.forEach((card, index) => {
+            card.pos = index
+        })
+        newBoard.lists[destinationListIndex].cards.forEach((card, index) => {
+            card.pos = index
+        })
+
         this.setState({board: newBoard})
-       // console.log("state",this.state.board)        */
+
+        axios.put(url.api + 'card/' + result.draggableId + "/oldList/" + result.source.droppableId + "/newList/" + result.destination.droppableId + "/board/" + newBoard._id,
+        {oldPos: result.source.index, newPos: result.destination.index},
+        url.config)
+        .then((response) => {
+            this.socket.emit('updateBoardServer', newBoard)
+        })
+        .catch((error) => {
+            alert('An error occured when getting the cards')
+        })
     }
 
     render(){
         return(
-                        
             <div className='board'>
                 {
-                    this.state.pageLoaded ?( 
-                        
+                    this.state.pageLoaded ?(
+
                         <DragDropContext  onDragEnd={this.onDragEnd} >
                             <div className="boardContainer">
                                     {this.renderOptions()}
@@ -118,28 +136,67 @@ class Board extends React.Component{
                                             </Button>
                                             {this.state.board.admins && this.state.board.admins.includes(Auth.getUserID())?(<Button bsStyle="primary" className='addListButton' onClick={() => this.setModalVisible(true)} >Board Options</Button>):(<span></span>)}
                                         </div>
-                                    </div>   
+                                    </div>
                                 </div>
                             </div>
-                            </DragDropContext> 
+                            </DragDropContext>
                     ):
                     (
                         <div className="spinn">
                             <Spin size='large' />
                         </div>
-                    ) 
+                    )
                 }
             </div>
-            
+
 
         )
+    }
+
+    addCard(card, listId){
+        const listIndex=this.state.board.lists.findIndex(l=>l._id === listId)
+
+        let newCards = this.state.board.lists[listIndex].cards
+
+        let newCard = card
+        newCard.pos = newCards.length
+
+        newCards.push(newCard)
+
+        let newBoard = this.state.board
+
+        newBoard.lists[listIndex].cards = newCards
+
+        this.setState({board: newBoard})
+    }
+
+    deleteCards(listId) {
+        const listIndex=this.state.board.lists.findIndex(l=>l._id === listId)
+
+        let newBoard = this.state.board
+
+        newBoard.lists[listIndex].cards = []
+
+        this.setState({board: newBoard})
+    }
+
+    deleteCard(cardId, listId) {
+        const listIndex = this.state.board.lists.findIndex(l=>l._id === listId)
+
+        const cardIndex = this.state.board.lists[listIndex].cards.findIndex(c=>c._id === cardId)
+
+        let newBoard = this.state.board
+
+        newBoard.lists[listIndex].cards.splice(cardIndex, 1)
+
+        this.setState({board: newBoard})
     }
 
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             if (this.state.titleNewList) {
                 this.onClickAddList()
-            } 
+            }
         }
     }
 
@@ -149,8 +206,10 @@ class Board extends React.Component{
 
     getAllLists(data){
         data.sort(function(a, b){ return a.pos - b.pos})
+        data.forEach((list) => {
+            list.cards.sort(function(a, b){ return a.pos - b.pos})
+        })
         this.setState({board:{lists: data}})
-        
     }
 
     onClickAddList(){
@@ -175,7 +234,6 @@ class Board extends React.Component{
     }
 
     cardList(lists){
-        console.log("render")
         const listItems= lists.map((list, index)=>
                         <List key={list._id} parameters = {this.state.parameters} cards={list.cards} id={list._id} io={this.socket} title={list.title} usersBoard={this.state.usersBoard} idBoard={this.props.id} dropbox={this.props.dropbox}/>
     )
@@ -204,7 +262,7 @@ class Board extends React.Component{
                     <CascadeTeam teams={this.state.allTeams.filter(team=>!team.boards.includes(this.props.id))} boardId={this.props.id} remove={false} updateAllTeams={this.updateAllTeams}/>
                     <CascadeTeam teams={this.state.allTeams.filter(team=>team.boards.includes(this.props.id))} boardId={this.props.id} remove={true} updateAllTeams={this.updateAllTeams}/>
                     <Cascade users={this.state.usersBoard.filter(usr=>!this.state.board.admins.includes(usr._id))} task="Add Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
-                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>            
+                    <Cascade users={this.state.users.filter(usr=>this.state.board.admins.includes(usr._id))} task="Revoke Admin Board" boardId={this.state.board._id} updateBoard={this.updateBoard}/>
                 </Modal>
             </div>
             )
@@ -217,7 +275,7 @@ class Board extends React.Component{
     }
 
     updateBoard(board){
-        this.setState({board})
+        this.setState({board: board})
     }
 
     setModalVisible(modalVisible) {

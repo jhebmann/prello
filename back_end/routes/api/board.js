@@ -1,6 +1,7 @@
 const models = require('../../models')
 const Board = models.boards
 const Team = models.teams
+const Card = models.cards
 const router = require('express').Router()
 const ObjectId = require('mongodb').ObjectID
 
@@ -58,25 +59,58 @@ router.get('/public', function (req, res, next) {
     })
 })
 
+
 router.get('/:id', function (req, res, next) {
-    // Get the board having the id given in parameter
-    const id=ObjectId(req.params.id)
-    Board.aggregate([
-        { "$match": { "_id": id } },
-        {
-          $lookup:
-            {
-            from:"cards",
-            localField:"lists.cards._id",
-            foreignField:"_id",
-            as:"cardsInfo"
-            }
-            }], (err, board) => {
-                if (err || board === null) res.status(401).send("Couldn't find the board of id " + id)
-                else{ 
-                    res.status(200).send(board[0])
-                }
-      });
+    const id = req.params.id
+
+    Board.findById(id)
+    .then((board) => {
+        let fullBoard = board
+
+        let cardsProcessed = 0
+
+        if (board.lists.length !== 0 && board.lists.map((list) => list.cards.length).reduce((a, b) => a + b, 0) !== 0){
+            const allCards = board.lists.map((list) => list.cards.length).reduce((a, b) => a + b, 0)
+
+            fullBoard.lists.forEach((list, listIndex) => {
+                list.cards.forEach((card, cardIndex) => {
+                    Card.findById(card._id)
+                    .then((newCard) => {
+                        let haha = {
+                            _id: newCard._id,
+                            pos: card.pos,
+                            title: newCard.title,
+                            description: newCard.description,
+                            dueDate: newCard.dueDate,
+                            doneDate: newCard.doneDate,
+                            createdAt: newCard.createdAt,
+                            isArchived: newCard.isArchived,
+                            users: newCard.users,
+                            checklists : newCard.checklists,
+                            attachments : newCard.attachments,
+                            comments : newCard.comments,
+                            labels : newCard.labels
+                        }
+
+                        fullBoard.lists[listIndex].cards[cardIndex] = haha
+
+                        cardsProcessed++
+                        if(cardsProcessed === allCards) {
+                            res.status(200).send(fullBoard)
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+                })
+            })
+        } else {
+            res.status(200).send(board)
+        }
+    })
+    .catch((err) => {
+        console.log(err)
+    })
 })
 
 router.get('/:id/lists', function (req, res, next) {
@@ -110,7 +144,7 @@ router.get('/:id/admins', function (req, res, next) {
             }
             }], (err, board) => {
                 if (err || board === null) res.status(401).send("Couldn't find the board of id " + id)
-                else{ 
+                else{
                     res.status(200).send(board)
                 }
       });
@@ -193,7 +227,7 @@ router.post('/team/:teamId', function (req, res, next) {
     )
 })
 
-router.put('/:id', function (req, res, next) {  
+router.put('/:id', function (req, res, next) {
     // Update the board having the id given in parameter
     const id = req.params.id
     Board.findOne(
@@ -210,7 +244,7 @@ router.put('/:id', function (req, res, next) {
                     else {
                         console.log("The board of id " + id + " has been successfully updated")
                         res.status(200).send(board)
-                    }                
+                    }
                 })
             }
         }

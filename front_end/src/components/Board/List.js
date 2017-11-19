@@ -11,7 +11,7 @@ class List extends React.Component{
     super(props)
     //Default State
     this.state = {
-      cards: [],
+      cards: this.props.cards,
       titleNewCard: "",
       showInput: false,
       title: this.props.title,
@@ -19,7 +19,6 @@ class List extends React.Component{
       parameters: this.props.parameters,
       dnd:false
     }
-    
     this.socket = this.props.io
 
     this.onClickAddCard = this.onClickAddCard.bind(this)
@@ -38,20 +37,24 @@ class List extends React.Component{
 
     //Event Listeners
     this.socket.on('updateListTitle', this.updateListTitle)
-    this.socket.on('addCard', this.addCard)
-    this.socket.on('deleteCards', this.deleteCards)
-    this.socket.on('deleteCardClient', this.deleteCard)
-  
+    //this.socket.on('deleteCardClient', this.deleteCard)
   }
 
-  componentDidMount() {
-    axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards', url.config)
+  componentWillMount() {
+    /*axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards', url.config)
     .then((response) => {
       this.getAllCards(response.data, this.props.id)
     })
     .catch((error) => {
       alert('An error occured when getting the cards')
-    })
+    })*/
+  }
+
+  componentWillReceiveProps(newProps){
+    if (newProps.cards !== this.state.cards)
+    {
+      this.setState({cards: newProps.cards})
+    }
   }
 
   render(){
@@ -59,7 +62,7 @@ class List extends React.Component{
       if(!this.state.showInput) {
         headList = <h4 onClick={this.onClickUpdateList} className='listTitle'>{this.state.title || 'No title'}</h4>
       } else{
-        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList} 
+        headList = <input autoFocus='true' onChange={this.handleInputChange} onBlur={this.onClickUpdateList}
                           type="text" name="title" value={this.state.title} onKeyPress={this.handleKeyPress}/>
       }
       return(
@@ -75,7 +78,7 @@ class List extends React.Component{
           <div className="listBody">
                     {this.cardList()}
             <p>
-              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard" 
+              <FormControl type="text" onChange={this.handleInputChange} placeholder="Card Title" name="titleNewCard"
                             value={this.state.titleNewCard} onKeyPress={this.handleKeyPress}/>
               <Button className='cardButton' bsStyle="success" onClick={this.onClickAddCard} disabled={this.state.titleNewCard.trim().length < 1}>Add Card</Button>
               <Button className='cardButton' bsStyle="danger" onClick={this.onClickDeleteCards} disabled={this.state.cards.length < 1}>Delete Cards</Button>
@@ -83,11 +86,10 @@ class List extends React.Component{
           </div>
         </Panel>
       )
-  } 
+  }
 
-  //Renders the Cards stored in the cards array   
+  //Renders the Cards stored in the cards array
   cardList(){
-    console.log("render cards",this.state.cards)
     const cardItems= this.state.cards.map((card, index) =>
      <Draggable draggableId={card._id} listId={this.props.id} key={index} index={index}type="card" isDragDisabled={this.state.dnd}>
             {(provided, snapshot) => (
@@ -98,7 +100,7 @@ class List extends React.Component{
                     {...provided.dragHandleProps}
                 >
                 <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
-                listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket} 
+                listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}
                 usersBoard={this.props.usersBoard} dropbox={this.props.dropbox} switchDragDrop={this.switchDragDrop}
               />
                 </div>
@@ -106,7 +108,7 @@ class List extends React.Component{
                 </div>
         )}
         </Draggable>)
-        
+
     return (
     <Droppable droppableId={this.props.id} listId={this.props.id} key={1}direction="vertical" type="card" isDropDisabled={this.state.dnd}>
     {(provided, snapshot) => (
@@ -117,7 +119,7 @@ class List extends React.Component{
        {provided.placeholder}
         </div>
     )}
-    </Droppable>      
+    </Droppable>
     )
   }
 
@@ -127,7 +129,7 @@ class List extends React.Component{
 
   getAllCards(cards, id){
     if(id === this.props.id){
-      cards.sort(function(a, b){ return a.pos - b.pos})
+      //cards.sort(function(a, b){ return a.pos - b.pos})
       this.setState({cards: cards})
     }
   }
@@ -143,7 +145,8 @@ class List extends React.Component{
           checklists: [],
           labels: [],
           comments: [],
-          users:[]
+          users:[],
+          pos: prevState.cards.length
         })
       }))
     }
