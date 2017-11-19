@@ -44,7 +44,7 @@ class Popup extends React.Component{
         this.updateDoneDate = this.updateDoneDate.bind(this)
         this.updateTitleInput = this.updateTitleInput.bind(this)
         this.updateDescriptionInput = this.updateDescriptionInput.bind(this)
-        this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
+        //this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
 
         //////////////////// Attachments ////////////////////
         this.updateAttachments =this.updateAttachments.bind(this)
@@ -317,11 +317,11 @@ class Popup extends React.Component{
                         <Button className='popupButton' onClick={() => this.addDueDate.show()}><Glyphicon glyph="time"/> Due date</Button>
                         <Button className='popupButton' onClick={() => this.addAttachment.show()}><Glyphicon glyph="paperclip"/> Attachment</Button>
                     </div>
-                    <div className="popupActions">
+                    {/*<div className="popupActions">
                         <h3> Actions </h3>
-                        {/*<Button className='popupButton' onClick={() => this.moveCard.show()}><Glyphicon glyph="arrow-right"/> Move</Button>*/}
+                        <Button className='popupButton' onClick={() => this.moveCard.show()}><Glyphicon glyph="arrow-right"/> Move</Button>
                         <Button className='popupButton' onClick={this.onClickDeleteCard}><Glyphicon glyph="remove"/> Delete</Button>
-                    </div>
+                    </div>*/}
                 </div>
 
                 {/*//////////////// Popups Render /////////////////*/}
@@ -527,7 +527,7 @@ class Popup extends React.Component{
         })
     }
 
-    onClickDeleteCard() {
+    /*onClickDeleteCard() {
         confirmAlert({
             title: 'Delete the card ' + this.state.cardInfos.title + '?',
             message: 'This card will be removed and you won\'t be able to re-open it. There is no undo !',
@@ -543,7 +543,7 @@ class Popup extends React.Component{
                 })
             )
         })
-    }
+    }*/
 
     ////////////////////// Attachments //////////////////////
     onClickDeleteAttachment(e) {
