@@ -1,6 +1,6 @@
 import React from 'react'
 import Auth from '../Auth/Auth.js'
-import {Card,Button} from 'antd'
+import {Card,Button,Tag} from 'antd'
 import axios from 'axios'
 import url from '../../config'
 import { confirmAlert } from 'react-confirm-alert'
@@ -38,8 +38,8 @@ class HomeUserBoard extends React.Component{
           return (
             <Card title={<div>{this.handleBoardTitle()}</div>} extra={deleteBttn}>
                 {(this.state.board.isPublic) ?(
-                  <p>Public Board</p>):(
-                  <p>Private Board</p>)
+                    <Tag color="#2db7f5">Public Board</Tag>):(
+                        <Tag color="#f50">Private Board</Tag>)
                 }
             </Card>
        )
