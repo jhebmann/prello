@@ -26,7 +26,7 @@ class Member extends React.Component{
     }
 
     updateCard(card) {
-        if (card._id ===this.state.card.state.cardInfos._id){
+        if (card._id ===this.state.card.props.cardInfos._id){
             let newCardInfos = this.state.card
             newCardInfos.state.cardInfos.users = card.users
             this.state.card.setState({card: newCardInfos})

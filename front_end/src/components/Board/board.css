@@ -86,6 +86,8 @@ body {
 
 .popup {
   padding-left: 15px;
+  width: 100%;
+  height: 100%;
 }
 
 .popupLeft {
@@ -692,6 +694,7 @@ input[type="file"].fileSpace{
   height: 8px;
   margin: 0 3px 3px 0;
   width: 30%;
+  border-radius: 5px;
 }
 
 .labelShow {
@@ -722,4 +725,8 @@ input[type="file"].fileSpace{
   overflow: hidden;
   text-overflow: ellipsis;
   width: 78%;
+}
+
+.listBody>div {
+  min-height: 20px;
 }

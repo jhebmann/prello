@@ -23,19 +23,20 @@ class Card extends React.Component{
         this.updateCard = this.updateCard.bind(this)
         this.loadAttachments = this.loadAttachments.bind(this)
         this.onClickDeleteCard = this.onClickDeleteCard.bind(this)
-
-        //Event Listeners
-        //this.socket.on('updateCardClient', this.updateCard)
+        this.executeBeforeModalOpen = this.executeBeforeModalOpen.bind(this)
+        this.executeBeforeModalClose = this.executeBeforeModalClose.bind(this)
 
         this.loadAttachments()
     }
-    /*
-    componentDidMount(){
-        if (this.state.cardInfos._id === this.state.parameters.cardToFocus){
-            this.customDialog.show()
-        }
+
+    executeBeforeModalOpen(){
+        this.props.switchDragDrop()
     }
-*/
+
+    executeBeforeModalClose(){
+        this.props.switchDragDrop()
+    }
+
     render(){
         const bigPopup = {
             width: '60%',
@@ -106,7 +107,7 @@ class Card extends React.Component{
                 </div>
 
                 <SkyLight dialogStyles = {bigPopup} hideOnOverlayClicked ref = {ref => this.customDialog = ref}>
-                    <Popup listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
+                    <Popup className="tttttttt" listTitle = {this.state.listTitle} card = {this} cardInfos = {this.state.cardInfos} attachments = {this.state.attachments} io={this.socket}
                             listId = {this.props.listId} boardId = {this.props.boardId} parentClose={this.handlePopupClose.bind(this)} usersBoard={this.props.usersBoard}
                             dbx={this.props.dbx} labelsBoard={this.props.labelsBoard} labels={labels}
                     />
@@ -158,7 +159,7 @@ class Card extends React.Component{
             onConfirm: () => (
                 axios.delete(url.api + 'card/' + this.state.cardInfos._id + '/list/' + this.props.listId + '/board/' + this.props.boardId, url.config)
                 .then((response) => {
-                    this.socket.emit('deleteCardServer', this.state.cardInfos._id)
+                    this.socket.emit('deleteCardServer', this.state.cardInfos._id, this.props.listId)
                 })
                 .catch((error) => {
                     handleServerResponse(error, 'An error occured when deleting the card')

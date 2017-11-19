@@ -2,6 +2,7 @@ const models = require('../../models')
 const Board = models.boards
 const Team = models.teams
 const Label = models.labels
+const Card = models.cards
 const router = require('express').Router()
 const ObjectId = require('mongodb').ObjectID
 
@@ -59,14 +60,13 @@ router.get('/public', function (req, res, next) {
     })
 })
 
+
 router.get('/:id', function (req, res, next) {
     // Get the board having the id given in parameter
     const id = req.params.id
 
-    Board.findOne(
-        {_id: id}
-    )
-    .then(function(board){
+    Board.findById(id)
+    .then((board) => {
         const boardTeams = board.teams
         Team.find(
             {_id: {$in: boardTeams}}
@@ -77,15 +77,57 @@ router.get('/:id', function (req, res, next) {
                 allUsers = allUsers.concat(team.users)
             })
             if (allUsers.filter((e) => e.equals(req.userId)).length > 0 || board.isPublic){
-                res.status(200).send(board)
+                let fullBoard = board
+
+                let cardsProcessed = 0
+
+                if (board.lists.length !== 0 && board.lists.map((list) => list.cards.length).reduce((a, b) => a + b, 0) !== 0){
+                    const allCards = board.lists.map((list) => list.cards.length).reduce((a, b) => a + b, 0)
+
+                    fullBoard.lists.forEach((list, listIndex) => {
+                        list.cards.forEach((card, cardIndex) => {
+                            Card.findById(card._id)
+                            .then((newCard) => {
+                                let fullCard = {
+                                    _id: newCard._id,
+                                    pos: card.pos,
+                                    title: newCard.title,
+                                    description: newCard.description,
+                                    dueDate: newCard.dueDate,
+                                    doneDate: newCard.doneDate,
+                                    createdAt: newCard.createdAt,
+                                    isArchived: newCard.isArchived,
+                                    users: newCard.users,
+                                    checklists : newCard.checklists,
+                                    attachments : newCard.attachments,
+                                    comments : newCard.comments,
+                                    labels : newCard.labels
+                                }
+
+                                fullBoard.lists[listIndex].cards[cardIndex] = fullCard
+
+                                cardsProcessed++
+                                if(cardsProcessed === allCards) {
+                                    res.status(200).send(fullBoard)
+                                }
+                            })
+                            .catch((err) => {
+                                console.log(err)
+                            })
+                        })
+                    })
+                } else {
+                    res.status(200).send(board)
+                }
             } else {
                 res.status(403).send()
             }
         }).catch(function(err) {
             res.status(404).send(err)
         })
-    }).catch(function(err) {
-        res.status(404).send(err)
+    })
+    .catch((err) => {
+        console.log(err)
     })
 })
 
@@ -102,15 +144,6 @@ router.get('/:id/labels', function (req, res, next) {
     // Get the labels of the board having the id given in parameter
     Board.findById(req.params.id).then(function(board){
         res.status(200).send(board.labels)
-    }).catch(function(err) {
-        res.status(404).send(err)
-    })
-})
-
-router.get('/:id/admins', function (req, res, next) {
-    // Get all admins of the board having the id given in parameter
-    Board.findById(req.params.id).then(function(board){
-        res.status(200).send(board.admins)
     }).catch(function(err) {
         res.status(404).send(err)
     })

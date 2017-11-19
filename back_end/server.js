@@ -18,7 +18,7 @@ const models = require('./models/index')
 const listModel = models.lists
 
 // API routes
-//To prevent errors from Cross Origin Resource Sharing, we will set 
+//To prevent errors from Cross Origin Resource Sharing, we will set
 //our headers to allow CORS with middleware like so:
 app.use(function(req, res, next) {
  res.setHeader('Access-Control-Allow-Origin', '*')
@@ -73,10 +73,15 @@ io.on('connection', (client) => {
     client.on('newBoard', (board,teamId) => {
         client.broadcast.emit('addBoard', board,teamId)
     })
+
     client.on('updateBoardTitle', (id, newTitle) => {
         client.broadcast.emit('updateBoardTitle', id, newTitle)
     })
-    
+
+    client.on('updateBoardServer', (board) => {
+        client.broadcast.emit('updateBoardClient', board)
+    })
+
     client.on('deleteBoard', (idBoard) => {
         client.broadcast.emit('deleteBoard', idBoard)
     })
@@ -89,17 +94,17 @@ io.on('connection', (client) => {
     client.on('deleteTeamServer', (teamId) => {
         client.broadcast.emit('deleteTeamClient', teamId)
     })
-    
+
     // ----- Handle lists ----- //
     client.on('newList', (newList, idBoard)=> {
         client.broadcast.emit('addList', newList, idBoard)
     })
-    
-    client.on('updateListTitle', (idList, newTitle) => {  
+
+    client.on('updateListTitle', (idList, newTitle) => {
         client.broadcast.emit('updateListTitle', idList, newTitle)
     })
 
-    client.on('deleteListServer', (idList) => {  
+    client.on('deleteListServer', (idList) => {
         client.broadcast.emit('deleteListClient', idList)
         client.emit('deleteListClient', idList)
     })
@@ -107,19 +112,21 @@ io.on('connection', (client) => {
     // ----- Handle cards ----- //
     client.on('newCard', (newCard, idList) => {
         client.broadcast.emit('addCard', newCard, idList)
+        client.emit('addCard', newCard, idList)
     })
-    
+
     client.on('deleteAllCards', (idList) => {
         client.broadcast.emit('deleteCards', idList)
+        client.emit('deleteCards', idList)
     })
 
     client.on('updateCardServer', (card) => {
         client.broadcast.emit('updateCardClient', card)
     })
 
-    client.on('deleteCardServer', (cardId) => {
-        client.broadcast.emit('deleteCardClient', cardId)
-        client.emit('deleteCardClient', cardId)
+    client.on('deleteCardServer', (cardId, listId) => {
+        client.broadcast.emit('deleteCardClient', cardId, listId)
+        client.emit('deleteCardClient', cardId, listId)
     })
 
     // ----- Handle checklist ----- //
@@ -144,7 +151,7 @@ io.on('connection', (client) => {
     client.on('updateItemServer', (newItem, checklistId) => {
         client.broadcast.emit('updateItemClient', newItem, checklistId)
     })
-    
+
     client.on('deleteItemServer', (itemId, checklistId) => {
         client.broadcast.emit('deleteItemClient', itemId, checklistId)
     })
@@ -157,7 +164,7 @@ io.on('connection', (client) => {
     client.on('deleteAttachmentServer', (attachmentId) => {
         client.broadcast.emit('deleteAttachmentClient', attachmentId)
     })
-    
+
     client.on('updateAttachmentTitleServer', (attachment) => {
         client.broadcast.emit('updateAttachmentTitleClient', attachment)
         client.emit('updateAttachmentTitleClient', attachment)

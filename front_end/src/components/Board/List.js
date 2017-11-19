@@ -5,6 +5,7 @@ import Card from './Card.js'
 import url from '../../config'
 import handleServerResponse from '../../response'
 import { confirmAlert } from 'react-confirm-alert'
+import {Draggable, Droppable } from 'react-beautiful-dnd'
 
 class List extends React.Component{
 
@@ -12,12 +13,13 @@ class List extends React.Component{
     super(props)
     //Default State
     this.state = {
-      cards: [],
+      cards: this.props.cards,
       titleNewCard: "",
       showInput: false,
       title: this.props.title,
       pos: this.props.pos, // always undefined for now
-      parameters: this.props.parameters
+      parameters: this.props.parameters,
+      dnd:false
     }
 
     this.socket = this.props.io
@@ -26,6 +28,7 @@ class List extends React.Component{
     this.onClickDeleteCards= this.onClickDeleteCards.bind(this)
     this.onClickUpdateList = this.onClickUpdateList.bind(this)
     this.onClickDeleteList = this.onClickDeleteList.bind(this)
+    this.switchDragDrop = this.switchDragDrop.bind(this)
 
     this.addCard = this.addCard.bind(this)
     this.deleteCards = this.deleteCards.bind(this)
@@ -37,20 +40,13 @@ class List extends React.Component{
 
     //Event Listeners
     this.socket.on('updateListTitle', this.updateListTitle)
-    this.socket.on('addCard', this.addCard)
-    this.socket.on('deleteCards', this.deleteCards)
-    this.socket.on('deleteCardClient', this.deleteCard)
-
   }
 
-  componentDidMount() {
-    axios.get(url.api + 'list/' + this.props.id + '/board/' + this.props.idBoard + '/cards', url.config)
-    .then((response) => {
-      this.getAllCards(response.data, this.props.id)
-    })
-    .catch((error) => {
-      handleServerResponse(error, 'An error occured when getting the cards')
-    })
+  componentWillReceiveProps(newProps){
+    if (newProps.cards !== this.state.cards)
+    {
+      this.setState({cards: newProps.cards})
+    }
   }
 
   render(){
@@ -86,18 +82,46 @@ class List extends React.Component{
 
   //Renders the Cards stored in the cards array
   cardList(){
-    const cardItems= this.state.cards.map((card) =>
-            <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
-                listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}
-                usersBoard={this.props.usersBoard} dbx={this.props.dbx} labelsBoard={this.props.labelsBoard}
-              />
+    const cardItems= this.state.cards.map((card, index) =>
+     <Draggable draggableId={card._id} listId={this.props.id} key={index} index={index} type="card" isDragDisabled={this.state.dnd}>
+            {(provided, snapshot) => (
+                <div>
+                  <div
+                      ref={provided.innerRef}
+                      style={provided.draggableStyle}
+                      {...provided.dragHandleProps}
+                  >
+                    <Card parameters = {this.state.parameters} boardId={this.props.idBoard} listTitle={this.state.title}
+                    listId = {this.props.id} key={card._id} cardInfos={card} io={this.socket}
+                    usersBoard={this.props.usersBoard} dbx={this.props.dbx} labelsBoard={this.props.labelsBoard} switchDragDrop={this.switchDragDrop}
+                    />
+                  </div>
+                  {provided.placeholder}
+                </div>
+        )}
+        </Draggable>)
+
+    return (
+    <Droppable droppableId={this.props.id} listId={this.props.id} key={1}direction="vertical" type="card" isDropDisabled={this.state.dnd}>
+    {(provided, snapshot) => (
+        <div
+        ref={provided.innerRef}
+        >
+       {cardItems}
+       {provided.placeholder}
+        </div>
+    )}
+    </Droppable>
     )
-    return cardItems
+  }
+
+  switchDragDrop(){
+    this.setState({dnd:!this.state.dnd})
   }
 
   getAllCards(cards, id){
     if(id === this.props.id){
-      cards.sort(function(a, b){ return a.pos - b.pos})
+      //cards.sort(function(a, b){ return a.pos - b.pos})
       this.setState({cards: cards})
     }
   }
@@ -113,7 +137,8 @@ class List extends React.Component{
           checklists: [],
           labels: [],
           comments: [],
-          users:[]
+          users:[],
+          pos: prevState.cards.length
         })
       }))
     }

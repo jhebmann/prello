@@ -11,7 +11,6 @@ import NotFound from './components/NotFound/NotFound'
 import UnAuthorized from './components/Unauthorized/UnAuthorized'
 import Header from './components/Marginals/Header'
 import { Redirect } from 'react-router-dom'
-
 import './index.css'
 
 const queryString = require('query-string')
@@ -19,18 +18,18 @@ render((
   
   <BrowserRouter>
     <div className='rootDiv'>
-      <Header />
-      <Switch>
-        <Route exact path='/' component={HomeUser}/>
-        <Route path='/unauthorized' component={UnAuthorized}/>
-        <Route path='/board/:id' component={Board}/>
-        <Route path='/login' component={Login}/>
-        <Route path='/register' component={Register}/>
-        <Route path='/search/:text' component={Search}/>
-        <Route path='/dropboxAuth' component={DropboxAuth}/>
-        <Route path='/dropboxAuth' component={() => <Redirect to = {{pathname: queryString.parse(window.location.hash).state.split('|')[0], state: queryString.parse(window.location.hash).state.split('|')[1]}} />}/>
-        <Route component={NotFound}/>
-      </Switch>
+        <Header />
+        <Switch>
+          <Route exact path='/' component={HomeUser}/>
+          <Route path='/unauthorized' component={UnAuthorized}/>
+          <Route path='/board/:id' component={Board}/>
+          <Route path='/login' component={Login}/>
+          <Route path='/register' component={Register}/>
+          <Route path='/search/:text' component={Search}/>
+          <Route path='/dropboxAuth' component={DropboxAuth}/>
+          <Route path='/dropboxAuth' component={() => <Redirect to = {{pathname: queryString.parse(window.location.hash).state.split('|')[0], state: queryString.parse(window.location.hash).state.split('|')[1]}} />}/>
+          <Route component={NotFound}/>
+        </Switch>
     </div>
   </BrowserRouter>
   
