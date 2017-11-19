@@ -712,3 +712,14 @@ input[type="file"].fileSpace{
 #prelloHeaderTitle {
   margin-left: 45px;
 }
+
+.caption h4{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.divTitlePopup h2{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 78%;
+}
