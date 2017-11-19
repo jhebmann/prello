@@ -156,18 +156,20 @@ class Board extends React.Component{
     addCard(card, listId){
         const listIndex=this.state.board.lists.findIndex(l=>l._id === listId)
 
-        let newCards = this.state.board.lists[listIndex].cards
+        if (this.state.board.lists[listIndex]){
+            let newCards = this.state.board.lists[listIndex].cards
 
-        let newCard = card
-        newCard.pos = newCards.length
+            let newCard = card
+            newCard.pos = newCards.length
 
-        newCards.push(newCard)
+            newCards.push(newCard)
 
-        let newBoard = this.state.board
+            let newBoard = this.state.board
 
-        newBoard.lists[listIndex].cards = newCards
+            newBoard.lists[listIndex].cards = newCards
 
-        this.setState({board: newBoard})
+            this.setState({board: newBoard})
+        }
     }
 
     deleteCards(listId) {
@@ -175,21 +177,26 @@ class Board extends React.Component{
 
         let newBoard = this.state.board
 
-        newBoard.lists[listIndex].cards = []
+        if (newBoard.lists[listIndex]){
+            newBoard.lists[listIndex].cards = []
 
-        this.setState({board: newBoard})
+            this.setState({board: newBoard})
+        }
     }
 
     deleteCard(cardId, listId) {
         const listIndex = this.state.board.lists.findIndex(l=>l._id === listId)
 
-        const cardIndex = this.state.board.lists[listIndex].cards.findIndex(c=>c._id === cardId)
 
-        let newBoard = this.state.board
+        if (this.state.board.lists[listIndex]){
+            const cardIndex = this.state.board.lists[listIndex].cards.findIndex(c=>c._id === cardId)
 
-        newBoard.lists[listIndex].cards.splice(cardIndex, 1)
+            let newBoard = this.state.board
 
-        this.setState({board: newBoard})
+            newBoard.lists[listIndex].cards.splice(cardIndex, 1)
+
+            this.setState({board: newBoard})
+        }
     }
 
     handleKeyPress = (e) => {
